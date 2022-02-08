@@ -1,4 +1,5 @@
 /bin/
 .env
-/*.yaml
+.vscode
+*/*.yaml
 */node_modules/
