@@ -56,9 +56,6 @@ deploy_storage_trigger() {
   STORAGE_ACCOUNT_NAME=$(pulumi stack output storageAccountName)
   CONTAINER_NAME=$(pulumi stack output containerName)
 
-  # Subscription ID, this should never change
-  SUBSCRIPTION_ID="7736bb83-1342-4df1-8914-8f815ea3011e"
-
   ##
   # assign role "Storage Blob Data Contributor" to relevant asignees
   ##
@@ -66,7 +63,7 @@ deploy_storage_trigger() {
   cd ..
 
   # Deploy infrastructure
-  cd infra/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd infra/ && pulumi stack select infra -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
@@ -91,9 +88,6 @@ deploy_queue_trigger() {
   STORAGE_ACCOUNT_NAME=$(pulumi stack output storageAccountName)
   QUEUE_NAME=$(pulumi stack output queueName)
 
- # Subscription ID, this should never change
-  SUBSCRIPTION_ID="7736bb83-1342-4df1-8914-8f815ea3011e"
-
   ##
   # assign role "Storage Blob Data Contributor" to relevant asignees
   ##
@@ -101,7 +95,7 @@ deploy_queue_trigger() {
   cd ..
 
   # Deploy infrastructure
-  cd infra/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd infra/ && pulumi stack select infra -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
