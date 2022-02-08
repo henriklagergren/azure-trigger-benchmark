@@ -13,6 +13,9 @@
         "forceConsistentCasingInFileNames": true
     },
     "files": [
-        "index.ts"
+        "workloads/workload.ts",
+        "http/index.ts",
+        "shared/index.ts",
+        "infra/index.ts"
     ]
 }

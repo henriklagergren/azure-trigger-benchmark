@@ -23,7 +23,7 @@ deploy_shared_resources
   cd ..
 
   # Deploy HTTP trigger
-  cd http/ && pulumi stack select dev -c && pulumi up -f -y
+  cd http/ && pulumi stack select trigger -c && pulumi up -f -y
 
   # Get url to HTTP trigger gateway
   TRIGGER_URL=$(pulumi stack output url)
@@ -50,7 +50,7 @@ deploy_storage_trigger() {
   cd ..
 
   # Deploy storage trigger
-  cd storage/ && pulumi stack select dev -c && pulumi up -f -y
+  cd storage/ && pulumi stack select trigger -c && pulumi up -f -y
 
   # Assign required roles, get storage account name and container name
   STORAGE_ACCOUNT_NAME=$(pulumi stack output storageAccountName)
@@ -66,7 +66,7 @@ deploy_storage_trigger() {
   cd ..
 
   # Deploy infrastructure
-  cd infra/ && pulumi stack select dev -c && pulumi up -f -y
+  cd infra/ && pulumi stack select trigger -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
@@ -77,7 +77,7 @@ deploy_storage_trigger() {
 
 deploy_queue_trigger() {
   # Deploy shared resources
-  cd shared/ && pulumi stack select dev -c && pulumi up -f -y
+  cd shared/ && pulumi stack select trigger -c && pulumi up -f -y
 
   # Get name of resource group
   RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
@@ -85,7 +85,7 @@ deploy_queue_trigger() {
   cd ..
 
   # Deploy queue trigger
-  cd queue/ && pulumi stack select dev -c && pulumi up -f -y
+  cd queue/ && pulumi stack select trigger -c && pulumi up -f -y
 
   # Get storage account name and queue name
   STORAGE_ACCOUNT_NAME=$(pulumi stack output storageAccountName)
@@ -101,7 +101,7 @@ deploy_queue_trigger() {
   cd ..
 
   # Deploy infrastructure
-  cd infra/ && pulumi stack select dev -c && pulumi up -f -y
+  cd infra/ && pulumi stack select trigger -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)

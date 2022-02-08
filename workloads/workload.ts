@@ -1,5 +1,5 @@
 // A simple function returning the factorial of a set number n
-const factorial = (n) => {
+const factorial = (n : number) => {
     let res = 1;
   
     for (let i = 2; i <= n; i += 1) {

@@ -6,6 +6,9 @@ import * as pulumi from '@pulumi/pulumi';
 import * as appInsights from 'applicationinsights';
 import * as automation from '@pulumi/pulumi/automation';
 import axios from 'axios';
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: './../.env',});
 
 
 const current = azure.core.getClientConfig({});
@@ -43,7 +46,7 @@ const getStorageFunction = ( container: any, storageAccount : any, operationId :
   const clientSecretCredential = new Identity.ClientSecretCredential(
     tentantId,
     clientId,
-    process.env.CLIENT_SECRET,
+    process.env.CLIENT_SECRET as string,
   );
 
   const blobServiceClient = new Storage.BlobServiceClient(
@@ -82,7 +85,7 @@ const getQueueFunction = (queue : any, storageAccount : any, operationId : any )
   const clientSecretCredential = new Identity.ClientSecretCredential(
     tentantId,
     clientId,
-    process.env.CLIENT_SECRET,
+    process.env.CLIENT_SECRET as string
   );
 
   const queueServiceClient = new StorageQueue.QueueServiceClient(
@@ -92,7 +95,7 @@ const getQueueFunction = (queue : any, storageAccount : any, operationId : any )
 
   const queueClient = queueServiceClient.getQueueClient(queue);
 
-  const base64Encode = (str) => Buffer.from(str).toString('base64');
+  const base64Encode = (str : string) => Buffer.from(str).toString('base64');
 
   // Send message (operationId) to queue
  queueClient.sendMessage(base64Encode(operationId))
@@ -112,7 +115,7 @@ const getQueueFunction = (queue : any, storageAccount : any, operationId : any )
 });
 
 
-const handler = async (context, req) => {
+const handler = async (context : any, req : any) => {
   // const trace = openTelemetryApi.default;
   // Setup application insights
 
@@ -133,12 +136,12 @@ const handler = async (context, req) => {
 
   // Get URL params
   const triggerType : string = req.query && req.query.trigger;
-  const validTrigger : boolean = triggerType && (triggerType === 'http' || triggerType === 'storage' || triggerType === 'queue');
+  const validTrigger : string | boolean = triggerType && (triggerType === 'http' || triggerType === 'storage' || triggerType === 'queue');
   const triggerInput : string = req.query && req.query.input;
 
   
   if (validTrigger && triggerInput) {
-    const correlationContext = appInsights.startOperation(context, req);
+    const correlationContext : any = appInsights.startOperation(context, req);
 
     if (triggerType === 'http') {
       // HTTP trigger
@@ -227,7 +230,7 @@ const getEndpoint = async () => {
   const user = await automation.LocalWorkspace.create({})
   .then((ws) => ws.whoAmI()
     .then((i) => i.user));
-const shared = new pulumi.StackReference(`${user}/test-master-thesis/shared`);
+const shared = new pulumi.StackReference(`${user}/${process.env.PULUMI_PROJECT_NAME}/shared`);
 
 const resourceGroupId = shared.requireOutput('resourceGroupId');
 const resourceGroup = azure.core.ResourceGroup.get('ResourceGroup', resourceGroupId);
