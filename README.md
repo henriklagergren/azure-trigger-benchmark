@@ -16,3 +16,4 @@
   - trigger
   - infra
 6. Run "npm install" in ./shared, ./infra and ./http folder.
+7. Go to root and run the deploy-shell script.
