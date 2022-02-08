@@ -4,14 +4,14 @@ cd http/ && pulumi destroy -f -y
 cd ..
 
 # Destroy storage trigger
-cd storage/ && pulumi destroy -f -y
+# cd storage/ && pulumi destroy -f -y
 
-cd ..
+# cd ..
 
 # Destroy queue trigger
-cd queue/ && pulumi destroy -f -y
+# cd queue/ && pulumi destroy -f -y
 
-cd ..
+# cd ..
 
 # Destroy infrastructure
 cd infra/ && pulumi destroy -f -y

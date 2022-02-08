@@ -41,7 +41,7 @@ const getStorageFunction = ( container: any, storageAccount : any, operationId :
   const clientSecretCredential = new Identity.ClientSecretCredential(
     process.env.PULUMI_AZURE_TENANT_ID as string,
     process.env.PULUMI_AZURE_CLIENT_ID as string,
-    process.env.CLIENT_SECRET as string,
+    process.env.PULUMI_AZURE_CLIENT_SECRET as string,
   );
 
   const blobServiceClient = new Storage.BlobServiceClient(
@@ -80,7 +80,7 @@ const getQueueFunction = (queue : any, storageAccount : any, operationId : any )
   const clientSecretCredential = new Identity.ClientSecretCredential(
     process.env.PULUMI_AZURE_TENANT_ID as string,
     process.env.PULUMI_AZURE_CLIENT_ID as string,
-    process.env.CLIENT_SECRET as string
+    process.env.PULUMI_AZURE_CLIENT_SECRET as string
   );
 
   const queueServiceClient = new StorageQueue.QueueServiceClient(
