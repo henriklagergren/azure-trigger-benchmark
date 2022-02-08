@@ -10,11 +10,6 @@ import * as dotenv from 'dotenv';
 
 dotenv.config({ path: './../.env',});
 
-
-const current = azure.core.getClientConfig({});
-let clientId : string;
-let tentantId : string;
-
 type Response = {
   status: number, headers: {}, body: string
 }
@@ -44,8 +39,8 @@ const getStorageFunction = ( container: any, storageAccount : any, operationId :
 
   // TODO This might be unsecure, parameter order: TenantID, ClientID, ClientSecret.
   const clientSecretCredential = new Identity.ClientSecretCredential(
-    tentantId,
-    clientId,
+    process.env.PULUMI_AZURE_TENANT_ID as string,
+    process.env.PULUMI_AZURE_CLIENT_ID as string,
     process.env.CLIENT_SECRET as string,
   );
 
@@ -83,8 +78,8 @@ const getStorageFunction = ( container: any, storageAccount : any, operationId :
 const getQueueFunction = (queue : any, storageAccount : any, operationId : any )  => new Promise<Response>((resolve) => {
 
   const clientSecretCredential = new Identity.ClientSecretCredential(
-    tentantId,
-    clientId,
+    process.env.PULUMI_AZURE_TENANT_ID as string,
+    process.env.PULUMI_AZURE_CLIENT_ID as string,
     process.env.CLIENT_SECRET as string
   );
 

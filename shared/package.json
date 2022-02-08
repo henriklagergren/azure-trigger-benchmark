@@ -1,5 +1,5 @@
 {
-    "name": "test-master-thesis",
+    "name": "azure-triggers-study",
     "devDependencies": {
         "@types/node": "^17.0.14"
     },
