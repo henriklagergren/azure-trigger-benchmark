@@ -10,9 +10,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config({ path: './../.env',});
 
-console.log(process.env.PULUMI_AZURE_TENANT_ID)
-
-const handler = async (context, trigger) => {
+const handler = async (context : any, trigger : any) => {
   // Setup application insights
   appInsights.setup()
     .setAutoDependencyCorrelation(true)
@@ -29,30 +27,25 @@ const handler = async (context, trigger) => {
 
   const correlationContext = appInsights.startOperation(context, 'correlationContextStorage');
 
-  // TODO This might be unsecure, parameter order: TenantID, ClientID, ClientSecret.
-  const clientSecretCredential = new Identity.ClientSecretCredential(
-    process.env.PULUMI_AZURE_TENANT_ID as string,
-    process.env.PULUMI_AZURE_CLIENT_ID as string,
-    process.env.PULUMI_AZURE_CLIENT_SECRET as string,
-  );
+  let credential = new Identity.EnvironmentCredential();
 
   // Get correct operationID from blob metadata
   const blobUrl = trigger.data.url;
-  const props = blobUrl.split('/').filter((w) => w.length > 6);
+  const props = blobUrl.split('/').filter((w : string) => w.length > 6);
   const storageAccount = props[0].split('.')[0];
   const container = props[1];
   const blob = props[2];
 
   const blobServiceClient = new Storage.BlobServiceClient(
     `https://${storageAccount}.blob.core.windows.net`,
-    clientSecretCredential,
+    credential,
   );
 
   const containerClient = blobServiceClient.getContainerClient(container);
   const blobs = containerClient.listBlobsFlat({ includeMetadata: true });
 
   for await (const item of blobs) {
-    if (item.name === blob) {
+    if (item.name === blob && item.metadata != undefined && correlationContext != null) {
       appInsights.defaultClient.trackTrace({
         message: 'Custom operationId',
         properties: {
@@ -99,6 +92,9 @@ const getStorageResources = async () => {
     callback: handler,
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
+      AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
+      AZURE_TENANT_ID: process.env.AZURE_TENANT_ID,
+      AZURE_CLIENT_SECRET: process.env.AZURE_CLIENT_SECRET
     },
   });
 

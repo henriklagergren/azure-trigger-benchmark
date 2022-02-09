@@ -37,16 +37,11 @@ const getHttpFunction = (url: string) => new Promise<Response>((resolve) => {
 
 const getStorageFunction = ( container: any, storageAccount : any, operationId : any ) => new Promise<Response>((resolve) => {
 
-  // TODO This might be unsecure, parameter order: TenantID, ClientID, ClientSecret.
-  const clientSecretCredential = new Identity.ClientSecretCredential(
-    process.env.PULUMI_AZURE_TENANT_ID as string,
-    process.env.PULUMI_AZURE_CLIENT_ID as string,
-    process.env.PULUMI_AZURE_CLIENT_SECRET as string,
-  );
+  let credential = new Identity.EnvironmentCredential();
 
   const blobServiceClient = new Storage.BlobServiceClient(
     `https://${storageAccount}.blob.core.windows.net`,
-    clientSecretCredential,
+    credential,
   );
 
   const containerClient = blobServiceClient.getContainerClient(container);
@@ -77,15 +72,11 @@ const getStorageFunction = ( container: any, storageAccount : any, operationId :
 
 const getQueueFunction = (queue : any, storageAccount : any, operationId : any )  => new Promise<Response>((resolve) => {
 
-  const clientSecretCredential = new Identity.ClientSecretCredential(
-    process.env.PULUMI_AZURE_TENANT_ID as string,
-    process.env.PULUMI_AZURE_CLIENT_ID as string,
-    process.env.PULUMI_AZURE_CLIENT_SECRET as string
-  );
+  let credential = new Identity.EnvironmentCredential();
 
   const queueServiceClient = new StorageQueue.QueueServiceClient(
     `https://${storageAccount}.queue.core.windows.net`,
-    clientSecretCredential,
+    credential,
   );
 
   const queueClient = queueServiceClient.getQueueClient(queue);
@@ -239,6 +230,9 @@ const insights = azure.appinsights.Insights.get('Insights', insightsId);
     callback: handler,
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
+      AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
+      AZURE_TENANT_ID: process.env.AZURE_TENANT_ID,
+      AZURE_CLIENT_SECRET: process.env.AZURE_CLIENT_SECRET
     },
   });
 };
