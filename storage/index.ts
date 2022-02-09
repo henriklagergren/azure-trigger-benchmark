@@ -7,6 +7,7 @@ import * as pulumi from '@pulumi/pulumi';
 import * as automation from '@pulumi/pulumi/automation';
 import workload from '../workloads/workload';
 import * as dotenv from 'dotenv';
+import { RoleDefinition } from '@pulumi/azure/authorization';
 
 dotenv.config({ path: './../.env',});
 
@@ -71,6 +72,16 @@ const getStorageResources = async () => {
   const resourceGroup = azure.core.ResourceGroup.get('ResourceGroup', resourceGroupId);
   const insightsId = shared.requireOutput('insightsId');
   const insights = azure.appinsights.Insights.get('Insights', insightsId);
+
+  
+  const primary = azure.core.getSubscription({});
+  const exampleClientConf = azure.core.getClientConfig({});
+  const exampleAssign = new azure.authorization.Assignment("exampleAssign", {
+    name: process.env.AZURE_CLIENT_ID,
+    scope: primary.then(primary => `${primary.id}/resourceGroups/resourcegroupe2d9932a/`),
+    roleDefinitionName: "Storage Blob Data Contributor",
+    principalId: exampleClientConf.then(exampleClientConf => exampleClientConf.objectId),
+  })
 
   const storageAccount = new azure.storage.Account('account', {
     resourceGroupName: resourceGroup.name,
