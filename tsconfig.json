@@ -16,6 +16,8 @@
         "workloads/workload.ts",
         "http/index.ts",
         "shared/index.ts",
-        "infra/index.ts"
+        "infra/index.ts",
+        "storage/index.ts",
+        "queue/index.ts"
     ]
 }
