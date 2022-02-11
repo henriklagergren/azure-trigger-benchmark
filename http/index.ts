@@ -23,7 +23,7 @@ const handler = async () => {
   appInsights.defaultClient.setAutoPopulateAzureProperties(true);
   appInsights.start();
 
-  return workload(20);
+  return workload();
 };
 
 

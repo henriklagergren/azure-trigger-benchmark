@@ -138,7 +138,7 @@ const handler = async (context : any, req : any) => {
 
         // Track dependency on completion
         appInsights.defaultClient.trackDependency({
-          name: 'CompletionTrack',
+          name: 'CompletionTrackHttp',
           dependencyTypeName: 'HTTP',
           resultCode: response.status,
           success: true,
@@ -164,7 +164,7 @@ const handler = async (context : any, req : any) => {
         );
         // Track dependency on completion
         appInsights.defaultClient.trackDependency({
-          name: 'CompletionTrack',
+          name: 'CompletionTrackQueue',
           dependencyTypeName: 'HTTP',
           resultCode: response.status,
           success: true,
@@ -188,7 +188,7 @@ const handler = async (context : any, req : any) => {
         );
         // Track dependency on completion
         appInsights.defaultClient.trackDependency({
-          name: "CompletionTrack",
+          name: "CompletionTrackStorage",
           dependencyTypeName: 'HTTP',
           resultCode: response.status,
           success: true,
