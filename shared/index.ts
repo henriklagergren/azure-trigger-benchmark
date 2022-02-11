@@ -1,5 +1,4 @@
 import * as azure from '@pulumi/azure';
-import * as pulumi from "@pulumi/pulumi";
 import * as azuread from "@pulumi/azuread";
 
 const resourceGroup = new azure.core.ResourceGroup('ResourceGroup', {
@@ -13,18 +12,18 @@ const insights = new azure.appinsights.Insights('Insights', {
 });
 
 const current = azuread.getClientConfig({});
-const exampleApplication = new azuread.Application("exampleApplication", {
+const application = new azuread.Application("application", {
     displayName: "azure-triggers-study",
     owners: [current.then((current: { objectId: any; }) => current.objectId)],
 });
-const exampleServicePrincipal = new azuread.ServicePrincipal("exampleServicePrincipal", {
-    applicationId: exampleApplication.applicationId,
+const servicePrincipal = new azuread.ServicePrincipal("servicePrincipal", {
+    applicationId: application.applicationId,
     appRoleAssignmentRequired: false,
     owners: [current.then((current: { objectId: any; }) => current.objectId)],
 });
 
 const clientSecret = new azuread.ApplicationPassword('exampleClientSecret', {
-  applicationObjectId: exampleApplication.objectId,
+  applicationObjectId: application.objectId,
   displayName: "azure-triggers-study-secret",
   endDateRelative: "3600h"
 })
@@ -35,7 +34,7 @@ if (fs.existsSync('../.env')) {
   fs.unlinkSync('../.env')
 }
 
-exampleServicePrincipal.applicationTenantId.apply(applicationTenantId => fs.writeFile('../.env', 'AZURE_TENANT_ID="' + applicationTenantId + '"\n', {'flag': 'a'}, (err:any) => {
+servicePrincipal.applicationTenantId.apply(applicationTenantId => fs.writeFile('../.env', 'AZURE_TENANT_ID="' + applicationTenantId + '"\n', {'flag': 'a'}, (err:any) => {
   if (err){
     console.log('ERROR: Tenant ID not added') 
     throw err;
@@ -43,7 +42,15 @@ exampleServicePrincipal.applicationTenantId.apply(applicationTenantId => fs.writ
   console.log("Tenant ID - Added")
 }))
 
-exampleApplication.applicationId.apply(id => fs.writeFile('../.env', 'AZURE_CLIENT_ID="' + id + '"\n', {'flag': 'a'}, (err:any) => {
+servicePrincipal.objectId.apply(objectId => fs.writeFile('../.env', 'AZURE_PRINCIPAL_ID="' + objectId + '"\n', {'flag': 'a'}, (err:any) => {
+  if (err){
+    console.log('ERROR: Principal ID not added') 
+    throw err;
+  } 
+  console.log("Tenant ID - Added")
+}))
+
+application.applicationId.apply(id => fs.writeFile('../.env', 'AZURE_CLIENT_ID="' + id + '"\n', {'flag': 'a'}, (err:any) => {
   if (err){
     console.log('ERROR: Client ID not added') 
     throw err;
@@ -59,7 +66,7 @@ clientSecret.value.apply(value => fs.writeFile('../.env', 'AZURE_CLIENT_SECRET="
   console.log("Client Secret - Added")
 }))
 
-exampleApplication.objectId.apply(objectId => fs.writeFile('../.env', 'AZURE_OBJECT_ID="' + objectId + '"\n', {'flag' : 'a'}, (err:any) => {
+application.objectId.apply(objectId => fs.writeFile('../.env', 'AZURE_OBJECT_ID="' + objectId + '"\n', {'flag' : 'a'}, (err:any) => {
   if (err){
     console.log('ERROR: Object ID not added') 
     throw err;
