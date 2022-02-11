@@ -1,8 +1,6 @@
 import * as azure from '@pulumi/azure';
 import * as pulumi from "@pulumi/pulumi";
 import * as azuread from "@pulumi/azuread";
-import { ServicePrincipalPassword } from '@pulumi/azuread';
-import { Output } from '@pulumi/pulumi/output';
 
 const resourceGroup = new azure.core.ResourceGroup('ResourceGroup', {
   location: "northeurope"
@@ -26,7 +24,7 @@ const exampleServicePrincipal = new azuread.ServicePrincipal("exampleServicePrin
 });
 
 const clientSecret = new azuread.ApplicationPassword('exampleClientSecret', {
-  applicationObjectId: "b9862f32-b06d-4417-9e32-a259b5b6f8eb",
+  applicationObjectId: exampleApplication.objectId,
   displayName: "azure-triggers-study-secret",
   endDateRelative: "3600h"
 })
@@ -45,7 +43,7 @@ exampleServicePrincipal.applicationTenantId.apply(applicationTenantId => fs.writ
   console.log("Tenant ID - Added")
 }))
 
-exampleServicePrincipal.id.apply(id => fs.writeFile('../.env', 'AZURE_CLIENT_ID="' + id + '"\n', {'flag': 'a'}, (err:any) => {
+exampleApplication.applicationId.apply(id => fs.writeFile('../.env', 'AZURE_CLIENT_ID="' + id + '"\n', {'flag': 'a'}, (err:any) => {
   if (err){
     console.log('ERROR: Client ID not added') 
     throw err;
@@ -61,7 +59,7 @@ clientSecret.value.apply(value => fs.writeFile('../.env', 'AZURE_CLIENT_SECRET="
   console.log("Client Secret - Added")
 }))
 
-exampleServicePrincipal.objectId.apply(value => fs.writeFile('../.env', 'AZURE_OBJECT_ID="' + value + '"\n', {'flag' : 'a'}, (err:any) => {
+exampleApplication.objectId.apply(objectId => fs.writeFile('../.env', 'AZURE_OBJECT_ID="' + objectId + '"\n', {'flag' : 'a'}, (err:any) => {
   if (err){
     console.log('ERROR: Object ID not added') 
     throw err;
