@@ -9,6 +9,7 @@
         "@azure/storage-queue": "^12.7.0",
         "@pulumi/azure": "^4.36.0",
         "@pulumi/azure-native": "^1.54.0",
+        "@pulumi/azuread": "^5.16.0",
         "@pulumi/pulumi": "^3.23.2",
         "applicationinsights": "^2.2.1",
         "automation": "*",

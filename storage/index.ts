@@ -7,7 +7,6 @@ import * as pulumi from '@pulumi/pulumi';
 import * as automation from '@pulumi/pulumi/automation';
 import workload from '../workloads/workload';
 import * as dotenv from 'dotenv';
-import { RoleDefinition } from '@pulumi/azure/authorization';
 
 dotenv.config({ path: './../.env',});
 
