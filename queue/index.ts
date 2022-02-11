@@ -1,7 +1,4 @@
-/* eslint-disable no-restricted-syntax */
 import * as appInsights from 'applicationinsights';
-import * as Storage from '@azure/storage-blob';
-import * as Identity from '@azure/identity';
 import * as azure from '@pulumi/azure';
 import * as pulumi from '@pulumi/pulumi';
 import * as automation from '@pulumi/pulumi/automation';
@@ -10,7 +7,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config({ path: './../.env',});
 
-const handler = async (context : any, trigger : any) => {
+const handler = async (context : any, queueMessage : any) => {
   // Setup application insights
   appInsights.setup()
     .setAutoDependencyCorrelation(true)
@@ -25,36 +22,14 @@ const handler = async (context : any, trigger : any) => {
   appInsights.defaultClient.setAutoPopulateAzureProperties(true);
   appInsights.start();
 
-  const correlationContext = appInsights.startOperation(context, 'correlationContextStorage');
-
-  let credential = new Identity.EnvironmentCredential();
-
-  // Get correct operationID from blob metadata
-  const blobUrl = trigger.data.url;
-  const props = blobUrl.split('/').filter((w : string) => w.length > 6);
-  const storageAccount = props[0].split('.')[0];
-  const container = props[1];
-  const blob = props[2];
-
-  const blobServiceClient = new Storage.BlobServiceClient(
-    `https://${storageAccount}.blob.core.windows.net`,
-    credential,
-  );
-
-  const containerClient = blobServiceClient.getContainerClient(container);
-  const blobs = containerClient.listBlobsFlat({ includeMetadata: true });
-
-  for await (const item of blobs) {
-    if (item.name === blob && item.metadata != undefined && correlationContext != null) {
-      appInsights.defaultClient.trackTrace({
-        message: 'Custom operationId',
-        properties: {
-          newOperationId: item.metadata.operationid,
-          oldOperationId: correlationContext.operation.id,
-        },
-      });
-    }
-  }
+  const correlationContext = appInsights.startOperation(context, 'correlationContextQueue');
+  appInsights.defaultClient.trackTrace({
+    message: 'Custom operationId',
+    properties: {
+      newOperationId: queueMessage, // queueMessage only consists of operationId
+      oldOperationId: correlationContext!.operation.id,
+    },
+  });
   appInsights.defaultClient.flush();
 
   return workload();
@@ -72,9 +47,9 @@ const getStorageResources = async () => {
   const insightsId = shared.requireOutput('insightsId');
   const insights = azure.appinsights.Insights.get('Insights', insightsId);
 
-  new azure.authorization.Assignment("storageBlobDataContributor", {
+  new azure.authorization.Assignment("queueBlobDataContributor", {
     scope: resourceGroupId,
-    roleDefinitionName: "Storage Blob Data Contributor",
+    roleDefinitionName: "Storage Queue Data Contributor",
     principalId: process.env.AZURE_OBJECT_ID!,
   })
 
@@ -86,16 +61,25 @@ const getStorageResources = async () => {
     accountReplicationType: 'LRS',
   });
 
-  const container = new azure.storage.Container('container', {
+  const queue = new azure.storage.Queue('queue', {
     storageAccountName: storageAccount.name,
-    containerAccessType: 'private',
   });
 
-  // Blob trigger
-  azure.eventgrid.events.onGridBlobCreated('StorageTrigger', {
+  // Queue trigger
+  queue.onEvent('QueueTrigger', {
     resourceGroup,
-    storageAccount,
     callback: handler,
+    hostSettings: {
+      extensions: {
+        queues: {
+          maxPollingInterval: '00:00:01', // 1s
+          batchSize: 32,
+          newBatchThreshold: 16,
+          visibilityTimeout: "0",
+          maxDequeueCount: 5,
+        },
+      },
+    },
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
       AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
@@ -104,7 +88,10 @@ const getStorageResources = async () => {
     },
   });
 
-  return { storageAccountName: storageAccount.name, containerName: container.name };
+  return {
+    storageAccountName: storageAccount.name,
+    queueName: queue.name,
+  };
 };
 
 module.exports = getStorageResources().then((e) => e);

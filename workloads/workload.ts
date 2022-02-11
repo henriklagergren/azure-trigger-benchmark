@@ -8,7 +8,8 @@ const factorial = (n : number) => {
     return res;
   };
   
-  const workload = async (nrOfIterations : number) => {
+  const workload = async () => {
+    const nrOfIterations = 20;
     return {
       status: 200,
       headers: {
