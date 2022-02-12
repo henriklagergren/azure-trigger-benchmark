@@ -72,10 +72,11 @@ const getStorageResources = async () => {
   const insightsId = shared.requireOutput('insightsId');
   const insights = azure.appinsights.Insights.get('Insights', insightsId);
 
+
   new azure.authorization.Assignment("storageBlobDataContributor", {
     scope: resourceGroupId,
     roleDefinitionName: "Storage Blob Data Contributor",
-    principalId: process.env.AZURE_OBJECT_ID!,
+    principalId: process.env.AZURE_PRINCIPAL_ID!,
   })
 
   const storageAccount = new azure.storage.Account('account', {

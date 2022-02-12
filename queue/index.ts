@@ -50,7 +50,7 @@ const getStorageResources = async () => {
   new azure.authorization.Assignment("queueBlobDataContributor", {
     scope: resourceGroupId,
     roleDefinitionName: "Storage Queue Data Contributor",
-    principalId: process.env.AZURE_OBJECT_ID!,
+    principalId: process.env.AZURE_PRINCIPAL_ID!,
   })
 
   const storageAccount = new azure.storage.Account('account', {
