@@ -12,13 +12,15 @@ deploy_shared_resources() {
 
   # Create API key to be able to use Azure Insights REST API TODO use it with REST API
   az config set extension.use_dynamic_install=yes_without_prompt # Required to install and use app-insights module
-  API_KEY_NAME=$(date +%s%N) # Set current time as name
-  API_KEY=$(az monitor app-insights api-key create --api-key $API_KEY_NAME --read-properties ReadTelemetry --resource-group $RESOURCE_GROUP --app $INSIGHTS_NAME | \
-  python3 -c "import sys, json; print(json.load(sys.stdin)['apiKey'])") # Get apiKey from resulting JSON using python
+  API_KEY_NAME=$(date +%s%N)                                     # Set current time as name
+  API_KEY=$(
+    az monitor app-insights api-key create --api-key $API_KEY_NAME --read-properties ReadTelemetry --resource-group $RESOURCE_GROUP --app $INSIGHTS_NAME | \
+    python3 -c "import sys, json; print(json.load(sys.stdin)['apiKey'])"
+  ) # Get apiKey from resulting JSON using python
 }
 
 deploy_http_trigger() {
-deploy_shared_resources
+  deploy_shared_resources
 
   cd ..
 
@@ -74,7 +76,7 @@ deploy_storage_trigger() {
 
 deploy_queue_trigger() {
   # Deploy shared resources
-  cd shared/ && pulumi stack select trigger -c && pulumi up -f -y
+  deploy_shared_resources
 
   # Get name of resource group
   RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
@@ -104,24 +106,55 @@ deploy_queue_trigger() {
   echo "$BENCHMARK_URL?trigger=queue&input=$QUEUE_NAME,$STORAGE_ACCOUNT_NAME"
 }
 
+deploy_database_trigger() {
+  # Deploy shared resources
+  deploy_shared_resources
+
+  # Get name of resource group
+  RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
+
+  cd ..
+
+  # Deploy database trigger
+  cd database/ && pulumi stack select trigger -c && pulumi up -f -y
+
+  # Get storage account name and database name
+  CONTAINER_NAME=$(pulumi stack output containerName)
+  DATABASE_NAME=$(pulumi stack output databaseName)
+
+  ##
+  # assign role "Storage Blob Data Contributor" to relevant asignees
+  ##
+
+  cd ..
+
+  # Deploy infrastructure
+  cd infra/ && pulumi stack select infra -c && pulumi up -f -y
+
+  # Get url to benchmark gateway
+  BENCHMARK_URL=$(pulumi stack output url)
+
+  echo "Start database trigger benchmark:"
+  echo "$BENCHMARK_URL?trigger=database&input=$DATABASE_NAME,$CONTAINER_NAME"
+}
+
 # Read input flags
 while getopts 't:' flag; do
   case "${flag}" in
-    t) TRIGGER_TYPE="${OPTARG}" ;;
-    *) exit 1 ;;
+  t) TRIGGER_TYPE="${OPTARG}" ;;
+  *) exit 1 ;;
   esac
 done
 
 # Decide which trigger to deploy based on input flag
-if [ "$TRIGGER_TYPE" = 'http' ]
-then
+if [ "$TRIGGER_TYPE" = 'http' ]; then
   deploy_http_trigger
-elif [ "$TRIGGER_TYPE" = 'storage' ]
-then
+elif [ "$TRIGGER_TYPE" = 'storage' ]; then
   deploy_storage_trigger
-elif [ "$TRIGGER_TYPE" = 'queue' ]
-then
+elif [ "$TRIGGER_TYPE" = 'queue' ]; then
   deploy_queue_trigger
+elif [ "$TRIGGER_TYPE" = 'database' ]; then
+  deploy_database_trigger
 else
   echo 'Error: Unsupported trigger'
 fi

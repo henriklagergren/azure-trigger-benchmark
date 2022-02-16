@@ -9,3 +9,15 @@ cd ..
 cd http/ && npm install
 
 cd ..
+
+cd storage/ && npm install
+
+cd ..
+
+cd database/ && npm install
+
+cd ..
+
+cd queue/ && npm install
+
+cd ..

@@ -13,6 +13,11 @@ cd queue/ && pulumi destroy -f -y
 
 cd ..
 
+# Destroy database trigger
+cd database/ && pulumi destroy -f -y
+
+cd ..
+
 # Destroy infrastructure
 cd infra/ && pulumi destroy -f -y
 
