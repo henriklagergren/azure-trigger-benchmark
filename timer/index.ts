@@ -40,15 +40,42 @@ const getEndpoint = async () => {
   const insightsId = shared.requireOutput('insightsId');
   const insights = azure.appinsights.Insights.get('Insights', insightsId);
 
-  
   // HTTP trigger
-  return new azure.appservice.HttpEventSubscription('HttpTrigger', {
-    resourceGroup,
-    callback: handler,
+  const timer = new azure.appservice.TimerFunction("timerTrigger", {
+    schedule: {month: 11},
+    runOnStartup: false,
+    callback: handler
+  });
+
+  const app = new azure.appservice.MultiCallbackFunctionApp("timerApp", {
+    resourceGroupName: resourceGroup.name,
+    functions: [timer],
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
     },
-  });
+});
+
+//app.functionApp.id.apply(e => console.log(e));
+
+new azure.authorization.Assignment("timerOwner", {
+  scope: app.functionApp.id,
+  roleDefinitionName: "Owner",
+  principalId: process.env.AZURE_PRINCIPAL_ID!,
+})
+
+const fs = require('fs');
+
+app.functionApp.getHostKeys().masterKey.apply(masterKey => fs.writeFile('../.env', 'AZURE_TIMER_MASTER_KEY="' + masterKey + '"\n', {'flag': 'a'}, (err:any) => {
+  if (err){
+    console.log('ERROR: Master Key not added') 
+    throw err;
+  } 
+  console.log("Master Key - Added")
+}));
+
+
+  return {timerFunctionAppName: app.functionApp.defaultHostname,
+          timerTriggerAppName : timer.name}
 };
 
-exports.url = getEndpoint().then((endpoint) => endpoint.url);
+module.exports = getEndpoint().then((e) => e);

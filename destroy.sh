@@ -18,6 +18,11 @@ cd database/ && pulumi destroy -f -y
 
 cd ..
 
+# Destroy database trigger
+cd timer/ && pulumi destroy -f -y
+
+cd ..
+
 # Destroy infrastructure
 cd infra/ && pulumi destroy -f -y
 
