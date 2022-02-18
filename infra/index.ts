@@ -164,6 +164,35 @@ const getDatabaseFunction = (databaseName: string, containerName: string) =>
     })
   })
 
+const getTimerFunction = (url : string) => 
+  new Promise<Response>(resolve => {
+    axios
+      .post(url, '{"input":"test"}',{
+        headers: {
+          "x-functions-key" : process.env['AZURE_TIMER_MASTERKEY']!,
+          "Content-type" : "application/json"
+        }
+      })
+      .then(() =>
+        resolve({
+          status: 200,
+          headers: {
+            'content-type': 'text/plain'
+          },
+          body: 'AZURE - Timer trigger successfully started'
+        })
+      )
+      .catch(e =>
+        resolve({
+          status: 200,
+          headers: {
+            'content-type': 'text/plain'
+          },
+          body: `AZURE - Timer trigger failed to start\n\nError: ${e.message}`
+        })
+      )
+  })
+
 const handler = async (context: any, req: any) => {
   // const trace = openTelemetryApi.default;
   // Setup application insights
@@ -191,7 +220,8 @@ const handler = async (context: any, req: any) => {
     (triggerType === 'http' ||
       triggerType === 'storage' ||
       triggerType === 'queue' ||
-      triggerType === 'database')
+      triggerType === 'database' ||
+      triggerType === 'timer')
   const triggerInput: string = req.query && req.query.input
 
   if (validTrigger && triggerInput) {
@@ -296,6 +326,25 @@ const handler = async (context: any, req: any) => {
         }, correlationContext)()
       }
     }
+
+    if (triggerType == 'timer'){
+      return appInsights.wrapWithCorrelationContext(async () => {
+        const startTime = Date.now() // Start trackRequest timer
+        const response = await getTimerFunction(triggerInput);
+        // Track dependency on completion
+        appInsights.defaultClient.trackDependency({
+          name: 'CompletionTrackStorage',
+          dependencyTypeName: 'HTTP',
+          resultCode: response.status,
+          success: true,
+          duration: Date.now() - startTime,
+          id: correlationContext.operation.parentId,
+          data: ''
+        })
+        appInsights.defaultClient.flush()
+        return response
+      }, correlationContext)()
+    }
   }
   // If either parameter is missing or is invalid
   return {
@@ -333,7 +382,8 @@ const getEndpoint = async () => {
       AZURE_TENANT_ID: process.env.AZURE_TENANT_ID,
       AZURE_CLIENT_SECRET: process.env.AZURE_CLIENT_SECRET,
       ACCOUNTDB_ENDPOINT: process.env.ACCOUNTDB_ENDPOINT,
-      ACCOUNTDB_PRIMARYKEY: process.env.ACCOUNTDB_PRIMARYKEY
+      ACCOUNTDB_PRIMARYKEY: process.env.ACCOUNTDB_PRIMARYKEY,
+      AZURE_TIMER_MASTERKEY: process.env.AZURE_TIMER_MASTERKEY
     }
   })
 }

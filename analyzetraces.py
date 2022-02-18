@@ -99,7 +99,6 @@ all_entries.sort(key=lambda x:x['timestamp'])
 print('')
 print('Setting correct operation IDs...')
 
-
 if len(switch_operation_ids) > 0:
     for entry in all_entries:
         for switch in switch_operation_ids:
@@ -141,28 +140,22 @@ print('Checking the validity of traces...')
 
 all_valid_groups = []
 
-x = 0
-
 for group in all_groups:
-    #print(f"${group}\n")
     trace_amount = 0
     request_amount = 0
     dependency_amount = 0
     for entry in group:
         if entry['type'] == 'TRACE':
             trace_amount += 1
-            print(f"{trace_amount} - traces")
         elif entry['type'] == 'REQUEST':
             request_amount += 1
-            print(f"{request_amount} - reqs")
         elif entry['type'] == 'DEPENDENCY':
             dependency_amount += 1
-            print(f"{dependency_amount} - dependency")
-    if trace_amount == 4 and request_amount == 2 and dependency_amount >= 2:
+    if trace_amount == 4 and request_amount == 2 and dependency_amount == 1:
         all_valid_groups.append(group)
     else:
-        print('Group with id ' + str(group[0]['operation_id']) + ' was thrown out...')
-        x = x+1
+        print('Group with id ' +
+              str(group[0]['operation_id']) + ' was thrown out...')
 
 all_groups = all_valid_groups
 
@@ -174,41 +167,39 @@ all_trigger_delays_ms = []
 
 for group in all_groups:
     dependency_timestamp = datetime.now()
-    request_timestamp = datetime.now() #TODO Request_timestamp does not change because there is no entry where the name is not Functions.InfraEndpoint. This causes the request_timestamp to always be equal the datetime.now().
+    request_timestamp = datetime.now()
     for entry in group:
         if entry['type'] == 'DEPENDENCY':
-            dependency_timestamp = datetime.strptime(entry['timestamp']+'000', '%Y-%m-%d %H:%M:%S.%f')
+            dependency_timestamp = datetime.strptime(
+                entry['timestamp']+'000', '%Y-%m-%d %H:%M:%S.%f')
         elif entry['type'] == 'REQUEST' and entry['name'] != 'Functions.InfraEndpoint':
-            request_timestamp = datetime.strptime(entry['timestamp']+'000', '%Y-%m-%d %H:%M:%S.%f')
+            request_timestamp = datetime.strptime(
+                entry['timestamp']+'000', '%Y-%m-%d %H:%M:%S.%f')
 
-    print(request_timestamp)
-    print(f"{dependency_timestamp}\n")
-  
     delta = request_timestamp - dependency_timestamp
-    print(delta)
-    all_trigger_delays_ms.append((delta.seconds*1000000 + delta.microseconds) / 1000)
+    all_trigger_delays_ms.append(
+        (delta.seconds*1000000 + delta.microseconds) / 1000)
 
 print('')
 print('## RESULTS ##')
 print('')
 print(all_trigger_delays_ms)
 print('')
-print('Average: ' + str(sum(all_trigger_delays_ms) / max(1, len(all_trigger_delays_ms))) + ' ms')
+print('Average: ' + str(sum(all_trigger_delays_ms) /
+      max(1, len(all_trigger_delays_ms))) + ' ms')
 print('')
-print('Number of valid entries: '+ str(len(all_trigger_delays_ms)))
+print('Number of valid entries: ' + str(len(all_trigger_delays_ms)))
 print('')
 
-
-
-# csvFile = str(str(datetime.strptime(str(datetime.now()), '%Y-%m-%d %H:%M:%S.%f')).split('.')[0])
-# csvFile = re.sub(' ', '_', csvFile)
-# csvFile = re.sub(':', '-', csvFile)
-# with open(trigger_type + '-' + csvFile + '.csv', 'w', newline='') as file:
-#     writer = csv.writer(file)
-#     writer.writerow(['Trigger type: ' + trigger_type])
-#     writer.writerow(['Traces: ' + str(len(all_trigger_delays_ms))])
-#     writer.writerow([' '])
-#     writer.writerow(['Measured latencies:'])
-#     for value in all_trigger_delays_ms:
-#         writer.writerow([value])
-
+csvFile = str(str(datetime.strptime(str(datetime.now()),
+              '%Y-%m-%d %H:%M:%S.%f')).split('.')[0])
+csvFile = re.sub(' ', '_', csvFile)
+csvFile = re.sub(':', '-', csvFile)
+with open(trigger_type + '-' + csvFile + '.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(['Trigger type: ' + trigger_type])
+    writer.writerow(['Traces: ' + str(len(all_trigger_delays_ms))])
+    writer.writerow([' '])
+    writer.writerow(['Measured latencies:'])
+    for value in all_trigger_delays_ms:
+        writer.writerow([value])
