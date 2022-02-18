@@ -46,7 +46,7 @@ const getStorageFunction = (
   storageAccount: any,
   operationId: any
 ) =>
-  new Promise<Response>(resolve => {
+  new Promise<Response>(async resolve => {
     let credential = new Identity.EnvironmentCredential()
 
     const blobServiceClient = new Storage.BlobServiceClient(
@@ -59,7 +59,7 @@ const getStorageFunction = (
     const blobName = `${new Date().getTime()}.txt`
     const blockBlobClient = containerClient.getBlockBlobClient(blobName)
 
-    blockBlobClient
+    const uploadBlobResponse = await blockBlobClient
       .upload(content, content.length, {
         metadata: {
           operationId

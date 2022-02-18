@@ -10,6 +10,10 @@ import * as dotenv from 'dotenv'
 
 dotenv.config({ path: './../.env' })
 
+function delay (ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 const handler = async (context: any, trigger: any) => {
   // Setup application insights
   appInsights
@@ -57,13 +61,14 @@ const handler = async (context: any, trigger: any) => {
       appInsights.defaultClient.trackTrace({
         message: 'Custom operationId',
         properties: {
-          newOperationId: item.metadata.operationid,
+          newOperationId: item.metadata.operationId,
           oldOperationId: correlationContext.operation.id
         }
       })
     }
   }
   appInsights.defaultClient.flush()
+  await delay(5000)
 
   return workload()
 }
@@ -88,6 +93,12 @@ const getStorageResources = async () => {
   new azure.authorization.Assignment('storageBlobDataContributor', {
     scope: resourceGroupId,
     roleDefinitionName: 'Storage Blob Data Contributor',
+    principalId: process.env.AZURE_PRINCIPAL_ID!
+  })
+
+  new azure.authorization.Assignment('microsoftWeb', {
+    scope: resourceGroupId,
+    roleDefinitionName: 'Website Contributor',
     principalId: process.env.AZURE_PRINCIPAL_ID!
   })
 
