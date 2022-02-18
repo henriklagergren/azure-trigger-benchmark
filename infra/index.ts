@@ -125,9 +125,8 @@ const getDatabaseFunction = (databaseName: string, containerName: string) =>
   new Promise<Response>(async resolve => {
     const { CosmosClient } = require('@azure/cosmos')
 
-    const endpoint = 'https://databasetrigger495102f6.documents.azure.com:443/'
-    const key =
-      '1WYgt6Qe9SNiJKbVY652WdjkczgcgJJIV2PNqWnbYrRwqYrjUzWB5lq6EUEJBljLUb8tm4cymbcXuVDXwPpg4g==' //process.env.ACCOUNTDB_PRIMARYKEY!
+    const endpoint = process.env['ACCOUNTDB_ENDPOINT']
+    const key = process.env['ACCOUNTDB_PRIMARYKEY']
     const client = new CosmosClient({ endpoint, key })
 
     async function main () {
@@ -381,7 +380,9 @@ const getEndpoint = async () => {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
       AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
       AZURE_TENANT_ID: process.env.AZURE_TENANT_ID,
-      AZURE_CLIENT_SECRET: process.env.AZURE_CLIENT_SECRET
+      AZURE_CLIENT_SECRET: process.env.AZURE_CLIENT_SECRET,
+      ACCOUNTDB_ENDPOINT: process.env.ACCOUNTDB_ENDPOINT,
+      ACCOUNTDB_PRIMARYKEY: process.env.ACCOUNTDB_PRIMARYKEY
     }
   })
 }
