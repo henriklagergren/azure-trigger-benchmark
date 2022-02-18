@@ -169,7 +169,7 @@ const getTimerFunction = (url : string) =>
     axios
       .post(url, '{"input":"test"}',{
         headers: {
-          "x-functions-key" : process.env.AZURE_TIMER_MASTER_KEY!,
+          "x-functions-key" : process.env['AZURE_TIMER_MASTERKEY']!,
           "Content-type" : "application/json"
         }
       })
@@ -382,7 +382,8 @@ const getEndpoint = async () => {
       AZURE_TENANT_ID: process.env.AZURE_TENANT_ID,
       AZURE_CLIENT_SECRET: process.env.AZURE_CLIENT_SECRET,
       ACCOUNTDB_ENDPOINT: process.env.ACCOUNTDB_ENDPOINT,
-      ACCOUNTDB_PRIMARYKEY: process.env.ACCOUNTDB_PRIMARYKEY
+      ACCOUNTDB_PRIMARYKEY: process.env.ACCOUNTDB_PRIMARYKEY,
+      AZURE_TIMER_MASTERKEY: process.env.AZURE_TIMER_MASTERKEY
     }
   })
 }

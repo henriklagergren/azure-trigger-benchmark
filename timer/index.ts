@@ -65,7 +65,7 @@ new azure.authorization.Assignment("timerOwner", {
 
 const fs = require('fs');
 
-app.functionApp.getHostKeys().masterKey.apply(masterKey => fs.writeFile('../.env', 'AZURE_TIMER_MASTER_KEY="' + masterKey + '"\n', {'flag': 'a'}, (err:any) => {
+app.functionApp.getHostKeys().masterKey.apply(masterKey => fs.writeFile('../.env', 'AZURE_TIMER_MASTERKEY="' + masterKey + '"\n', {'flag': 'a'}, (err:any) => {
   if (err){
     console.log('ERROR: Master Key not added') 
     throw err;
