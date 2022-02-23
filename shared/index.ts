@@ -74,6 +74,12 @@ new azure.authorization.Assignment('timerOwner', {
   principalId: servicePrincipal.objectId
 })
 
+new azure.authorization.Assignment('databaseContributor', {
+  scope: resourceGroup.id,
+  roleDefinitionName: 'Contributor',
+  principalId: process.env.AZURE_PRINCIPAL_ID!
+})
+
 writeEnv()
 
 // Export ids and names of resources to import them in other projects

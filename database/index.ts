@@ -5,8 +5,6 @@ import * as dotenv from 'dotenv'
 import * as automation from '@pulumi/pulumi/automation'
 import * as pulumi from '@pulumi/pulumi'
 import workload from '../workloads/workload'
-import * as cosmos from '@azure/cosmos'
-import { SqlDatabase } from '@pulumi/azure/cosmosdb'
 
 dotenv.config({ path: './../.env' })
 
@@ -35,10 +33,6 @@ const handler = async (context: any) => {
 
   console.log(newOperationId)
 
-  const client = new cosmos.CosmosClient(
-    'AccountEndpoint=https://databasetrigger16a562e1.documents.azure.com:443/;AccountKey=pdK18bIRDpTbZAlWp9hdyp5HmtAcHwnoHPHc16puajpJDyWSB10ySv0n5OVdvU2NCZSpMTHX5GGMvfYOm8BgJw==;'
-  )
-
   appInsights.defaultClient.trackTrace({
     message: 'Custom operationId',
     properties: {
@@ -61,19 +55,8 @@ const getDatabaseResources = async () => {
     `${user}/${process.env.PULUMI_PROJECT_NAME}/shared`
   )
 
-  const resourceGroupId = shared.requireOutput('resourceGroupId')
-  const resourceGroup = azure.core.ResourceGroup.get(
-    'ResourceGroup',
-    resourceGroupId
-  )
   const insightsId = shared.requireOutput('insightsId')
   const insights = azure.appinsights.Insights.get('Insights', insightsId)
-
-  new azure.authorization.Assignment('databaseContributor', {
-    scope: resourceGroupId,
-    roleDefinitionName: 'Contributor',
-    principalId: process.env.AZURE_PRINCIPAL_ID!
-  })
 
   const sqlAccount = cosmosdb.Account.get(
     process.env.ACCOUNTDB_NAME!,
