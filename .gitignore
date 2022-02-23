@@ -3,3 +3,5 @@
 
 */node_modules/
 .csv
+/experiment/*.csv
+/experiment/*.png

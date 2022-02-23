@@ -90,10 +90,10 @@ const getDatabaseResources = async () => {
     process.env.CONTAINER_ID!
   )
 
-  const connectionKey = `Cosmos${process.env['ACCOUNTDB_NAME']}ConnectionKey1`
+  const connectionKey = `Cosmos${process.env['ACCOUNTDB_NAME']}ConnectionKey`
 
   // SQL on change trigger
-  sqlAccount.onChange('databaseTrigger1', {
+  sqlAccount.onChange('databaseTrigger', {
     databaseName: sqlDatabase.name,
     collectionName: sqlContainer.name,
     startFromBeginning: true,

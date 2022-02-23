@@ -1,7 +1,6 @@
 import * as azure from '@pulumi/azure'
 import * as azuread from '@pulumi/azuread'
 import * as cosmosdb from '@pulumi/azure/cosmosdb'
-import { IdentityType } from '@pulumi/azure-native/sql/v20180601preview'
 
 const fs = require('fs')
 
@@ -55,6 +54,24 @@ const sqlContainer = new cosmosdb.SqlContainer('sqlContainer', {
   accountName: sqlAccount.name,
   resourceGroupName: resourceGroup.name,
   partitionKeyPath: '/newOperationId'
+})
+
+new azure.authorization.Assignment('storageBlobDataContributor', {
+  scope: resourceGroup.id,
+  roleDefinitionName: 'Storage Blob Data Contributor',
+  principalId: servicePrincipal.objectId
+})
+
+new azure.authorization.Assignment('storageQueueDataContributor', {
+  scope: resourceGroup.id,
+  roleDefinitionName: 'Storage Queue Data Contributor',
+  principalId: servicePrincipal.objectId
+})
+
+new azure.authorization.Assignment('timerOwner', {
+  scope: resourceGroup.id,
+  roleDefinitionName: 'Owner',
+  principalId: servicePrincipal.objectId
 })
 
 writeEnv()

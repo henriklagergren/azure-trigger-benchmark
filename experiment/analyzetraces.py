@@ -14,25 +14,29 @@ application_ID = 'd3aeeeeb-e8f9-41c4-bf19-a838df745bb9'
 api_key = 'dw8g2lvrzmxxicu23petdfm1fer0j1nukipmhhlz'
 ##
 
-headers = {'x-api-key': api_key,}
-params = (('timespan', timespan),('$top', top))
+headers = {'x-api-key': api_key, }
+params = (('timespan', timespan), ('$top', top))
 
 print('')
 print('Fetching Requests...')
-reqs = requests.get('https://api.applicationinsights.io/v1/apps/' + application_ID + '/events/requests', headers=headers, params=params)
+reqs = requests.get('https://api.applicationinsights.io/v1/apps/' +
+                    application_ID + '/events/requests', headers=headers, params=params)
 reqs = reqs.json()
 
 
 print('')
 print('Fetching Dependencies...')
-dependencies = requests.get('https://api.applicationinsights.io/v1/apps/' + application_ID + '/events/dependencies', headers=headers, params=params)
+dependencies = requests.get('https://api.applicationinsights.io/v1/apps/' +
+                            application_ID + '/events/dependencies', headers=headers, params=params)
 dependencies = dependencies.json()
 
-params = (('timespan', timespan),('$filter', 'contains(trace/message, \'exec\') or contains(trace/message, \'custom\')'),('$top', top))
+params = (('timespan', timespan), ('$filter',
+          'contains(trace/message, \'exec\') or contains(trace/message, \'custom\')'), ('$top', top))
 
 print('')
 print('Fetching Traces...')
-traces = requests.get('https://api.applicationinsights.io/v1/apps/' + application_ID + '/events/traces', headers=headers, params=params)
+traces = requests.get('https://api.applicationinsights.io/v1/apps/' +
+                      application_ID + '/events/traces', headers=headers, params=params)
 traces = traces.json()
 
 all_entries = []
@@ -69,6 +73,7 @@ for value in dependencies['value']:
     d['name'] = name
     d['timestamp'] = timestamp
     d['operation_id'] = operation_id
+    d['duration'] = value['dependency']['duration']
     all_entries.append(d)
 
 print('')
@@ -77,6 +82,7 @@ for value in traces['value']:
     message_whole = value['trace']['message']
     if 'Custom operationId' in message_whole:
         # Get operation ids that should be switched
+
         switch_operation_ids.append(value['customDimensions'])
     else:
         message_list = message_whole.split(' ')
@@ -93,7 +99,7 @@ for value in traces['value']:
         all_entries.append(d)
 
 # Sort by timestamp, must be done before switching operation ids
-all_entries.sort(key=lambda x:x['timestamp'])
+all_entries.sort(key=lambda x: x['timestamp'])
 
 # Switch operation ids if necessary
 print('')
@@ -102,8 +108,9 @@ print('Setting correct operation IDs...')
 if len(switch_operation_ids) > 0:
     for entry in all_entries:
         for switch in switch_operation_ids:
-            if entry['operation_id'] == switch['oldOperationId'] and switch['newOperationId'] != '':
-                entry['operation_id'] = switch['newOperationId']
+            if entry['operation_id'] == switch['oldOperationId']:
+                entry['operation_id'] = (
+                    switch['newOperationId'].replace('|', '').split('.')[0])
 
 
 # Remove entries without operation_id
@@ -114,12 +121,10 @@ for entry in filtered_entries:
 
 all_entries = filtered_entries
 
-
-
 dash = '-' * 119
 
 # Sort by operation_id before grouping
-all_entries.sort(key=lambda x:x['operation_id'])
+all_entries.sort(key=lambda x: x['operation_id'])
 
 print('')
 print('Partitioning groups...')
@@ -155,8 +160,14 @@ for group in all_groups:
             print(f"{request_amount} - request")
         elif entry['type'] == 'DEPENDENCY':
             dependency_amount += 1
-            print(f"{dependency_amount} - dependency")
-    if trace_amount == 4 and request_amount == 2 and dependency_amount >= 1: # How do we know the "valid" amount of trace/request/dependency.
+    if(trigger_type == "http"):
+        isValid = (trace_amount == 4 and request_amount ==
+                   2 and dependency_amount == 2)
+    elif(trigger_type == "storage"):
+        isValid = (trace_amount == 4 and request_amount ==
+                   2 and dependency_amount == 9)
+
+    if isValid:
         all_valid_groups.append(group)
     else:
         print('Group with id ' +
@@ -169,12 +180,15 @@ print('Checks completed')
 
 
 all_trigger_delays_ms = []
+all_completion_tracks = []
 
 for group in all_groups:
     dependency_timestamp = datetime.now()
     request_timestamp = datetime.now()
     for entry in group:
-        if entry['type'] == 'DEPENDENCY':
+        if entry['name'] == ('CompletionTrack' + trigger_type.capitalize()):
+            all_completion_tracks.append(entry['duration'])
+        elif entry['type'] == 'DEPENDENCY':
             dependency_timestamp = datetime.strptime(
                 entry['timestamp']+'000', '%Y-%m-%d %H:%M:%S.%f')
         elif entry['type'] == 'REQUEST' and entry['name'] != 'Functions.InfraEndpoint':
@@ -193,20 +207,23 @@ print('')
 print('Average: ' + str(sum(all_trigger_delays_ms) /
       max(1, len(all_trigger_delays_ms))) + ' ms')
 print('')
+print('Completion tracks')
+print(all_completion_tracks)
+print('')
+print('Average: ' + str(sum(all_completion_tracks) /
+      max(1, len(all_completion_tracks))) + ' ms')
+print('')
 print('Number of valid entries: ' + str(len(all_trigger_delays_ms)))
 print('')
 
-
-# csvFile = str(str(datetime.strptime(str(datetime.now()),
-#               '%Y-%m-%d %H:%M:%S.%f')).split('.')[0])
-# csvFile = re.sub(' ', '_', csvFile)
-# csvFile = re.sub(':', '-', csvFile)
-# with open(trigger_type + '-' + csvFile + '.csv', 'w', newline='') as file:
-#     writer = csv.writer(file)
-#     writer.writerow(['Trigger type: ' + trigger_type])
-#     writer.writerow(['Traces: ' + str(len(all_trigger_delays_ms))])
-#     writer.writerow([' '])
-#     writer.writerow(['Measured latencies:'])
-#     for value in all_trigger_delays_ms:
-#         writer.writerow([value])
-        
+csvFile = str(str(datetime.strptime(str(datetime.now()),
+                                    '%Y-%m-%d %H:%M:%S.%f')).split('.')[0])
+csvFile = re.sub(' ', '_', csvFile)
+csvFile = re.sub(':', '-', csvFile)
+with open(trigger_type + '.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(["trigger_type", "latency"])
+    count = 0
+    for value in all_trigger_delays_ms:
+        writer.writerow([trigger_type, value])
+        count = count + 1
