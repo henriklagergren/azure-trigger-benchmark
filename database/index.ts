@@ -4,14 +4,13 @@ import * as cosmosdb from '@pulumi/azure/cosmosdb'
 import * as dotenv from 'dotenv'
 import * as automation from '@pulumi/pulumi/automation'
 import * as pulumi from '@pulumi/pulumi'
-import * as Identity from '@azure/identity'
 import workload from '../workloads/workload'
 import * as cosmos from '@azure/cosmos'
 import { SqlDatabase } from '@pulumi/azure/cosmosdb'
 
 dotenv.config({ path: './../.env' })
 
-const handler = async (context: any, items: any) => {
+const handler = async (context: any) => {
   // Setup application insights
   appInsights
     .setup()
@@ -27,7 +26,28 @@ const handler = async (context: any, items: any) => {
   appInsights.defaultClient.setAutoPopulateAzureProperties(true)
   appInsights.start()
 
-  console.log('entered handler database')
+  const correlationContext = appInsights.startOperation(
+    context,
+    'correlationContextDatabase'
+  )
+
+  const newOperationId = context['bindings']['items'][0]['newOperationId']
+
+  console.log(newOperationId)
+
+  const client = new cosmos.CosmosClient(
+    'AccountEndpoint=https://databasetrigger16a562e1.documents.azure.com:443/;AccountKey=pdK18bIRDpTbZAlWp9hdyp5HmtAcHwnoHPHc16puajpJDyWSB10ySv0n5OVdvU2NCZSpMTHX5GGMvfYOm8BgJw==;'
+  )
+
+  appInsights.defaultClient.trackTrace({
+    message: 'Custom operationId',
+    properties: {
+      newOperationId: newOperationId,
+      oldOperationId: correlationContext!.operation.id
+    }
+  })
+
+  appInsights.defaultClient.flush()
 
   return workload()
 }
@@ -49,84 +69,41 @@ const getDatabaseResources = async () => {
   const insightsId = shared.requireOutput('insightsId')
   const insights = azure.appinsights.Insights.get('Insights', insightsId)
 
-  let sqlAccount = new cosmosdb.Account('databaseTrigger', {
-    resourceGroupName: resourceGroup.name,
-    offerType: 'Standard',
-    consistencyPolicy: {
-      consistencyLevel: 'Session'
-    },
-    geoLocations: [{ location: resourceGroup.location, failoverPriority: 0 }],
-    enableFreeTier: true
+  new azure.authorization.Assignment('databaseContributor', {
+    scope: resourceGroupId,
+    roleDefinitionName: 'Contributor',
+    principalId: process.env.AZURE_PRINCIPAL_ID!
   })
 
-  const sqlDatabase = new cosmosdb.SqlDatabase('sqlDatabase', {
-    accountName: sqlAccount.name,
-    resourceGroupName: resourceGroup.name,
-    throughput: 400
-  })
-
-  const sqlContainer = new cosmosdb.SqlContainer('sqlContainer', {
-    databaseName: sqlDatabase.name,
-    accountName: sqlAccount.name,
-    resourceGroupName: resourceGroup.name,
-    partitionKeyPath: '/id'
-  })
-
-  new azure.cosmosdb.SqlTrigger(
-    'sqlTrigger',
-    {
-      containerId: sqlContainer.id,
-      body: 'function trigger(){}',
-      operation: 'Create',
-      type: 'Post'
-    },
-    { deleteBeforeReplace: true }
+  const sqlAccount = cosmosdb.Account.get(
+    process.env.ACCOUNTDB_NAME!,
+    process.env.ACCOUNTDB_ID!
   )
 
-  const fs = require('fs')
-
-  sqlAccount.name.apply(name =>
-    fs.writeFile(
-      '../.env',
-      'ACCOUNTDB_ENDPOINT="https://' + name + '.documents.azure.com:443/"\n',
-      { flag: 'a' },
-      (err: any) => {
-        if (err) {
-          console.log('ERROR: Cosmos DB account endpoint not added')
-          throw err
-        }
-        console.log('Cosmos DB account endpoint - Added')
-      }
-    )
+  const sqlDatabase = cosmosdb.SqlDatabase.get(
+    process.env.DATABASE_NAME!,
+    process.env.DATABASE_ID!
   )
 
-  sqlAccount.primaryKey.apply(key =>
-    fs.writeFile(
-      '../.env',
-      'ACCOUNTDB_PRIMARYKEY="' + key + '"\n',
-      { flag: 'a' },
-      (err: any) => {
-        if (err) {
-          console.log('ERROR: Cosmos DB primary key not added')
-          throw err
-        }
-        console.log('Cosmos DB primary key - Added')
-      }
-    )
+  const sqlContainer = cosmosdb.SqlContainer.get(
+    process.env.CONTAINER_NAME!,
+    process.env.CONTAINER_ID!
   )
+
+  const connectionKey = `Cosmos${process.env['ACCOUNTDB_NAME']}ConnectionKey1`
 
   // SQL on change trigger
-  sqlAccount.onChange('databaseTrigger', {
+  sqlAccount.onChange('databaseTrigger1', {
     databaseName: sqlDatabase.name,
     collectionName: sqlContainer.name,
+    startFromBeginning: true,
     callback: handler,
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
-      AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
-      AZURE_TENANT_ID: process.env.AZURE_TENANT_ID,
-      AZURE_CLIENT_SECRET: process.env.AZURE_CLIENT_SECRET
+      [connectionKey]: `AccountEndpoint=${process.env.ACCOUNTDB_ENDPOINT};AccountKey=${process.env.ACCOUNTDB_PRIMARYKEY};`
     }
   })
+
   return {
     databaseName: sqlDatabase.name,
     containerName: sqlContainer.name

@@ -1,24 +1,24 @@
 {
-    "compilerOptions": {
-        "strict": true,
-        "outDir": "bin",
-        "target": "es2016",
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "sourceMap": true,
-        "experimentalDecorators": true,
-        "pretty": true,
-        "noFallthroughCasesInSwitch": true,
-        "noImplicitReturns": true,
-        "forceConsistentCasingInFileNames": true
-    },
-    "files": [
-        "workloads/workload.ts",
-        "http/index.ts",
-        "shared/index.ts",
-        "infra/index.ts",
-        "storage/index.ts",
-        "queue/index.ts",
-        "database/index.ts"
-    ]
+  "compilerOptions": {
+    "strict": true,
+    "outDir": "bin",
+    "target": "es2016",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "pretty": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "files": [
+    "workloads/workload.ts",
+    "http/index.ts",
+    "shared/index.ts",
+    "infra/index.ts",
+    "storage/index.ts",
+    "queue/index.ts",
+    "database/index.ts"
+  ]
 }

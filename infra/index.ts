@@ -121,42 +121,48 @@ const getQueueFunction = (queue: any, storageAccount: any, operationId: any) =>
       )
   })
 
-const getDatabaseFunction = (databaseName: string, containerName: string) =>
+const getDatabaseFunction = (
+  databaseName: string,
+  containerName: string,
+  operationId: any
+) =>
   new Promise<Response>(async resolve => {
-    const { CosmosClient } = require('@azure/cosmos')
-
-    const endpoint = process.env['ACCOUNTDB_ENDPOINT']
-    const key = process.env['ACCOUNTDB_PRIMARYKEY']
-    const client = new CosmosClient({ endpoint, key })
+    const endpoint = process.env.ACCOUNTDB_ENDPOINT!
+    const key = process.env.ACCOUNTDB_PRIMARYKEY!
+    const client = new cosmos.CosmosClient(
+      `AccountEndpoint=${endpoint};AccountKey=${key};`
+    )
 
     async function main () {
       const container = client.database(databaseName).container(containerName)
 
       console.log('Upserting items to database')
 
-      const entries = [{ id: '1', name: 'azure-database-trigger' }]
-      for (const entry of entries) {
-        container.items
-          .upsert(entry)
-          .then(() =>
-            resolve({
-              status: 200,
-              headers: {
-                'content-type': 'text/plain'
-              },
-              body: 'AZURE - Database trigger benchmark successfully started'
-            })
-          )
-          .catch((e: any) =>
-            resolve({
-              status: 200,
-              headers: {
-                'content-type': 'text/plain'
-              },
-              body: `AZURE - Database trigger benchmark failed to start\n\nError: ${e.message}`
-            })
-          )
+      const newItem = {
+        newOperationId: operationId,
+        isComplete: false
       }
+
+      await container.items
+        .upsert(newItem)
+        .then(() =>
+          resolve({
+            status: 200,
+            headers: {
+              'content-type': 'text/plain'
+            },
+            body: `AZURE - Database trigger benchmark successfully started`
+          })
+        )
+        .catch((e: any) =>
+          resolve({
+            status: 200,
+            headers: {
+              'content-type': 'text/plain'
+            },
+            body: `AZURE - Database trigger benchmark failed to start\n\nError: ${e.message}`
+          })
+        )
     }
 
     main().catch(error => {
@@ -164,13 +170,13 @@ const getDatabaseFunction = (databaseName: string, containerName: string) =>
     })
   })
 
-const getTimerFunction = (url : string) => 
+const getTimerFunction = (url: string) =>
   new Promise<Response>(resolve => {
     axios
-      .post(url, '{"input":"test"}',{
+      .post(url, '{"input":"test"}', {
         headers: {
-          "x-functions-key" : process.env['AZURE_TIMER_MASTERKEY']!,
-          "Content-type" : "application/json"
+          'x-functions-key': process.env['AZURE_TIMER_MASTERKEY']!,
+          'Content-type': 'application/json'
         }
       })
       .then(() =>
@@ -309,7 +315,8 @@ const handler = async (context: any, req: any) => {
           const startTime = Date.now()
           const response = await getDatabaseFunction(
             databaseInputs[0],
-            databaseInputs[1]
+            databaseInputs[1],
+            correlationContext.operation.id
           )
           // Track dependency on completion
           appInsights.defaultClient.trackDependency({
@@ -327,10 +334,10 @@ const handler = async (context: any, req: any) => {
       }
     }
 
-    if (triggerType == 'timer'){
+    if (triggerType == 'timer') {
       return appInsights.wrapWithCorrelationContext(async () => {
         const startTime = Date.now() // Start trackRequest timer
-        const response = await getTimerFunction(triggerInput);
+        const response = await getTimerFunction(triggerInput)
         // Track dependency on completion
         appInsights.defaultClient.trackDependency({
           name: 'CompletionTrackStorage',

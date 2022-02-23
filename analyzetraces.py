@@ -6,12 +6,12 @@ import csv
 import re
 
 # EDIT THESE PARAMETERS
-trigger_type ='storage'
-timespan = '2022-02-18T17:00:00Z/2022-02-18T22:50:00Z' # Time zone GMT
+trigger_type ='database'
+timespan = '2022-02-23T15:34:00Z/2022-02-24T22:50:00Z' # Time zone GMT
 # Azure Insights REST API limits to 500 rows by default, many invocations => thousands of rows. Get top 5000 rows
 top = 5000
-application_ID = '0bc2d4fb-42fc-46ad-ad09-07020c146524'
-api_key = '5t662w4fg4v4mwueqvr41nww47pxosgn6po6keai'
+application_ID = 'd3aeeeeb-e8f9-41c4-bf19-a838df745bb9'
+api_key = 'dw8g2lvrzmxxicu23petdfm1fer0j1nukipmhhlz'
 ##
 
 headers = {'x-api-key': api_key,}
@@ -102,7 +102,7 @@ print('Setting correct operation IDs...')
 if len(switch_operation_ids) > 0:
     for entry in all_entries:
         for switch in switch_operation_ids:
-            if entry['operation_id'] == switch['oldOperationId']:
+            if entry['operation_id'] == switch['oldOperationId'] and switch['newOperationId'] != '':
                 entry['operation_id'] = switch['newOperationId']
 
 
@@ -113,6 +113,8 @@ for entry in filtered_entries:
         filtered_entries.remove(entry)
 
 all_entries = filtered_entries
+
+
 
 dash = '-' * 119
 
@@ -147,11 +149,14 @@ for group in all_groups:
     for entry in group:
         if entry['type'] == 'TRACE':
             trace_amount += 1
+            print(f"{trace_amount} - Trace")
         elif entry['type'] == 'REQUEST':
             request_amount += 1
+            print(f"{request_amount} - request")
         elif entry['type'] == 'DEPENDENCY':
             dependency_amount += 1
-    if trace_amount == 4 and request_amount == 2 and dependency_amount == 1:
+            print(f"{dependency_amount} - dependency")
+    if trace_amount == 4 and request_amount == 2 and dependency_amount >= 1: # How do we know the "valid" amount of trace/request/dependency.
         all_valid_groups.append(group)
     else:
         print('Group with id ' +
@@ -191,15 +196,17 @@ print('')
 print('Number of valid entries: ' + str(len(all_trigger_delays_ms)))
 print('')
 
-csvFile = str(str(datetime.strptime(str(datetime.now()),
-              '%Y-%m-%d %H:%M:%S.%f')).split('.')[0])
-csvFile = re.sub(' ', '_', csvFile)
-csvFile = re.sub(':', '-', csvFile)
-with open(trigger_type + '-' + csvFile + '.csv', 'w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerow(['Trigger type: ' + trigger_type])
-    writer.writerow(['Traces: ' + str(len(all_trigger_delays_ms))])
-    writer.writerow([' '])
-    writer.writerow(['Measured latencies:'])
-    for value in all_trigger_delays_ms:
-        writer.writerow([value])
+
+# csvFile = str(str(datetime.strptime(str(datetime.now()),
+#               '%Y-%m-%d %H:%M:%S.%f')).split('.')[0])
+# csvFile = re.sub(' ', '_', csvFile)
+# csvFile = re.sub(':', '-', csvFile)
+# with open(trigger_type + '-' + csvFile + '.csv', 'w', newline='') as file:
+#     writer = csv.writer(file)
+#     writer.writerow(['Trigger type: ' + trigger_type])
+#     writer.writerow(['Traces: ' + str(len(all_trigger_delays_ms))])
+#     writer.writerow([' '])
+#     writer.writerow(['Measured latencies:'])
+#     for value in all_trigger_delays_ms:
+#         writer.writerow([value])
+        
