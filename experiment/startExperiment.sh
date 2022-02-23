@@ -4,7 +4,7 @@ NUMBER_TIMES=0
 deploy_http_trigger() {
   while [ $NUMBER_TIMES -ne 0 ]; do
     echo "Http experiment ${NUMBER_TIMES} started"
-    curl 'https://infraendpoint3f9f4d92.azurewebsites.net/api/InfraEndpoint?trigger=http&input=https://httptrigger2bd4dafb.azurewebsites.net/api/HttpTrigger'
+    curl "https://infraendpoint874ca9a4.azurewebsites.net/api/InfraEndpoint?trigger=http&input=https://httptrigger17b53ce0.azurewebsites.net/api/HttpTrigger"
     echo ''
     ((NUMBER_TIMES = $NUMBER_TIMES - 1))
   done
@@ -14,7 +14,7 @@ deploy_http_trigger() {
 deploy_storage_trigger() {
   while [ $NUMBER_TIMES -ne 0 ]; do
     echo "Storage experiment ${NUMBER_TIMES} started"
-    curl ''
+    curl "https://infraendpoint2bfdfae2.azurewebsites.net/api/InfraEndpoint?trigger=storage&input=container4231d2c7,accounte7fd09c"
     echo ''
     ((NUMBER_TIMES = $NUMBER_TIMES - 1))
   done

@@ -28,6 +28,24 @@ const clientSecret = new azuread.ApplicationPassword('exampleClientSecret', {
   endDateRelative: "3600h"
 })
 
+new azure.authorization.Assignment('storageBlobDataContributor', {
+  scope: resourceGroup.id,
+  roleDefinitionName: 'Storage Blob Data Contributor',
+  principalId: servicePrincipal.objectId
+})
+
+new azure.authorization.Assignment('storageQueueDataContributor', {
+  scope: resourceGroup.id,
+  roleDefinitionName: 'Storage Queue Data Contributor',
+  principalId: servicePrincipal.objectId
+})
+
+new azure.authorization.Assignment("timerOwner", {
+  scope: resourceGroup.id,
+  roleDefinitionName: 'Owner',
+  principalId: servicePrincipal.objectId,
+})
+
 const fs = require('fs');
 
 if (fs.existsSync('../.env')) {

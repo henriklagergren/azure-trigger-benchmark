@@ -26,8 +26,6 @@ const handler = async () => {
   return workload();
 };
 
-
-
 const getEndpoint = async () => {
 
   const user = await automation.LocalWorkspace.create({})
@@ -54,14 +52,6 @@ const getEndpoint = async () => {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
     },
 });
-
-//app.functionApp.id.apply(e => console.log(e));
-
-new azure.authorization.Assignment("timerOwner", {
-  scope: app.functionApp.id,
-  roleDefinitionName: "Owner",
-  principalId: process.env.AZURE_PRINCIPAL_ID!,
-})
 
 const fs = require('fs');
 

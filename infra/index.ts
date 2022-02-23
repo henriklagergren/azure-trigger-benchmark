@@ -283,7 +283,7 @@ const handler = async (context: any, req: any) => {
           const response = await getStorageFunction(
             storageInputs[0],
             storageInputs[1],
-            correlationContext.operation.id
+            correlationContext.operation.parentId
           )
           // Track dependency on completion
           appInsights.defaultClient.trackDependency({

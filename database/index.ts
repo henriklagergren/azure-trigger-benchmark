@@ -115,10 +115,12 @@ const getDatabaseResources = async () => {
     )
   )
 
+
   // SQL on change trigger
   sqlAccount.onChange('databaseTrigger', {
     databaseName: sqlDatabase.name,
     collectionName: sqlContainer.name,
+    
     callback: handler,
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
@@ -126,7 +128,10 @@ const getDatabaseResources = async () => {
       AZURE_TENANT_ID: process.env.AZURE_TENANT_ID,
       AZURE_CLIENT_SECRET: process.env.AZURE_CLIENT_SECRET
     }
-  })
+    
+  });
+
+
   return {
     databaseName: sqlDatabase.name,
     containerName: sqlContainer.name

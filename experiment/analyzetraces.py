@@ -6,12 +6,12 @@ import csv
 import re
 
 # EDIT THESE PARAMETERS
-trigger_type = 'queue'
-timespan = ''
+trigger_type = 'storage'
+timespan = '2022-02-20T21:00:00Z/2022-02-23T19:00:00Z'
 # Azure Insights REST API limits to 500 rows by default, many invocations => thousands of rows. Get top 5000 rows
-top = 20
-application_ID = 'b0b135ce-f8d0-465a-b832-0232a4fb2099'
-api_key = '4n4z75kg7cff4atqtrfxrzwnip8ewjx10tvf4kvl'
+top = 10000
+application_ID = 'ea608af4-552d-4fd1-82d7-bdd42fe07f1c'
+api_key = 'qygk8a02wf6bq5kjri3iz4erx5lwlcvvwninjnj7'
 ##
 
 headers = {'x-api-key': api_key, }
@@ -72,6 +72,7 @@ for value in dependencies['value']:
     d['name'] = name
     d['timestamp'] = timestamp
     d['operation_id'] = operation_id
+    d['duration'] = value['dependency']['duration']
     all_entries.append(d)
 
 print('')
@@ -80,6 +81,7 @@ for value in traces['value']:
     message_whole = value['trace']['message']
     if 'Custom operationId' in message_whole:
         # Get operation ids that should be switched
+
         switch_operation_ids.append(value['customDimensions'])
     else:
         message_list = message_whole.split(' ')
@@ -95,7 +97,6 @@ for value in traces['value']:
         d['operation_id'] = operation_id
         all_entries.append(d)
 
-print(d)
 # Sort by timestamp, must be done before switching operation ids
 all_entries.sort(key=lambda x: x['timestamp'])
 
@@ -107,7 +108,8 @@ if len(switch_operation_ids) > 0:
     for entry in all_entries:
         for switch in switch_operation_ids:
             if entry['operation_id'] == switch['oldOperationId']:
-                entry['operation_id'] = switch['newOperationId']
+                entry['operation_id'] = (
+                    switch['newOperationId'].replace('|', '').split('.')[0])
 
 
 # Remove entries without operation_id
@@ -155,7 +157,15 @@ for group in all_groups:
             request_amount += 1
         elif entry['type'] == 'DEPENDENCY':
             dependency_amount += 1
-    if trace_amount == 4 and request_amount == 2 and dependency_amount == 1:
+
+    if(trigger_type == "http"):
+        isValid = (trace_amount == 4 and request_amount ==
+                   2 and dependency_amount == 2)
+    elif(trigger_type == "storage"):
+        isValid = (trace_amount == 4 and request_amount ==
+                   2 and dependency_amount == 9)
+
+    if isValid:
         all_valid_groups.append(group)
     else:
         print('Group with id ' +
@@ -168,12 +178,15 @@ print('Checks completed')
 
 
 all_trigger_delays_ms = []
+all_completion_tracks = []
 
 for group in all_groups:
     dependency_timestamp = datetime.now()
     request_timestamp = datetime.now()
     for entry in group:
-        if entry['type'] == 'DEPENDENCY':
+        if entry['name'] == ('CompletionTrack' + trigger_type.capitalize()):
+            all_completion_tracks.append(entry['duration'])
+        elif entry['type'] == 'DEPENDENCY':
             dependency_timestamp = datetime.strptime(
                 entry['timestamp']+'000', '%Y-%m-%d %H:%M:%S.%f')
         elif entry['type'] == 'REQUEST' and entry['name'] != 'Functions.InfraEndpoint':
@@ -192,18 +205,23 @@ print('')
 print('Average: ' + str(sum(all_trigger_delays_ms) /
       max(1, len(all_trigger_delays_ms))) + ' ms')
 print('')
+print('Completion tracks')
+print(all_completion_tracks)
+print('')
+print('Average: ' + str(sum(all_completion_tracks) /
+      max(1, len(all_completion_tracks))) + ' ms')
+print('')
 print('Number of valid entries: ' + str(len(all_trigger_delays_ms)))
 print('')
 
 csvFile = str(str(datetime.strptime(str(datetime.now()),
-              '%Y-%m-%d %H:%M:%S.%f')).split('.')[0])
+                                    '%Y-%m-%d %H:%M:%S.%f')).split('.')[0])
 csvFile = re.sub(' ', '_', csvFile)
 csvFile = re.sub(':', '-', csvFile)
-with open(trigger_type + '-' + csvFile + '.csv', 'w', newline='') as file:
+with open(trigger_type + '.csv', 'w', newline='') as file:
     writer = csv.writer(file)
-    writer.writerow(['Trigger type: ' + trigger_type])
-    writer.writerow(['Traces: ' + str(len(all_trigger_delays_ms))])
-    writer.writerow([' '])
-    writer.writerow(['Measured latencies:'])
+    writer.writerow(["trigger_type", "latency"])
+    count = 0
     for value in all_trigger_delays_ms:
-        writer.writerow([value])
+        writer.writerow([trigger_type, value])
+        count = count + 1
