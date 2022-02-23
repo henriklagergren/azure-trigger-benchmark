@@ -6,42 +6,37 @@ import csv
 import re
 
 # EDIT THESE PARAMETERS
-<<<<<<< HEAD:experiment/analyzetraces.py
 trigger_type = 'storage'
 timespan = '2022-02-20T21:00:00Z/2022-02-23T19:00:00Z'
 # Azure Insights REST API limits to 500 rows by default, many invocations => thousands of rows. Get top 5000 rows
 top = 10000
 application_ID = 'ea608af4-552d-4fd1-82d7-bdd42fe07f1c'
 api_key = 'qygk8a02wf6bq5kjri3iz4erx5lwlcvvwninjnj7'
-=======
-trigger_type ='storage'
-timespan = '2022-02-18T17:00:00Z/2022-02-18T22:50:00Z' # Time zone GMT
-# Azure Insights REST API limits to 500 rows by default, many invocations => thousands of rows. Get top 5000 rows
-top = 5000
-application_ID = '0bc2d4fb-42fc-46ad-ad09-07020c146524'
-api_key = '5t662w4fg4v4mwueqvr41nww47pxosgn6po6keai'
->>>>>>> 9677bc696f15c6ba0c838a7b9b296b3dacf0b23e:analyzetraces.py
 ##
 
-headers = {'x-api-key': api_key,}
-params = (('timespan', timespan),('$top', top))
+headers = {'x-api-key': api_key, }
+params = (('timespan', timespan), ('$top', top))
 
 print('')
 print('Fetching Requests...')
-reqs = requests.get('https://api.applicationinsights.io/v1/apps/' + application_ID + '/events/requests', headers=headers, params=params)
+reqs = requests.get('https://api.applicationinsights.io/v1/apps/' +
+                    application_ID + '/events/requests', headers=headers, params=params)
 reqs = reqs.json()
 
 
 print('')
 print('Fetching Dependencies...')
-dependencies = requests.get('https://api.applicationinsights.io/v1/apps/' + application_ID + '/events/dependencies', headers=headers, params=params)
+dependencies = requests.get('https://api.applicationinsights.io/v1/apps/' +
+                            application_ID + '/events/dependencies', headers=headers, params=params)
 dependencies = dependencies.json()
 
-params = (('timespan', timespan),('$filter', 'contains(trace/message, \'exec\') or contains(trace/message, \'custom\')'),('$top', top))
+params = (('timespan', timespan), ('$filter',
+          'contains(trace/message, \'exec\') or contains(trace/message, \'custom\')'), ('$top', top))
 
 print('')
 print('Fetching Traces...')
-traces = requests.get('https://api.applicationinsights.io/v1/apps/' + application_ID + '/events/traces', headers=headers, params=params)
+traces = requests.get('https://api.applicationinsights.io/v1/apps/' +
+                      application_ID + '/events/traces', headers=headers, params=params)
 traces = traces.json()
 
 all_entries = []
@@ -104,7 +99,7 @@ for value in traces['value']:
         all_entries.append(d)
 
 # Sort by timestamp, must be done before switching operation ids
-all_entries.sort(key=lambda x:x['timestamp'])
+all_entries.sort(key=lambda x: x['timestamp'])
 
 # Switch operation ids if necessary
 print('')
@@ -129,7 +124,7 @@ all_entries = filtered_entries
 dash = '-' * 119
 
 # Sort by operation_id before grouping
-all_entries.sort(key=lambda x:x['operation_id'])
+all_entries.sort(key=lambda x: x['operation_id'])
 
 print('')
 print('Partitioning groups...')
