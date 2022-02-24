@@ -73,12 +73,13 @@ new azure.authorization.Assignment('timerOwner', {
   roleDefinitionName: 'Owner',
   principalId: servicePrincipal.objectId
 })
-
+/*
 new azure.authorization.Assignment('databaseContributor', {
   scope: resourceGroup.id,
   roleDefinitionName: 'Contributor',
-  principalId: process.env.AZURE_PRINCIPAL_ID!
+  principalId: servicePrincipal.objectId
 })
+*/
 
 writeEnv()
 

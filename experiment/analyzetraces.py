@@ -7,11 +7,11 @@ import re
 
 # EDIT THESE PARAMETERS
 trigger_type ='database'
-timespan = '2022-02-23T15:34:00Z/2022-02-24T22:50:00Z' # Time zone GMT
+timespan = '2022-02-24T11:26:00Z/2022-02-25T15:50:00Z' # Time zone GMT
 # Azure Insights REST API limits to 500 rows by default, many invocations => thousands of rows. Get top 5000 rows
 top = 5000
-application_ID = 'd3aeeeeb-e8f9-41c4-bf19-a838df745bb9'
-api_key = 'dw8g2lvrzmxxicu23petdfm1fer0j1nukipmhhlz'
+application_ID = '663c2982-f1c4-466c-8509-a67eb3f623d8'
+api_key = 'y4ievgnobgucfozpshcyuhyiicfy8f2sz552pi1u'
 ##
 
 headers = {'x-api-key': api_key, }
@@ -61,6 +61,7 @@ for value in reqs['value']:
 print('')
 print('Extracting Dependencies...')
 for value in dependencies['value']:
+    print(value)
     timestamp = value['timestamp']
     timestamp = timestamp.replace('T', ' ')
     timestamp = timestamp.replace('Z', '')
@@ -72,8 +73,12 @@ for value in dependencies['value']:
     d['type'] = 'DEPENDENCY'
     d['name'] = name
     d['timestamp'] = timestamp
-    d['operation_id'] = operation_id
     d['duration'] = value['dependency']['duration']
+    # Might not be a correct solution to remove the excessive GET requests which messes up the results.
+    if(name.startswith('GET')):
+        d['operation_id'] = ''
+    else:
+        d['operation_id'] = operation_id
     all_entries.append(d)
 
 print('')
@@ -82,7 +87,6 @@ for value in traces['value']:
     message_whole = value['trace']['message']
     if 'Custom operationId' in message_whole:
         # Get operation ids that should be switched
-
         switch_operation_ids.append(value['customDimensions'])
     else:
         message_list = message_whole.split(' ')
@@ -123,6 +127,8 @@ all_entries = filtered_entries
 
 dash = '-' * 119
 
+print(all_entries)
+
 # Sort by operation_id before grouping
 all_entries.sort(key=lambda x: x['operation_id'])
 
@@ -142,6 +148,7 @@ for entry in all_entries:
     elif saved_id == entry['operation_id']:
         all_groups[index].append(entry)
 
+
 print('')
 print('Checking the validity of traces...')
 
@@ -160,15 +167,19 @@ for group in all_groups:
             print(f"{request_amount} - request")
         elif entry['type'] == 'DEPENDENCY':
             dependency_amount += 1
+            print(f"{dependency_amount} - dependency")
     if(trigger_type == "http"):
         isValid = (trace_amount == 4 and request_amount ==
                    2 and dependency_amount == 2)
     elif(trigger_type == "storage"):
         isValid = (trace_amount == 4 and request_amount ==
                    2 and dependency_amount == 9)
+    else:
+        isValid = (request_amount == 2)
 
     if isValid:
         all_valid_groups.append(group)
+        print('Group with id ' + str(group[0]['operation_id']) + ' is valid')
     else:
         print('Group with id ' +
               str(group[0]['operation_id']) + ' was thrown out...')
@@ -196,6 +207,9 @@ for group in all_groups:
                 entry['timestamp']+'000', '%Y-%m-%d %H:%M:%S.%f')
 
     delta = request_timestamp - dependency_timestamp
+    print(f"{request_timestamp}\n")
+    print(f"{dependency_timestamp}\n")
+    print(f"{delta}\n")
     all_trigger_delays_ms.append(
         (delta.seconds*1000000 + delta.microseconds) / 1000)
 

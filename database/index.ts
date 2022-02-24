@@ -79,7 +79,6 @@ const getDatabaseResources = async () => {
   sqlAccount.onChange('databaseTrigger', {
     databaseName: sqlDatabase.name,
     collectionName: sqlContainer.name,
-    startFromBeginning: true,
     callback: handler,
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,

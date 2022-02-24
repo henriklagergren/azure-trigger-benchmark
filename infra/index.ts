@@ -144,7 +144,7 @@ const getDatabaseFunction = (
       }
 
       await container.items
-        .upsert(newItem)
+        .create(newItem)
         .then(() =>
           resolve({
             status: 200,
