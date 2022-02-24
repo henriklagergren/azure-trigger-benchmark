@@ -4,14 +4,21 @@ from itertools import groupby
 from datetime import datetime
 import csv
 import re
+import os
+from dotenv import load_dotenv
+
+load_dotenv('./../.env')
+
+INSIGHTS_API_KEY = os.getenv('INSIGHTS_API_KEY')
+INSIGHTS_APP_ID = os.getenv('INSIGHTS_APP_ID')
 
 # EDIT THESE PARAMETERS
 trigger_type ='database'
-timespan = '2022-02-24T11:26:00Z/2022-02-25T15:50:00Z' # Time zone GMT
+timespan = '2022-02-23T11:26:00Z/2022-02-25T15:50:00Z' # Time zone GMT
 # Azure Insights REST API limits to 500 rows by default, many invocations => thousands of rows. Get top 5000 rows
 top = 5000
-application_ID = '663c2982-f1c4-466c-8509-a67eb3f623d8'
-api_key = 'y4ievgnobgucfozpshcyuhyiicfy8f2sz552pi1u'
+application_ID = INSIGHTS_APP_ID
+api_key = INSIGHTS_API_KEY
 ##
 
 headers = {'x-api-key': api_key, }
@@ -61,7 +68,6 @@ for value in reqs['value']:
 print('')
 print('Extracting Dependencies...')
 for value in dependencies['value']:
-    print(value)
     timestamp = value['timestamp']
     timestamp = timestamp.replace('T', ' ')
     timestamp = timestamp.replace('Z', '')
@@ -126,8 +132,6 @@ for entry in filtered_entries:
 all_entries = filtered_entries
 
 dash = '-' * 119
-
-print(all_entries)
 
 # Sort by operation_id before grouping
 all_entries.sort(key=lambda x: x['operation_id'])
@@ -207,9 +211,9 @@ for group in all_groups:
                 entry['timestamp']+'000', '%Y-%m-%d %H:%M:%S.%f')
 
     delta = request_timestamp - dependency_timestamp
-    print(f"{request_timestamp}\n")
-    print(f"{dependency_timestamp}\n")
-    print(f"{delta}\n")
+    # print(f"{request_timestamp}\n")
+    # print(f"{dependency_timestamp}\n")
+    # print(f"{delta}\n")
     all_trigger_delays_ms.append(
         (delta.seconds*1000000 + delta.microseconds) / 1000)
 

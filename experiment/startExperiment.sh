@@ -34,7 +34,7 @@ deploy_queue_trigger() {
 deploy_database_trigger() {
   while [ $NUMBER_TIMES -ne 0 ]; do
     echo "Database experiment ${NUMBER_TIMES} started"
-    curl 'https://infraendpoint8f939800.azurewebsites.net/api/InfraEndpoint?trigger=database&input=sqlDatabase6d7b584,sqlContainer6f1803a'
+    curl 'https://infraendpoint1ba3f85b.azurewebsites.net/api/InfraEndpoint?trigger=database&input=sqlDatabaseee6eff4,sqlContainera9b0345'
     echo ''
     ((NUMBER_TIMES = $NUMBER_TIMES - 1))
   done

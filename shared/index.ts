@@ -14,7 +14,10 @@ const insights = new azure.appinsights.Insights('Insights', {
   applicationType: 'Node.JS'
 })
 
-//const insights_key = azure.appinsights.ApiKey.get
+const readTelemetry = new azure.appinsights.ApiKey('readTelemetry', {
+  applicationInsightsId: insights.id,
+  readPermissions: ['aggregate', 'api', 'draft', 'extendqueries', 'search']
+})
 
 const current = azuread.getClientConfig({})
 const application = new azuread.Application('application', {
@@ -286,6 +289,36 @@ function writeEnv () {
           throw err
         }
         console.log('Object ID - Added')
+      }
+    )
+  )
+
+  readTelemetry.apiKey.apply(key =>
+    fs.writeFile(
+      '../.env',
+      'INSIGHTS_API_KEY="' + key + '"\n',
+      { flag: 'a' },
+      (err: any) => {
+        if (err) {
+          console.log('ERROR: API_KEY not added')
+          throw err
+        }
+        console.log('API_KEY - Added')
+      }
+    )
+  )
+
+  insights.appId.apply(id =>
+    fs.writeFile(
+      '../.env',
+      'INSIGHTS_APP_ID="' + id + '"\n',
+      { flag: 'a' },
+      (err: any) => {
+        if (err) {
+          console.log('ERROR: APP ID not added')
+          throw err
+        }
+        console.log('APP ID - Added')
       }
     )
   )
