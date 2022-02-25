@@ -80,11 +80,7 @@ for value in dependencies['value']:
     d['name'] = name
     d['timestamp'] = timestamp
     d['duration'] = value['dependency']['duration']
-    # Might not be a correct solution to remove the excessive GET requests which messes up the results.
-    if(name.startswith('GET')):
-        d['operation_id'] = ''
-    else:
-        d['operation_id'] = operation_id
+    d['operation_id'] = operation_id
     all_entries.append(d)
 
 print('')
@@ -142,15 +138,24 @@ print('Partitioning groups...')
 all_groups = []
 saved_id = None
 index = -1
+requestCount = 0
 
 for entry in all_entries:
-    if saved_id != entry['operation_id']:
+    if saved_id != entry['operation_id']:  # New Group
+        requestCount = 0  # Reset count
+        if(entry['type'] == 'REQUEST'):
+            requestCount += 1
         index += 1
         all_groups.append([])
         all_groups[index].append(entry)
         saved_id = entry['operation_id']
     elif saved_id == entry['operation_id']:
-        all_groups[index].append(entry)
+        if(requestCount == 2):
+            pass
+        else:
+            if(entry['type'] == 'REQUEST'):
+                requestCount += 1
+            all_groups[index].append(entry)
 
 
 print('')
@@ -179,11 +184,9 @@ for group in all_groups:
     elif(trigger_type == "storage"):
         isValid = (trace_amount == 4 and request_amount ==
                    2 and dependency_amount == 9)
-    elif(trigger_type == "queue"):
-        isValid = (trace_amount == 4 and request_amount ==
-                   2 and dependency_amount == 7)
-    else:
-        isValid = (request_amount == 2)
+    elif(trigger_type == "database"):
+        isValid = (trace_amount == 2 and request_amount ==
+                   2 and dependency_amount == 4)
 
     if isValid:
         all_valid_groups.append(group)
