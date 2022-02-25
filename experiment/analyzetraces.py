@@ -13,10 +13,10 @@ INSIGHTS_API_KEY = os.getenv('INSIGHTS_API_KEY')
 INSIGHTS_APP_ID = os.getenv('INSIGHTS_APP_ID')
 
 # EDIT THESE PARAMETERS
-trigger_type ='database'
-timespan = '2022-02-23T11:26:00Z/2022-02-25T15:50:00Z' # Time zone GMT
+trigger_type = 'timer'
+timespan = '2022-02-23T11:26:00Z/2022-02-25T17:50:00Z'  # Time zone GMT
 # Azure Insights REST API limits to 500 rows by default, many invocations => thousands of rows. Get top 5000 rows
-top = 5000
+top = 100
 application_ID = INSIGHTS_APP_ID
 api_key = INSIGHTS_API_KEY
 ##
@@ -162,13 +162,14 @@ for group in all_groups:
     trace_amount = 0
     request_amount = 0
     dependency_amount = 0
+    print('')
     for entry in group:
         if entry['type'] == 'TRACE':
             trace_amount += 1
             print(f"{trace_amount} - Trace")
         elif entry['type'] == 'REQUEST':
             request_amount += 1
-            print(f"{request_amount} - request")
+            print(f"{request_amount} - request {entry['name']}")
         elif entry['type'] == 'DEPENDENCY':
             dependency_amount += 1
             print(f"{dependency_amount} - dependency")
@@ -178,6 +179,9 @@ for group in all_groups:
     elif(trigger_type == "storage"):
         isValid = (trace_amount == 4 and request_amount ==
                    2 and dependency_amount == 9)
+    elif(trigger_type == "queue"):
+        isValid = (trace_amount == 4 and request_amount ==
+                   2 and dependency_amount == 7)
     else:
         isValid = (request_amount == 2)
 

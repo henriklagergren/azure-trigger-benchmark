@@ -24,7 +24,7 @@ deploy_storage_trigger() {
 deploy_queue_trigger() {
   while [ $NUMBER_TIMES -ne 0 ]; do
     echo "Queue experiment ${NUMBER_TIMES} started"
-    curl 'https://infraendpoint8f939800.azurewebsites.net/api/InfraEndpoint?trigger=queue&input=queue79e38a9a,account1c2c527'
+    curl 'https://infraendpoint33a600b4.azurewebsites.net/api/InfraEndpoint?trigger=queue&input=queue1ff1448a,accountaaab6f9'
     echo ''
     ((NUMBER_TIMES = $NUMBER_TIMES - 1))
   done
@@ -39,6 +39,16 @@ deploy_database_trigger() {
     ((NUMBER_TIMES = $NUMBER_TIMES - 1))
   done
   echo 'Database experiment finished'
+}
+
+deploy_timer_trigger() {
+  while [ $NUMBER_TIMES -ne 0 ]; do
+    echo "Timer experiment ${NUMBER_TIMES} started"
+    curl 'https://infraendpoint33a600b4.azurewebsites.net/api/InfraEndpoint?trigger=timer&input=https://timerapp2a675f63.azurewebsites.net/admin/functions/timerTrigger'
+    echo ''
+    ((NUMBER_TIMES = $NUMBER_TIMES - 1))
+  done
+  echo 'Timer experiment finished'
 }
 
 # Read input flags
@@ -59,6 +69,8 @@ elif [ "$TRIGGER_TYPE" = 'queue' ] && [ "$NUMBER_TIMES" != 0 ]; then
   deploy_queue_trigger
 elif [ "$TRIGGER_TYPE" = 'database' ] && [ "$NUMBER_TIMES" != 0 ]; then
   deploy_database_trigger
+elif [ "$TRIGGER_TYPE" = 'timer' ] && [ "$NUMBER_TIMES" != 0 ]; then
+  deploy_timer_trigger
 else
   echo 'Error: Unsupported trigger based on t-flag or number of executions not specified based on a-flag'
 fi
