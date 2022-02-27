@@ -1,6 +1,7 @@
 # Azure Triggers Study
 
-#### This is an ongoing master thesis, in cooperation with Microsoft. Finish date expected in May 2022.
+#### This is an ongoing master thesis at Chalmers University of Technology, in cooperation with Microsoft. 
+Finish date expected in May 2022.
 
 ## Intructions to reproduce experiment:
 
