@@ -1,7 +1,6 @@
-/bin/
-.env
+*/bin/
+*/.env
 
-*/node_modules/
-.csv
-/experiment/*.csv
-/experiment/*.png
+latency-experiment/*/node_modules/
+*/experiment/*.csv
+*/experiment/*.png

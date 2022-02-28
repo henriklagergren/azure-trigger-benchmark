@@ -1,14 +1,13 @@
 import * as appInsights from 'applicationinsights'
 import * as azure from '@pulumi/azure'
-import * as cosmosdb from '@pulumi/azure/cosmosdb'
-import * as dotenv from 'dotenv'
-import * as automation from '@pulumi/pulumi/automation'
 import * as pulumi from '@pulumi/pulumi'
+import * as automation from '@pulumi/pulumi/automation'
 import workload from '../workloads/workload'
+import * as dotenv from 'dotenv'
 
 dotenv.config({ path: './../.env' })
 
-const handler = async (context: any) => {
+const handler = async (context: any, queueMessage: any) => {
   // Setup application insights
   appInsights
     .setup()
@@ -26,27 +25,21 @@ const handler = async (context: any) => {
 
   const correlationContext = appInsights.startOperation(
     context,
-    'correlationContextDatabase'
+    'correlationContextQueue'
   )
-
-  const newOperationId = context['bindings']['items'][0]['newOperationId']
-
-  console.log(newOperationId)
-
   appInsights.defaultClient.trackTrace({
     message: 'Custom operationId',
     properties: {
-      newOperationId: newOperationId,
+      newOperationId: queueMessage, // queueMessage only consists of operationId
       oldOperationId: correlationContext!.operation.id
     }
   })
-
   appInsights.defaultClient.flush()
 
   return workload()
 }
 
-const getDatabaseResources = async () => {
+const getStorageResources = async () => {
   // Import shared resources
   const user = await automation.LocalWorkspace.create({}).then(ws =>
     ws.whoAmI().then(i => i.user)
@@ -55,41 +48,54 @@ const getDatabaseResources = async () => {
     `${user}/${process.env.PULUMI_PROJECT_NAME}/shared`
   )
 
+  const resourceGroupId = shared.requireOutput('resourceGroupId')
+  const resourceGroup = azure.core.ResourceGroup.get(
+    'ResourceGroup',
+    resourceGroupId
+  )
   const insightsId = shared.requireOutput('insightsId')
   const insights = azure.appinsights.Insights.get('Insights', insightsId)
 
-  const sqlAccount = cosmosdb.Account.get(
-    process.env.ACCOUNTDB_NAME!,
-    process.env.ACCOUNTDB_ID!
-  )
+  const storageAccount = new azure.storage.Account('account', {
+    resourceGroupName: resourceGroup.name,
+    location: resourceGroup.location,
+    accountTier: 'Standard',
+    accountKind: 'StorageV2',
+    accountReplicationType: 'LRS'
+  })
 
-  const sqlDatabase = cosmosdb.SqlDatabase.get(
-    process.env.DATABASE_NAME!,
-    process.env.DATABASE_ID!
-  )
+  const queue = new azure.storage.Queue('queue', {
+    storageAccountName: storageAccount.name
+  })
 
-  const sqlContainer = cosmosdb.SqlContainer.get(
-    process.env.CONTAINER_NAME!,
-    process.env.CONTAINER_ID!
-  )
-
-  const connectionKey = `Cosmos${process.env['ACCOUNTDB_NAME']}ConnectionKey`
-
-  // SQL on change trigger
-  sqlAccount.onChange('databaseTrigger', {
-    databaseName: sqlDatabase.name,
-    collectionName: sqlContainer.name,
+  // Queue trigger
+  queue.onEvent('QueueTrigger', {
+    resourceGroup,
+    location: 'northeurope',
     callback: handler,
+    hostSettings: {
+      extensions: {
+        queues: {
+          maxPollingInterval: '00:00:01', // 1s
+          batchSize: 32,
+          newBatchThreshold: 16,
+          visibilityTimeout: '0',
+          maxDequeueCount: 5
+        }
+      }
+    },
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
-      [connectionKey]: `AccountEndpoint=${process.env.ACCOUNTDB_ENDPOINT};AccountKey=${process.env.ACCOUNTDB_PRIMARYKEY};`
+      AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
+      AZURE_TENANT_ID: process.env.AZURE_TENANT_ID,
+      AZURE_CLIENT_SECRET: process.env.AZURE_CLIENT_SECRET
     }
   })
 
   return {
-    databaseName: sqlDatabase.name,
-    containerName: sqlContainer.name
+    storageAccountName: storageAccount.name,
+    queueName: queue.name
   }
 }
 
-module.exports = getDatabaseResources().then(e => e)
+module.exports = getStorageResources().then(e => e)

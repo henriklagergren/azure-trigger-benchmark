@@ -382,6 +382,7 @@ const getEndpoint = async () => {
   // Infrastructure endpoint (HTTP trigger)
   return new azure.appservice.HttpEventSubscription('InfraEndpoint', {
     resourceGroup,
+    location: 'northeurope',
     callback: handler,
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
