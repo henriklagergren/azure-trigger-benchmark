@@ -11,7 +11,7 @@ Finish date expected in May 2022.
 5. Run the shell-file "deploy.sh --t <trigger_type>" to create all necessary resources in azure.
 
 
-# Database Trigger
+### Database Trigger
 When running database trigger some manual adjustments have to be made. As of writing this thesis, it was not possible to set the FeedPollDelay on the Cosmos DB trigger through pulumi which resulted in the trigger only got triggered each 5 seconds (default value for FeedPollDelay). 
  - Go to Azure Portal
  - Navigate to the databaseTrigger function app
