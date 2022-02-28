@@ -5,6 +5,7 @@ import * as dotenv from 'dotenv'
 import * as automation from '@pulumi/pulumi/automation'
 import * as pulumi from '@pulumi/pulumi'
 import workload from '../workloads/workload'
+import * as azurefunctions from '@azure/functions'
 
 dotenv.config({ path: './../.env' })
 
@@ -20,6 +21,7 @@ const handler = async (context: any) => {
     .setAutoCollectConsole(true)
     .setUseDiskRetryCaching(false)
     .setSendLiveMetrics(false)
+    .setUseDiskRetryCaching(false)
     .setDistributedTracingMode(appInsights.DistributedTracingModes.AI_AND_W3C)
   appInsights.defaultClient.setAutoPopulateAzureProperties(true)
   appInsights.start()
@@ -76,9 +78,11 @@ const getDatabaseResources = async () => {
   const connectionKey = `Cosmos${process.env['ACCOUNTDB_NAME']}ConnectionKey`
 
   // SQL on change trigger
-  sqlAccount.onChange('databaseTrigger', {
+  sqlAccount.onChange('databaseTrigger1', {
     databaseName: sqlDatabase.name,
     collectionName: sqlContainer.name,
+    startFromBeginning: true,
+    location: 'northeurope',
     callback: handler,
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
