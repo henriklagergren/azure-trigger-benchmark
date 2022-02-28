@@ -14,9 +14,9 @@ INSIGHTS_APP_ID = os.getenv('INSIGHTS_APP_ID')
 
 # EDIT THESE PARAMETERS
 trigger_type = 'timer'
-timespan = '2022-02-23T11:26:00Z/2022-02-25T17:50:00Z'  # Time zone GMT
+timespan = '2022-02-23T11:26:00Z/2022-02-28T17:50:00Z'  # Time zone GMT
 # Azure Insights REST API limits to 500 rows by default, many invocations => thousands of rows. Get top 5000 rows
-top = 100
+top = 5000
 application_ID = INSIGHTS_APP_ID
 api_key = INSIGHTS_API_KEY
 ##
@@ -187,6 +187,8 @@ for group in all_groups:
     elif(trigger_type == "database"):
         isValid = (trace_amount == 2 and request_amount ==
                    2 and dependency_amount == 4)
+    else:
+        isValid = (request_amount == 2)
 
     if isValid:
         all_valid_groups.append(group)

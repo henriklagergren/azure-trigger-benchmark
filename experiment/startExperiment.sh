@@ -44,7 +44,7 @@ deploy_database_trigger() {
 deploy_timer_trigger() {
   while [ $NUMBER_TIMES -ne 0 ]; do
     echo "Timer experiment ${NUMBER_TIMES} started"
-    curl 'https://infraendpoint33a600b4.azurewebsites.net/api/InfraEndpoint?trigger=timer&input=https://timerapp2a675f63.azurewebsites.net/admin/functions/timerTrigger'
+    curl 'https://infraendpoint608752a7.azurewebsites.net/api/InfraEndpoint?trigger=timer&input=https://timerapp72f74213.azurewebsites.net/admin/functions/timerTrigger'
     echo ''
     ((NUMBER_TIMES = $NUMBER_TIMES - 1))
   done

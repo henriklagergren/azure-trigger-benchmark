@@ -170,13 +170,13 @@ const getDatabaseFunction = (
     })
   })
 
-const getTimerFunction = (url: string) =>
+const getTimerFunction = (url: string,operationId : any) =>
   new Promise<Response>(resolve => {
     axios
-      .post(url, '{"input":"test"}', {
+      .post(url,{"input" : operationId}, {
         headers: {
           'x-functions-key': process.env['AZURE_TIMER_MASTERKEY']!,
-          'Content-type': 'application/json'
+          'Content-type': 'application/json',
         }
       })
       .then(() =>
@@ -218,7 +218,7 @@ const handler = async (context: any, req: any) => {
   appInsights.start()
 
   // Start an AI Correlation Context using the provided Function context
-
+  
   // Get URL params
   const triggerType: string = req.query && req.query.trigger
   const validTrigger: string | boolean =
@@ -337,10 +337,10 @@ const handler = async (context: any, req: any) => {
     if (triggerType == 'timer') {
       return appInsights.wrapWithCorrelationContext(async () => {
         const startTime = Date.now() // Start trackRequest timer
-        const response = await getTimerFunction(triggerInput)
+        const response = await getTimerFunction(triggerInput,correlationContext.operation.parentId)
         // Track dependency on completion
         appInsights.defaultClient.trackDependency({
-          name: 'CompletionTrackStorage',
+          name: 'CompletionTrackTimer',
           dependencyTypeName: 'HTTP',
           resultCode: response.status,
           success: true,

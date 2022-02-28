@@ -4,13 +4,16 @@ import * as pulumi from '@pulumi/pulumi';
 import workload from '../workloads/workload';
 import * as automation from '@pulumi/pulumi/automation';
 import * as dotenv from 'dotenv';
+import { FunctionDefaultResponse, TimerContext, TimerInfo } from '@pulumi/azure/appservice';
 
 dotenv.config({ path: './../.env',});
 
 
-const handler = async () => {
+const handler = async (context: TimerContext) => {
+
   // Setup application insights
-  appInsights.setup()
+  appInsights
+    .setup()
     .setAutoDependencyCorrelation(true)
     .setAutoCollectRequests(true)
     .setAutoCollectPerformance(true, true)
@@ -19,9 +22,22 @@ const handler = async () => {
     .setAutoCollectConsole(true)
     .setUseDiskRetryCaching(false)
     .setSendLiveMetrics(false)
-    .setDistributedTracingMode(appInsights.DistributedTracingModes.AI_AND_W3C);
-  appInsights.defaultClient.setAutoPopulateAzureProperties(true);
-  appInsights.start();
+    .setDistributedTracingMode(appInsights.DistributedTracingModes.AI_AND_W3C)
+  appInsights.defaultClient.setAutoPopulateAzureProperties(true)
+  appInsights.start()
+
+  const correlationContext = appInsights.startOperation(
+    context,
+    'correlationContextTimer'
+  );
+
+  appInsights.defaultClient.trackTrace({
+    message: 'Custom operationId',
+    properties: {
+      newOperationId: context.bindingData["timer"],
+      oldOperationId: correlationContext.operation.id
+    }
+  })
 
   return workload();
 };

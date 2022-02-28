@@ -14,6 +14,9 @@ if(os.isfile('storage.csv')):
 if(os.isfile('queue.csv')):
     result_list.append(pd.read_csv('queue.csv', delimiter=","))
 
+if(os.isfile('timer.csv')):
+    result_list.append(pd.read_csv('timer.csv', delimiter=","))
+
 
 result_df = pd.concat(result_list)
 
