@@ -1,9 +1,9 @@
 NUMBER_TIMES=0
 
-deploy_http_trigger() {
+deploy_trigger() {
   while [ $NUMBER_TIMES -ne 0 ]; do
     echo "Experiment ${NUMBER_TIMES} started"
-    curl 'https://infraendpoint6cc5883f.azurewebsites.net/api/InfraEndpoint?trigger=eventHub&input=eventHubTriggerc4194b2,eventHubNamee91fbc6'
+    curl 'https://infraendpoint6cc5883f.azurewebsites.net/api/InfraEndpoint?trigger=eventGrid&input=eventgridsa52be621,container04ea32b1'
     echo ''
     ((NUMBER_TIMES = $NUMBER_TIMES - 1))
   done
@@ -19,5 +19,5 @@ while getopts ':a:' opt; do
 done
 
 
-deploy_http_trigger
+deploy_trigger
 

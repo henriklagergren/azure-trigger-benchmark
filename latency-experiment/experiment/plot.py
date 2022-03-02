@@ -20,11 +20,14 @@ if(os.isfile('timer.csv')):
 if(os.isfile('eventHub.csv')):
     result_list.append(pd.read_csv('eventHub.csv', delimiter=","))
 
+if(os.isfile('eventGrid.csv')):
+    result_list.append(pd.read_csv('eventGrid.csv', delimiter=","))
+
 
 result_df = pd.concat(result_list)
 
 plot = (p9.ggplot(result_df, p9.aes(
     x="trigger_type", y="latency"))
-    + p9.geom_violin() + p9.ylim(0, 1000))
+    + p9.geom_violin() + p9.ylim(0, 500))
 
 plot.save(filename="results.png")
