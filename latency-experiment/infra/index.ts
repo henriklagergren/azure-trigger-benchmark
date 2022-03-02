@@ -231,6 +231,49 @@ const getTimerFunction = (url: string,operationId : any) =>
   })
   })
 
+  const getEventGridFunction = (
+    storageAccountName: string,
+    storageContainerName : string,
+    operationId: any
+  ) =>
+    new Promise<Response>(async resolve => {
+      let credential = new Identity.EnvironmentCredential()
+  
+      const blobServiceClient = new Storage.BlobServiceClient(
+        `https://${storageAccountName}.blob.core.windows.net`,
+        credential
+      );
+      
+      const containerClient = blobServiceClient.getContainerClient(storageContainerName);
+      const content: string = 'Hello world!';
+      const blobName = operationId;
+      const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+  
+      blockBlobClient
+        .upload(content, content.length, {
+          metadata: {
+            operationId
+          }
+        }).then(() =>
+        resolve({
+          status: 200,
+          headers: {
+            'content-type': 'text/plain'
+          },
+          body: 'AZURE - Event Grid trigger successfully started'
+        })
+      )
+      .catch(e =>
+        resolve({
+          status: 200,
+          headers: {
+            'content-type': 'text/plain'
+          },
+          body: `AZURE - Event Grid trigger failed to start\n\nError: ${e.message}`
+        })
+      )
+    })
+
 const handler = async (context: any, req: any) => {
   // const trace = openTelemetryApi.default;
   // Setup application insights
@@ -260,7 +303,8 @@ const handler = async (context: any, req: any) => {
       triggerType === 'queue' ||
       triggerType === 'database' ||
       triggerType === 'timer' ||
-      triggerType === 'eventHub') 
+      triggerType === 'eventHub' ||
+      triggerType === 'eventGrid') 
   const triggerInput: string = req.query && req.query.input
 
   if (validTrigger && triggerInput) {
@@ -409,6 +453,30 @@ const handler = async (context: any, req: any) => {
           return response
         }, correlationContext)()
       }
+
+      if(triggerType == 'eventGrid'){
+        const eventGridInputs = triggerInput.split(',')
+          return appInsights.wrapWithCorrelationContext(async () => {
+            const startTime = Date.now()
+            const response = await getEventGridFunction(
+              eventGridInputs[0],
+              eventGridInputs[1],
+              correlationContext.operation.id
+            )
+            // Track dependency on completion
+            appInsights.defaultClient.trackDependency({
+              name: 'CompletionTrackEventGrid',
+              dependencyTypeName: 'HTTP',
+              resultCode: response.status,
+              success: true,
+              duration: Date.now() - startTime,
+              id: correlationContext.operation.parentId,
+              data: ''
+            })
+            appInsights.defaultClient.flush()
+            return response
+          }, correlationContext)()
+        }
   }
   // If either parameter is missing or is invalid
   return {
