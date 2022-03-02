@@ -76,6 +76,13 @@ new azure.authorization.Assignment('timerOwner', {
   roleDefinitionName: 'Owner',
   principalId: servicePrincipal.objectId
 })
+
+new azure.authorization.Assignment('serviceBusOwner', {
+  scope: resourceGroup.id,
+  roleDefinitionName: 'Azure Service Bus Data Owner',
+  principalId: servicePrincipal.objectId
+})
+
 /*
 new azure.authorization.Assignment('databaseContributor', {
   scope: resourceGroup.id,
@@ -325,7 +332,7 @@ function writeEnv () {
 
   fs.writeFile(
     '../.env',
-    'PULUMI_PROJECT_NAME="azure-triggers-study" \nPULUMI_AZURE_LOCATION="northeurope" \n',
+    'PULUMI_PROJECT_NAME="azure-triggers-study-latency" \nPULUMI_AZURE_LOCATION="northeurope" \n',
     { flag: 'a' },
     (err: any) => {
       if (err) {

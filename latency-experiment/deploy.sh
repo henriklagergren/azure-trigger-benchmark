@@ -163,6 +163,34 @@ deploy_timer_trigger() {
   echo "$BENCHMARK_URL?trigger=timer&input=https://$TIMER_FUNCTION_APP_NAME/admin/functions/$TIMER_TRIGGER_NAME"
 }
 
+deploy_serviceBus_trigger() {
+  # Deploy shared resources
+  deploy_shared_resources
+
+  # Get name of resource group
+  RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
+
+  cd ..
+
+  # Deploy serviceBus trigger
+  cd service_Bus/ && pulumi stack select trigger -c && pulumi up -f -y
+
+  # Get storage account name and serviceBus name
+  SERVICE_BUS_NAMESPACE=$(pulumi stack output serviceBusNamespace)
+  TOPIC_NAME=$(pulumi stack output topicName)
+
+  cd ..
+
+  # Deploy infrastructure
+  cd infra/ && pulumi stack select infra -c && pulumi up -f -y
+
+  # Get url to benchmark gateway
+  BENCHMARK_URL=$(pulumi stack output url)
+
+  echo "Start serviceBus trigger benchmark:"
+  echo "$BENCHMARK_URL?trigger=serviceBus&input=$SERVICE_BUS_NAMESPACE",$TOPIC_NAME
+}
+
 # Read input flags
 while getopts 't:' flag; do
   case "${flag}" in
@@ -182,6 +210,8 @@ elif [ "$TRIGGER_TYPE" = 'database' ]; then
   deploy_database_trigger
 elif [ "$TRIGGER_TYPE" = 'timer' ]; then
   deploy_timer_trigger
+elif [ "$TRIGGER_TYPE" = 'serviceBus' ]; then
+  deploy_serviceBus_trigger
 else
   echo 'Error: Unsupported trigger'
 fi

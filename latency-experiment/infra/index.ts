@@ -8,6 +8,7 @@ import * as automation from '@pulumi/pulumi/automation'
 import axios from 'axios'
 import * as dotenv from 'dotenv'
 import * as cosmos from '@azure/cosmos'
+import * as serviceBus from '@azure/service-bus'
 
 dotenv.config({ path: './../.env' })
 
@@ -132,42 +133,35 @@ const getDatabaseFunction = (
     const client = new cosmos.CosmosClient(
       `AccountEndpoint=${endpoint};AccountKey=${key};`
     )
+    const container = client.database(databaseName).container(containerName)
 
-    async function main () {
-      const container = client.database(databaseName).container(containerName)
+    console.log('Upserting items to database')
 
-      console.log('Upserting items to database')
-
-      const newItem = {
-        newOperationId: operationId,
-        isComplete: false
-      }
-
-      await container.items
-        .create(newItem)
-        .then(() =>
-          resolve({
-            status: 200,
-            headers: {
-              'content-type': 'text/plain'
-            },
-            body: `AZURE - Database trigger benchmark successfully started`
-          })
-        )
-        .catch((e: any) =>
-          resolve({
-            status: 200,
-            headers: {
-              'content-type': 'text/plain'
-            },
-            body: `AZURE - Database trigger benchmark failed to start\n\nError: ${e.message}`
-          })
-        )
+    const newItem = {
+      newOperationId: operationId,
+      isComplete: false
     }
 
-    main().catch(error => {
-      console.error(error)
-    })
+    await container.items
+      .create(newItem)
+      .then(() =>
+        resolve({
+          status: 200,
+          headers: {
+            'content-type': 'text/plain'
+          },
+          body: `AZURE - Database trigger benchmark successfully started`
+        })
+      )
+      .catch((e: any) =>
+        resolve({
+          status: 200,
+          headers: {
+            'content-type': 'text/plain'
+          },
+          body: `AZURE - Database trigger benchmark failed to start\n\nError: ${e.message}`
+        })
+      )
   })
 
 const getTimerFunction = (url: string) =>
@@ -199,6 +193,85 @@ const getTimerFunction = (url: string) =>
       )
   })
 
+const getServiceBusResources = (serviceBusName: string, topicName: string) =>
+  new Promise<Response>(async resolve => {
+    /*
+    const credential = new Identity.ClientSecretCredential(
+      process.env.AZURE_TENANT_ID!,
+      process.env.AZURE_CLIENT_ID!,
+      process.env.AZURE_CLIENT_SECRET!
+    )
+    */
+
+    let credential = new Identity.EnvironmentCredential()
+
+    const client = new serviceBus.ServiceBusClient(
+      `${serviceBusName}.servicebus.windows.net`,
+      credential
+    )
+
+    const messages = [{ body: 'Azure Service Bus Trigger' }]
+
+    const sender = client.createSender(topicName)
+
+    try {
+      // Tries to send all messages in a single batch.
+      // Will fail if the messages cannot fit in a batch.
+      // await sender.sendMessages(messages);
+
+      // create a batch object
+      let batch = await sender.createMessageBatch()
+      for (let i = 0; i < messages.length; i++) {
+        // for each message in the arry
+
+        // try to add the message to the batch
+        if (!batch.tryAddMessage(messages[i])) {
+          // if it fails to add the message to the current batch
+          // send the current batch as it is full
+          await sender.sendMessages(batch)
+
+          // then, create a new batch
+          batch = await sender.createMessageBatch()
+
+          // now, add the message failed to be added to the previous batch to this batch
+          if (!batch.tryAddMessage(messages[i])) {
+            // if it still can't be added to the batch, the message is probably too big to fit in a batch
+            throw new Error('Message too big to fit in a batch')
+          }
+        }
+      }
+
+      // Send the last created batch of messages to the topic
+      await sender
+        .sendMessages(batch)
+        .then(() =>
+          resolve({
+            status: 200,
+            headers: {
+              'content-type': 'text/plain'
+            },
+            body: 'AZURE - Service Bus trigger successfully started'
+          })
+        )
+        .catch(e =>
+          resolve({
+            status: 200,
+            headers: {
+              'content-type': 'text/plain'
+            },
+            body: `AZURE - Service Bus trigger failed to start\n\nError: ${e.message}`
+          })
+        )
+
+      console.log(`Sent a batch of messages to the topic: ${topicName}`)
+
+      // Close the sender
+      await sender.close()
+    } finally {
+      await client.close()
+    }
+  })
+
 const handler = async (context: any, req: any) => {
   // const trace = openTelemetryApi.default;
   // Setup application insights
@@ -227,7 +300,8 @@ const handler = async (context: any, req: any) => {
       triggerType === 'storage' ||
       triggerType === 'queue' ||
       triggerType === 'database' ||
-      triggerType === 'timer')
+      triggerType === 'timer' ||
+      triggerType === 'serviceBus')
   const triggerInput: string = req.query && req.query.input
 
   if (validTrigger && triggerInput) {
@@ -349,6 +423,29 @@ const handler = async (context: any, req: any) => {
           data: ''
         })
         appInsights.defaultClient.flush()
+        return response
+      }, correlationContext)()
+    }
+    if (triggerType === 'serviceBus') {
+      const serviceBusInputs = triggerInput.split(',')
+      return appInsights.wrapWithCorrelationContext(async () => {
+        const startTime = Date.now() // Start trackRequest timer
+        const response = await getServiceBusResources(
+          serviceBusInputs[0],
+          serviceBusInputs[1]
+        )
+        // Track dependency on completion
+        appInsights.defaultClient.trackDependency({
+          name: 'CompletionTrackserviceBus',
+          dependencyTypeName: 'HTTP',
+          resultCode: response.status,
+          success: true,
+          data: req.query.input,
+          duration: Date.now() - startTime,
+          id: correlationContext.operation.parentId
+        })
+        appInsights.defaultClient.flush()
+
         return response
       }, correlationContext)()
     }

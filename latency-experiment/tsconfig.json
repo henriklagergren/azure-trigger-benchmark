@@ -19,6 +19,7 @@
     "infra/index.ts",
     "storage/index.ts",
     "queue/index.ts",
-    "database/index.ts"
+    "database/index.ts",
+    "service_Bus/index.ts"
   ]
 }
