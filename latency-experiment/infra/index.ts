@@ -545,7 +545,6 @@ const handler = async (context: any, req: any) => {
 
     if (triggerType == 'eventHub') {
       const eventHubInputs = triggerInput.split(',')
-<<<<<<< HEAD
         return appInsights.wrapWithCorrelationContext(async () => {
           const startTime = Date.now()
           const response = await getEventHubFunction(
@@ -591,29 +590,6 @@ const handler = async (context: any, req: any) => {
             return response
           }, correlationContext)()
         }
-=======
-      return appInsights.wrapWithCorrelationContext(async () => {
-        const startTime = Date.now()
-        const response = await getEventHubFunction(
-          eventHubInputs[0],
-          eventHubInputs[1],
-          correlationContext.operation.id
-        )
-        // Track dependency on completion
-        appInsights.defaultClient.trackDependency({
-          name: 'CompletionTrackEventHub',
-          dependencyTypeName: 'HTTP',
-          resultCode: response.status,
-          success: true,
-          duration: Date.now() - startTime,
-          id: correlationContext.operation.parentId,
-          data: ''
-        })
-        appInsights.defaultClient.flush()
-        return response
-      }, correlationContext)()
-    }
->>>>>>> b1b69d5f0065ecb16e4fca4a5924ff940ef61bca
   }
   // If either parameter is missing or is invalid
   return {

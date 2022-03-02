@@ -338,7 +338,7 @@ function writeEnv () {
 
   fs.writeFile(
     '../.env',
-    'PULUMI_PROJECT_NAME="azure-triggers-study-latency" \nPULUMI_AZURE_LOCATION="northeurope" \n',
+    'PULUMI_PROJECT_NAME="azure-triggers-study" \nPULUMI_AZURE_LOCATION="northeurope" \n',
     { flag: 'a' },
     (err: any) => {
       if (err) {

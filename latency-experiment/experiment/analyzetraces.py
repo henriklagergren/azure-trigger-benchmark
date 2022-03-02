@@ -13,7 +13,7 @@ INSIGHTS_API_KEY = os.getenv('INSIGHTS_API_KEY')
 INSIGHTS_APP_ID = os.getenv('INSIGHTS_APP_ID')
 
 # EDIT THESE PARAMETERS
-trigger_type = 'eventGrid'
+trigger_type = 'serviceBus'
 timespan = '2022-02-28T14:00:00Z/2022-03-03T19:00:00Z'  # Time zone GMT
 # Azure Insights REST API limits to 500 rows by default, many invocations => thousands of rows. Get top 5000 rows
 top = 10000
@@ -168,37 +168,25 @@ for group in all_groups:
     request_amount = 0
     dependency_amount = 0
     print('')
+    isValidRequest = False
     for entry in group:
         if entry['type'] == 'TRACE':
             trace_amount += 1
             print(f"{trace_amount} - Trace")
         elif entry['type'] == 'REQUEST':
             request_amount += 1
+            isValidRequest = trigger_type in entry['name']
             print(f"{request_amount} - request {entry['name']}")
         elif entry['type'] == 'DEPENDENCY':
             dependency_amount += 1
             print(f"{dependency_amount} - dependency")
-    if(trigger_type == "http"):
-        isValid = (trace_amount == 4 and request_amount ==
-                   2 and dependency_amount == 2)
-    elif(trigger_type == "storage"):
-        isValid = (trace_amount == 4 and request_amount ==
-                   2 and dependency_amount == 9)
-    elif(trigger_type == "database"):
-        isValid = (trace_amount == 2 and request_amount ==
-                   2 and dependency_amount == 4)
-    elif(trigger_type == "eventGrid"):
-        isValid = (trace_amount == 2 and request_amount ==
-                   2 and dependency_amount == 9)
-    else:
-        isValid = (request_amount == 2)
 
-    if isValid:
+    if (request_amount == 2 and isValidRequest):
         all_valid_groups.append(group)
         print('Group with id ' + str(group[0]['operation_id']) + ' is valid')
-    # else:
-        # print('Group with id ' +
-        #      str(group[0]['operation_id']) + ' was thrown out...')
+    else:
+        print('Group with id ' +
+              str(group[0]['operation_id']) + ' was thrown out...')
 
 all_groups = all_valid_groups
 

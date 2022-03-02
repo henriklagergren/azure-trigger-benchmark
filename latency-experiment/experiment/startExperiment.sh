@@ -3,7 +3,7 @@ NUMBER_TIMES=0
 deploy_trigger() {
   while [ $NUMBER_TIMES -ne 0 ]; do
     echo "Experiment ${NUMBER_TIMES} started"
-    curl 'https://infraendpoint6cc5883f.azurewebsites.net/api/InfraEndpoint?trigger=eventGrid&input=eventgridsa52be621,container04ea32b1'
+    curl 'https://infraendpoint6cc5883f.azurewebsites.net/api/InfraEndpoint?trigger=serviceBus&input=serviceBusNamespaceed67ddca,servicebustopic17cafa80'
     echo ''
     ((NUMBER_TIMES = $NUMBER_TIMES - 1))
   done
