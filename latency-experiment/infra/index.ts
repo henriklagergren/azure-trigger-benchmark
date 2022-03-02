@@ -1,6 +1,7 @@
 import * as Storage from '@azure/storage-blob'
 import * as StorageQueue from '@azure/storage-queue'
 import * as Identity from '@azure/identity'
+import * as EventHub from '@azure/event-hubs'
 import * as azure from '@pulumi/azure'
 import * as pulumi from '@pulumi/pulumi'
 import * as appInsights from 'applicationinsights'
@@ -164,15 +165,19 @@ const getDatabaseFunction = (
       )
   })
 
-const getTimerFunction = (url: string) =>
+const getTimerFunction = (url: string, operationId: any) =>
   new Promise<Response>(resolve => {
     axios
-      .post(url, '{"input":"test"}', {
-        headers: {
-          'x-functions-key': process.env['AZURE_TIMER_MASTERKEY']!,
-          'Content-type': 'application/json'
+      .post(
+        url,
+        { input: operationId },
+        {
+          headers: {
+            'x-functions-key': process.env['AZURE_TIMER_MASTERKEY']!,
+            'Content-type': 'application/json'
+          }
         }
-      })
+      )
       .then(() =>
         resolve({
           status: 200,
@@ -272,6 +277,46 @@ const getServiceBusResources = (serviceBusName: string, topicName: string) =>
     }
   })
 
+const getEventHubFunction = (
+  eventHubName: string,
+  eventHubNamespace: string,
+  operationId: string
+) =>
+  new Promise<Response>(async resolve => {
+    const producer = new EventHub.EventHubProducerClient(
+      eventHubNamespace + '.servicebus.windows.net',
+      eventHubName,
+      new Identity.EnvironmentCredential()
+    )
+
+    const batch = await producer.createBatch()
+
+    batch.tryAdd({ body: operationId })
+
+    producer
+      .sendBatch(batch)
+      .then(async () => {
+        await producer.close()
+        resolve({
+          status: 200,
+          headers: {
+            'content-type': 'text/plain'
+          },
+          body: 'AZURE - Event Hub trigger benchmark successfully started'
+        })
+      })
+      .catch(async e => {
+        await producer.close()
+        resolve({
+          status: 200,
+          headers: {
+            'content-type': 'text/plain'
+          },
+          body: `AZURE - Event Hub trigger benchmark failed to start\n\nError in sending batch: ${e.message} \n`
+        })
+      })
+  })
+
 const handler = async (context: any, req: any) => {
   // const trace = openTelemetryApi.default;
   // Setup application insights
@@ -301,7 +346,8 @@ const handler = async (context: any, req: any) => {
       triggerType === 'queue' ||
       triggerType === 'database' ||
       triggerType === 'timer' ||
-      triggerType === 'serviceBus')
+      triggerType === 'serviceBus' ||
+      triggerType === 'eventHub')
   const triggerInput: string = req.query && req.query.input
 
   if (validTrigger && triggerInput) {
@@ -411,10 +457,13 @@ const handler = async (context: any, req: any) => {
     if (triggerType == 'timer') {
       return appInsights.wrapWithCorrelationContext(async () => {
         const startTime = Date.now() // Start trackRequest timer
-        const response = await getTimerFunction(triggerInput)
+        const response = await getTimerFunction(
+          triggerInput,
+          correlationContext.operation.parentId
+        )
         // Track dependency on completion
         appInsights.defaultClient.trackDependency({
-          name: 'CompletionTrackStorage',
+          name: 'CompletionTrackTimer',
           dependencyTypeName: 'HTTP',
           resultCode: response.status,
           success: true,
@@ -449,6 +498,30 @@ const handler = async (context: any, req: any) => {
         return response
       }, correlationContext)()
     }
+
+    if (triggerType == 'eventHub') {
+      const eventHubInputs = triggerInput.split(',')
+      return appInsights.wrapWithCorrelationContext(async () => {
+        const startTime = Date.now()
+        const response = await getEventHubFunction(
+          eventHubInputs[0],
+          eventHubInputs[1],
+          correlationContext.operation.id
+        )
+        // Track dependency on completion
+        appInsights.defaultClient.trackDependency({
+          name: 'CompletionTrackEventHub',
+          dependencyTypeName: 'HTTP',
+          resultCode: response.status,
+          success: true,
+          duration: Date.now() - startTime,
+          id: correlationContext.operation.parentId,
+          data: ''
+        })
+        appInsights.defaultClient.flush()
+        return response
+      }, correlationContext)()
+    }
   }
   // If either parameter is missing or is invalid
   return {
@@ -479,7 +552,7 @@ const getEndpoint = async () => {
   // Infrastructure endpoint (HTTP trigger)
   return new azure.appservice.HttpEventSubscription('InfraEndpoint', {
     resourceGroup,
-    location: 'northeurope',
+    location: process.env.PULUMI_AZURE_LOCATION,
     callback: handler,
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,

@@ -7,8 +7,9 @@ import * as dotenv from 'dotenv'
 
 dotenv.config({ path: './../.env' })
 
-const handler = async () => {
+const handler = async (context : any, message : any) => {
   // Setup application insights
+
   appInsights
     .setup()
     .setAutoDependencyCorrelation(true)
@@ -23,10 +24,23 @@ const handler = async () => {
   appInsights.defaultClient.setAutoPopulateAzureProperties(true)
   appInsights.start()
 
+  const correlationContext = appInsights.startOperation(
+    context,
+    'correlationContextEventHub'
+  )
+
+  appInsights.defaultClient.trackTrace({
+    message: 'Custom operationId',
+    properties: {
+      newOperationId: message,
+      oldOperationId: correlationContext!.operation.id
+    }
+  })
+
   return workload()
 }
 
-const getEndpoint = async () => {
+const getEventHubResources = async () => {
   const user = await automation.LocalWorkspace.create({}).then(ws =>
     ws.whoAmI().then(i => i.user)
   )
@@ -42,15 +56,37 @@ const getEndpoint = async () => {
   const insightsId = shared.requireOutput('insightsId')
   const insights = azure.appinsights.Insights.get('Insights', insightsId)
 
-  // HTTP trigger
-  return new azure.appservice.HttpEventSubscription('HttpTrigger', {
-    resourceGroup,
-    location: process.env.PULUMI_AZURE_LOCATION,
-    callback: handler,
-    appSettings: {
-      APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey
-    }
-  })
+  const eventHubNamespace = new azure.eventhub.EventHubNamespace("eventHubName", {
+    location: resourceGroup.location,
+    resourceGroupName: resourceGroup.name,
+    sku: "Standard",
+    capacity: 1,
+    tags: {
+        environment: "Production",
+    },
+});
+
+const eventHub = new azure.eventhub.EventHub("eventHubTrigger", {
+    namespaceName: eventHubNamespace.name,
+    resourceGroupName: resourceGroup.name,
+    partitionCount: 2,
+    messageRetention: 1,
+});
+
+
+//Event hub trigger
+eventHub.onEvent('eventHubTrigger',{
+  location: process.env.PULUMI_AZURE_LOCATION,
+  callback: handler,
+  appSettings: {
+    APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
+  }
+});
+
+  return {
+    eventHubName: eventHub.name,
+    eventHubNamespace: eventHubNamespace.name
+  }
 }
 
-exports.url = getEndpoint().then(endpoint => endpoint.url)
+module.exports = getEventHubResources().then(e => e)

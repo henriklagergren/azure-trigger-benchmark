@@ -11,6 +11,16 @@ if(os.isfile('http.csv')):
 if(os.isfile('storage.csv')):
     result_list.append(pd.read_csv('storage.csv', delimiter=","))
 
+if(os.isfile('queue.csv')):
+    result_list.append(pd.read_csv('queue.csv', delimiter=","))
+
+if(os.isfile('timer.csv')):
+    result_list.append(pd.read_csv('timer.csv', delimiter=","))
+
+if(os.isfile('eventHub.csv')):
+    result_list.append(pd.read_csv('eventHub.csv', delimiter=","))
+
+
 result_df = pd.concat(result_list)
 
 plot = (p9.ggplot(result_df, p9.aes(

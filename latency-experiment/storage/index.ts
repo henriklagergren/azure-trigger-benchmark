@@ -107,7 +107,7 @@ const getStorageResources = async () => {
   azure.eventgrid.events.onGridBlobCreated('StorageTrigger', {
     resourceGroup,
     storageAccount,
-    location: 'northeurope',
+    location: process.env.PULUMI_AZURE_LOCATION,
     callback: handler,
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,

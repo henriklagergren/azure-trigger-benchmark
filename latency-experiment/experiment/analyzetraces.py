@@ -13,10 +13,10 @@ INSIGHTS_API_KEY = os.getenv('INSIGHTS_API_KEY')
 INSIGHTS_APP_ID = os.getenv('INSIGHTS_APP_ID')
 
 # EDIT THESE PARAMETERS
-trigger_type ='database'
-timespan = '2022-02-25T13:25:00Z/2022-02-26T22:50:00Z' # Time zone GMT
+trigger_type = 'eventHub'
+timespan = '2022-02-28T14:00:00Z/2022-03-03T19:00:00Z'  # Time zone GMT
 # Azure Insights REST API limits to 500 rows by default, many invocations => thousands of rows. Get top 5000 rows
-top = 5000
+top = 10000
 application_ID = INSIGHTS_APP_ID
 api_key = INSIGHTS_API_KEY
 ##
@@ -89,6 +89,7 @@ for value in traces['value']:
     message_whole = value['trace']['message']
     if 'Custom operationId' in message_whole:
         # Get operation ids that should be switched
+        print(value)
         switch_operation_ids.append(value['customDimensions'])
     else:
         message_list = message_whole.split(' ')
@@ -141,8 +142,8 @@ index = -1
 requestCount = 0
 
 for entry in all_entries:
-    if saved_id != entry['operation_id']: # New Group
-        requestCount = 0 # Reset count
+    if saved_id != entry['operation_id']:  # New Group
+        requestCount = 0  # Reset count
         if(entry['type'] == 'REQUEST'):
             requestCount += 1
         index += 1
@@ -167,16 +168,17 @@ for group in all_groups:
     trace_amount = 0
     request_amount = 0
     dependency_amount = 0
+    # print('')
     for entry in group:
         if entry['type'] == 'TRACE':
             trace_amount += 1
-            print(f"{trace_amount} - Trace")
+            # print(f"{trace_amount} - Trace")
         elif entry['type'] == 'REQUEST':
             request_amount += 1
-            print(f"{request_amount} - request")
+            # print(f"{request_amount} - request {entry['name']}")
         elif entry['type'] == 'DEPENDENCY':
             dependency_amount += 1
-            print(f"{dependency_amount} - dependency")
+            # print(f"{dependency_amount} - dependency")
     if(trigger_type == "http"):
         isValid = (trace_amount == 4 and request_amount ==
                    2 and dependency_amount == 2)
@@ -184,14 +186,17 @@ for group in all_groups:
         isValid = (trace_amount == 4 and request_amount ==
                    2 and dependency_amount == 9)
     elif(trigger_type == "database"):
-        isValid = (trace_amount == 2 and request_amount == 2 and dependency_amount == 4)
-        
+        isValid = (trace_amount == 2 and request_amount ==
+                   2 and dependency_amount == 4)
+    else:
+        isValid = (request_amount == 2)
+
     if isValid:
         all_valid_groups.append(group)
         print('Group with id ' + str(group[0]['operation_id']) + ' is valid')
-    else:
-        print('Group with id ' +
-              str(group[0]['operation_id']) + ' was thrown out...')
+    # else:
+        # print('Group with id ' +
+        #      str(group[0]['operation_id']) + ' was thrown out...')
 
 all_groups = all_valid_groups
 
@@ -206,6 +211,7 @@ for group in all_groups:
     dependency_timestamp = datetime.now()
     request_timestamp = datetime.now()
     for entry in group:
+        print(entry["name"])
         if entry['name'] == ('CompletionTrack' + trigger_type.capitalize()):
             all_completion_tracks.append(entry['duration'])
         elif entry['type'] == 'DEPENDENCY':
