@@ -6,6 +6,7 @@ import * as automation from '@pulumi/pulumi/automation'
 import * as pulumi from '@pulumi/pulumi'
 import workload from '../workloads/workload'
 import * as azurefunctions from '@azure/functions'
+import { CosmosChangeFeedSubscription } from '@pulumi/azure/cosmosdb'
 
 dotenv.config({ path: './../.env' })
 
@@ -78,11 +79,11 @@ const getDatabaseResources = async () => {
   const connectionKey = `Cosmos${process.env['ACCOUNTDB_NAME']}ConnectionKey`
 
   // SQL on change trigger
-  sqlAccount.onChange('databaseTrigger1', {
+  sqlAccount.onChange('databaseTrigger', {
     databaseName: sqlDatabase.name,
     collectionName: sqlContainer.name,
     startFromBeginning: true,
-    location: 'northeurope',
+    location: process.env.PULUMI_AZURE_LOCATION,
     callback: handler,
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,

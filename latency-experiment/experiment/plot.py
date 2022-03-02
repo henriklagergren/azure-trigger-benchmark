@@ -17,6 +17,9 @@ if(os.isfile('queue.csv')):
 if(os.isfile('timer.csv')):
     result_list.append(pd.read_csv('timer.csv', delimiter=","))
 
+if(os.isfile('eventHub.csv')):
+    result_list.append(pd.read_csv('eventHub.csv', delimiter=","))
+
 
 result_df = pd.concat(result_list)
 

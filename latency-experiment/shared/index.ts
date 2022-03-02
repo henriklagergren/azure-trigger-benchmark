@@ -1,8 +1,8 @@
 import * as azure from '@pulumi/azure'
 import * as azuread from '@pulumi/azuread'
 import * as cosmosdb from '@pulumi/azure/cosmosdb'
+import * as fs from 'fs'
 
-const fs = require('fs')
 
 const resourceGroup = new azure.core.ResourceGroup('ResourceGroup', {
   location: 'northeurope'
@@ -68,6 +68,12 @@ new azure.authorization.Assignment('storageBlobDataContributor', {
 new azure.authorization.Assignment('storageQueueDataContributor', {
   scope: resourceGroup.id,
   roleDefinitionName: 'Storage Queue Data Contributor',
+  principalId: servicePrincipal.objectId
+})
+
+new azure.authorization.Assignment('eventHubDataOwner', {
+  scope: resourceGroup.id,
+  roleDefinitionName: 'Azure Event Hubs Data Owner',
   principalId: servicePrincipal.objectId
 })
 

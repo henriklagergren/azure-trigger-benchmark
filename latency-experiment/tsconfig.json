@@ -19,6 +19,8 @@
     "infra/index.ts",
     "storage/index.ts",
     "queue/index.ts",
-    "database/index.ts"
+    "database/index.ts",
+    "timer/index.ts",
+    "event_hub/index.ts"
   ]
 }

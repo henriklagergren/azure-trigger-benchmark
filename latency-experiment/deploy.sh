@@ -163,6 +163,33 @@ deploy_timer_trigger() {
   echo "$BENCHMARK_URL?trigger=timer&input=https://$TIMER_FUNCTION_APP_NAME/admin/functions/$TIMER_TRIGGER_NAME"
 }
 
+deploy_eventHub_trigger() {
+  # Deploy shared resources
+  deploy_shared_resources
+
+  cd ..
+
+  # Deploy database trigger
+  cd event_hub/ && pulumi stack select trigger -c && pulumi up -f -y
+
+  # Get timer function app name and trigger name
+  EVENT_HUB_NAME=$(pulumi stack output eventHubName)
+  EVENT_HUB_NAMESPACE=$(pulumi stack output eventHubNamespace)
+
+  cd ..
+
+
+
+  # Deploy infrastructure
+  cd infra/ && pulumi stack select infra -c && pulumi up -f -y
+
+  # Get url to benchmark gateway
+  BENCHMARK_URL=$(pulumi stack output url)
+
+  echo "Start event hub trigger benchmark:"
+  echo "$BENCHMARK_URL?trigger=eventHub&input=$EVENT_HUB_NAME,$EVENT_HUB_NAMESPACE"
+}
+
 # Read input flags
 while getopts 't:' flag; do
   case "${flag}" in
@@ -182,6 +209,8 @@ elif [ "$TRIGGER_TYPE" = 'database' ]; then
   deploy_database_trigger
 elif [ "$TRIGGER_TYPE" = 'timer' ]; then
   deploy_timer_trigger
+elif [ "$TRIGGER_TYPE" = 'eventHub' ]; then
+  deploy_eventHub_trigger
 else
   echo 'Error: Unsupported trigger'
 fi

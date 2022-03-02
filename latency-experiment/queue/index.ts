@@ -71,7 +71,7 @@ const getStorageResources = async () => {
   // Queue trigger
   queue.onEvent('QueueTrigger', {
     resourceGroup,
-    location: 'northeurope',
+    location: process.env.PULUMI_AZURE_LOCATION,
     callback: handler,
     hostSettings: {
       extensions: {

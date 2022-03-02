@@ -1,32 +1,24 @@
-# Destroy HTTP trigger
-cd http/ && pulumi destroy -f -y
+TRIGGER_TYPE=''
 
-cd ..
+# Read input flags
+while getopts 't:' flag; do
+  case "${flag}" in
+  t) TRIGGER_TYPE="${OPTARG}" ;;
+  *) exit 1 ;;
+  esac
+done
 
-# Destroy storage trigger
-cd storage/ && pulumi destroy -f -y
-
-cd ..
-
-# Destroy queue trigger
-cd queue/ && pulumi destroy -f -y
-
-cd ..
-
-# Destroy database trigger
-cd database/ && pulumi destroy -f -y
-
-cd ..
-
-# Destroy database trigger
-cd timer/ && pulumi destroy -f -y
-
-cd ..
-
-# Destroy infrastructure
-cd infra/ && pulumi destroy -f -y
-
-cd ..
-
-# Destroy shared resources (must be done last due to how pulumi tracks resources)
-cd shared/ && pulumi destroy -f -y
+# Decide which trigger to deploy based on input flag
+if [ "$TRIGGER_TYPE" = 'eventHub' ]; then
+    cd event_hub/ && pulumi destroy -f -y
+    cd ..
+    cd infra/ && pulumi destroy -f -y
+    cd ..
+    cd shared/ && pulumi destroy -f -y
+elif [ "$TRIGGER_TYPE" = 'http' || "$TRIGGER_TYPE" = 'storage' ||  "$TRIGGER_TYPE" = 'database' || "$TRIGGER_TYPE" = 'queue' || "$TRIGGER_TYPE" = 'storage' || "$TRIGGER_TYPE" = 'timer' ]; then
+    cd $TRIGGER_TYPE/ && pulumi destroy -f -y
+    cd ..
+    cd infra/ && pulumi destroy -f -y
+    cd ..
+    cd shared/ && pulumi destroy -f -y
+fi
