@@ -198,7 +198,11 @@ const getTimerFunction = (url: string, operationId: any) =>
       )
   })
 
-const getServiceBusResources = (serviceBusName: string, topicName: string) =>
+const getServiceBusResources = (
+  serviceBusName: string,
+  topicName: string,
+  operationId: string
+) =>
   new Promise<Response>(async resolve => {
     /*
     const credential = new Identity.ClientSecretCredential(
@@ -215,7 +219,7 @@ const getServiceBusResources = (serviceBusName: string, topicName: string) =>
       credential
     )
 
-    const messages = [{ body: 'Azure Service Bus Trigger' }]
+    const messages = [{ body: operationId }]
 
     const sender = client.createSender(topicName)
 
@@ -317,30 +321,33 @@ const getEventHubFunction = (
       })
   })
 
-  const getEventGridFunction = (
-    storageAccountName: string,
-    storageContainerName : string,
-    operationId: any
-  ) =>
-    new Promise<Response>(async resolve => {
-      let credential = new Identity.EnvironmentCredential()
-  
-      const blobServiceClient = new Storage.BlobServiceClient(
-        `https://${storageAccountName}.blob.core.windows.net`,
-        credential
-      );
-      
-      const containerClient = blobServiceClient.getContainerClient(storageContainerName);
-      const content: string = 'Hello world!';
-      const blobName = operationId;
-      const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-  
-      blockBlobClient
-        .upload(content, content.length, {
-          metadata: {
-            operationId
-          }
-        }).then(() =>
+const getEventGridFunction = (
+  storageAccountName: string,
+  storageContainerName: string,
+  operationId: any
+) =>
+  new Promise<Response>(async resolve => {
+    let credential = new Identity.EnvironmentCredential()
+
+    const blobServiceClient = new Storage.BlobServiceClient(
+      `https://${storageAccountName}.blob.core.windows.net`,
+      credential
+    )
+
+    const containerClient = blobServiceClient.getContainerClient(
+      storageContainerName
+    )
+    const content: string = 'Hello world!'
+    const blobName = operationId
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName)
+
+    blockBlobClient
+      .upload(content, content.length, {
+        metadata: {
+          operationId
+        }
+      })
+      .then(() =>
         resolve({
           status: 200,
           headers: {
@@ -358,7 +365,7 @@ const getEventHubFunction = (
           body: `AZURE - Event Grid trigger failed to start\n\nError: ${e.message}`
         })
       )
-    })
+  })
 
 const handler = async (context: any, req: any) => {
   // const trace = openTelemetryApi.default;
@@ -525,7 +532,8 @@ const handler = async (context: any, req: any) => {
         const startTime = Date.now() // Start trackRequest timer
         const response = await getServiceBusResources(
           serviceBusInputs[0],
-          serviceBusInputs[1]
+          serviceBusInputs[1],
+          correlationContext.operation.id
         )
         // Track dependency on completion
         appInsights.defaultClient.trackDependency({
@@ -545,51 +553,51 @@ const handler = async (context: any, req: any) => {
 
     if (triggerType == 'eventHub') {
       const eventHubInputs = triggerInput.split(',')
-        return appInsights.wrapWithCorrelationContext(async () => {
-          const startTime = Date.now()
-          const response = await getEventHubFunction(
-            eventHubInputs[0],
-            eventHubInputs[1],
-            correlationContext.operation.id
-          )
-          // Track dependency on completion
-          appInsights.defaultClient.trackDependency({
-            name: 'CompletionTrackEventHub',
-            dependencyTypeName: 'HTTP',
-            resultCode: response.status,
-            success: true,
-            duration: Date.now() - startTime,
-            id: correlationContext.operation.parentId,
-            data: ''
-          })
-          appInsights.defaultClient.flush()
-          return response
-        }, correlationContext)()
-      }
+      return appInsights.wrapWithCorrelationContext(async () => {
+        const startTime = Date.now()
+        const response = await getEventHubFunction(
+          eventHubInputs[0],
+          eventHubInputs[1],
+          correlationContext.operation.id
+        )
+        // Track dependency on completion
+        appInsights.defaultClient.trackDependency({
+          name: 'CompletionTrackEventHub',
+          dependencyTypeName: 'HTTP',
+          resultCode: response.status,
+          success: true,
+          duration: Date.now() - startTime,
+          id: correlationContext.operation.parentId,
+          data: ''
+        })
+        appInsights.defaultClient.flush()
+        return response
+      }, correlationContext)()
+    }
 
-      if(triggerType == 'eventGrid'){
-        const eventGridInputs = triggerInput.split(',')
-          return appInsights.wrapWithCorrelationContext(async () => {
-            const startTime = Date.now()
-            const response = await getEventGridFunction(
-              eventGridInputs[0],
-              eventGridInputs[1],
-              correlationContext.operation.id
-            )
-            // Track dependency on completion
-            appInsights.defaultClient.trackDependency({
-              name: 'CompletionTrackEventGrid',
-              dependencyTypeName: 'HTTP',
-              resultCode: response.status,
-              success: true,
-              duration: Date.now() - startTime,
-              id: correlationContext.operation.parentId,
-              data: ''
-            })
-            appInsights.defaultClient.flush()
-            return response
-          }, correlationContext)()
-        }
+    if (triggerType == 'eventGrid') {
+      const eventGridInputs = triggerInput.split(',')
+      return appInsights.wrapWithCorrelationContext(async () => {
+        const startTime = Date.now()
+        const response = await getEventGridFunction(
+          eventGridInputs[0],
+          eventGridInputs[1],
+          correlationContext.operation.id
+        )
+        // Track dependency on completion
+        appInsights.defaultClient.trackDependency({
+          name: 'CompletionTrackEventGrid',
+          dependencyTypeName: 'HTTP',
+          resultCode: response.status,
+          success: true,
+          duration: Date.now() - startTime,
+          id: correlationContext.operation.parentId,
+          data: ''
+        })
+        appInsights.defaultClient.flush()
+        return response
+      }, correlationContext)()
+    }
   }
   // If either parameter is missing or is invalid
   return {

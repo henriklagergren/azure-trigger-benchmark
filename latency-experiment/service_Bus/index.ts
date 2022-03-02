@@ -24,6 +24,23 @@ const handler = async (context: any, message: any) => {
   appInsights.defaultClient.setAutoPopulateAzureProperties(true)
   appInsights.start()
 
+  const correlationContext = appInsights.startOperation(
+    context,
+    'correlationContextDatabase'
+  )
+
+  console.log('Operation id ' + message)
+
+  appInsights.defaultClient.trackTrace({
+    message: 'Custom operationId',
+    properties: {
+      newOperationId: message,
+      oldOperationId: correlationContext!.operation.id
+    }
+  })
+
+  appInsights.defaultClient.flush()
+
   return workload()
 }
 
