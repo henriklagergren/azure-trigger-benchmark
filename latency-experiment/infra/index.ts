@@ -136,7 +136,7 @@ const getDatabaseFunction = (
     )
     const container = client.database(databaseName).container(containerName)
 
-    console.log('Upserting items to database')
+    console.log('Insert item to database')
 
     const newItem = {
       newOperationId: operationId,

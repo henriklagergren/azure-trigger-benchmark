@@ -1,4 +1,5 @@
 TRIGGER_TYPE=''
+FILE_NAME='../.env'
 
 deploy_shared_resources() {
   cd shared/ && pulumi stack select shared -c && pulumi up -f -y
@@ -38,6 +39,9 @@ deploy_http_trigger() {
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
 
+  echo "Write URL to .env"
+  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=http&input=$TRIGGER_URL\"" >>$FILE_NAME
+
   echo "Start HTTP trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=http&input=$TRIGGER_URL"
 }
@@ -69,6 +73,9 @@ deploy_storage_trigger() {
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
+
+  echo "Write URL to .env"
+  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=storage&input=$CONTAINER_NAME,$STORAGE_ACCOUNT_NAME\"" >>$FILE_NAME
 
   echo "Start storage trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=storage&input=$CONTAINER_NAME,$STORAGE_ACCOUNT_NAME"
@@ -102,6 +109,9 @@ deploy_queue_trigger() {
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
 
+  echo "Write URL to .env"
+  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=queue&input=$QUEUE_NAME,$STORAGE_ACCOUNT_NAME\"" >>$FILE_NAME
+
   echo "Start queue trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=queue&input=$QUEUE_NAME,$STORAGE_ACCOUNT_NAME"
 }
@@ -134,6 +144,9 @@ deploy_database_trigger() {
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
 
+  echo "Write URL to .env"
+  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=database&input=$DATABASE_NAME,$CONTAINER_NAME\"" >>$FILE_NAME
+
   echo "Start database trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=database&input=$DATABASE_NAME,$CONTAINER_NAME"
 }
@@ -158,6 +171,9 @@ deploy_timer_trigger() {
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
+
+  echo "Write URL to .env"
+  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=timer&input=https://$TIMER_FUNCTION_APP_NAME/admin/functions/$TIMER_TRIGGER_NAME\"" >>$FILE_NAME
 
   echo "Start timer trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=timer&input=https://$TIMER_FUNCTION_APP_NAME/admin/functions/$TIMER_TRIGGER_NAME"
@@ -187,8 +203,11 @@ deploy_serviceBus_trigger() {
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
 
+  echo "Write URL to .env"
+  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=serviceBus&input=$SERVICE_BUS_NAMESPACE,$TOPIC_NAME\"" >>$FILE_NAME
+
   echo "Start serviceBus trigger benchmark:"
-  echo "$BENCHMARK_URL?trigger=serviceBus&input=$SERVICE_BUS_NAMESPACE",$TOPIC_NAME
+  echo "$BENCHMARK_URL?trigger=serviceBus&input=$SERVICE_BUS_NAMESPACE,$TOPIC_NAME"
 }
 
 deploy_eventHub_trigger() {
@@ -211,6 +230,9 @@ deploy_eventHub_trigger() {
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
+
+  echo "Write URL to .env"
+  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=eventHub&input=$EVENT_HUB_NAME,$EVENT_HUB_NAMESPACE\"" >>$FILE_NAME
 
   echo "Start event hub trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=eventHub&input=$EVENT_HUB_NAME,$EVENT_HUB_NAMESPACE"
@@ -236,6 +258,9 @@ deploy_eventGrid_trigger() {
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
+
+  echo "Write URL to .env"
+  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=eventGrid&input=$EVENT_GRID_STORAGE_NAME,$EVENT_GRID_CONTAINER_NAME\"" >>$FILE_NAME
 
   echo "Start event grid trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=eventGrid&input=$EVENT_GRID_STORAGE_NAME,$EVENT_GRID_CONTAINER_NAME"
