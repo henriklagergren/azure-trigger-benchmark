@@ -17,6 +17,9 @@ if(os.isfile('queue.csv')):
 if(os.isfile('timer.csv')):
     result_list.append(pd.read_csv('timer.csv', delimiter=","))
 
+if(os.isfile('serviceBus.csv')):
+    result_list.append(pd.read_csv('serviceBus.csv', delimiter=","))
+
 if(os.isfile('eventHub.csv')):
     result_list.append(pd.read_csv('eventHub.csv', delimiter=","))
 
@@ -28,6 +31,6 @@ result_df = pd.concat(result_list)
 
 plot = (p9.ggplot(result_df, p9.aes(
     x="trigger_type", y="latency"))
-    + p9.geom_violin() + p9.ylim(0, 500))
+    + p9.geom_violin() + p9.ylim(0, 10000))
 
 plot.save(filename="results.png")

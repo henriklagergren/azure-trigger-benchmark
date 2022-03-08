@@ -13,8 +13,8 @@ INSIGHTS_API_KEY = os.getenv('INSIGHTS_API_KEY')
 INSIGHTS_APP_ID = os.getenv('INSIGHTS_APP_ID')
 
 # EDIT THESE PARAMETERS
-trigger_type = 'serviceBus'
-timespan = '2022-03-02T17:00:00Z/2022-03-03T19:00:00Z'  # Time zone GMT
+trigger_type = 'storage'
+timespan = '2022-03-08T11:00:00Z/2022-03-10T19:00:00Z'  # Time zone GMT
 # Azure Insights REST API limits to 500 rows by default, many invocations => thousands of rows. Get top 5000 rows
 top = 10000
 application_ID = INSIGHTS_APP_ID
@@ -157,7 +157,7 @@ for entry in all_entries:
                 requestCount += 1
             all_groups[index].append(entry)
 
-#print(all_groups)
+
 print('')
 print('Checking the validity of traces...')
 
@@ -167,19 +167,21 @@ for group in all_groups:
     trace_amount = 0
     request_amount = 0
     dependency_amount = 0
-    #print('')
+    print('')
     isValidRequest = False
     for entry in group:
         if entry['type'] == 'TRACE':
             trace_amount += 1
             print(f"{trace_amount} - Trace")
+            print(entry)
         elif entry['type'] == 'REQUEST':
             request_amount += 1
-            isValidRequest = trigger_type in entry['name']
+            isValidRequest = trigger_type.capitalize() in entry['name']
             print(f"{request_amount} - request {entry['name']}")
         elif entry['type'] == 'DEPENDENCY':
             dependency_amount += 1
             print(f"{dependency_amount} - dependency")
+            print(entry)
 
     if (request_amount == 2 and isValidRequest):
         all_valid_groups.append(group)

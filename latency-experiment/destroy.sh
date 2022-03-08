@@ -27,7 +27,7 @@ elif [ "$TRIGGER_TYPE" = 'serviceBus' ]; then
     cd infra/ && pulumi destroy -f -y
     cd ..
     cd shared/ && pulumi destroy -f -y
-elif [ "$TRIGGER_TYPE" = 'http' || "$TRIGGER_TYPE" = 'storage' || "$TRIGGER_TYPE" = 'database' || "$TRIGGER_TYPE" = 'queue' || "$TRIGGER_TYPE" = 'storage' || "$TRIGGER_TYPE" = 'timer' ]; then
+elif [[ "$TRIGGER_TYPE" = 'http' || "$TRIGGER_TYPE" = 'storage' || "$TRIGGER_TYPE" = 'database' || "$TRIGGER_TYPE" = 'queue' || "$TRIGGER_TYPE" = 'timer' ]]; then
     cd $TRIGGER_TYPE/ && pulumi destroy -f -y
     cd ..
     cd infra/ && pulumi destroy -f -y

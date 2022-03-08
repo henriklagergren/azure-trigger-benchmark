@@ -14,7 +14,8 @@ function delay (ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-const handler = async (context: any, trigger: any) => {
+const handler = async (context: any) => {
+
   // Setup application insights
   appInsights
     .setup()
@@ -33,42 +34,20 @@ const handler = async (context: any, trigger: any) => {
   const correlationContext = appInsights.startOperation(
     context,
     'correlationContextStorage'
-  )
+  );
 
-  let credential = new Identity.EnvironmentCredential()
+  const operationId = context["bindingData"]["metadata"]["operationId"].replace('|', '').split('.')[0];
 
-  // Get correct operationID from blob metadata
-  const blobUrl = trigger.data.url
-  const props = blobUrl.split('/').filter((w: string) => w.length > 6)
-  const storageAccount = props[0].split('.')[0]
-  const container = props[1]
-  const blob = props[2]
-
-  const blobServiceClient = new Storage.BlobServiceClient(
-    `https://${storageAccount}.blob.core.windows.net`,
-    credential
-  )
-
-  const containerClient = blobServiceClient.getContainerClient(container)
-  const blobs = containerClient.listBlobsFlat({ includeMetadata: true })
-
-  for await (const item of blobs) {
-    if (
-      item.name === blob &&
-      item.metadata != undefined &&
-      correlationContext != null
-    ) {
-      appInsights.defaultClient.trackTrace({
-        message: 'Custom operationId',
-        properties: {
-          newOperationId: item.metadata.operationId,
-          oldOperationId: correlationContext.operation.id
-        }
-      })
+  appInsights.defaultClient.trackTrace({
+    message: 'Custom operationId',
+    properties: {
+      newOperationId: operationId,
+      oldOperationId: correlationContext!.operation.id
     }
-  }
+  })
+    
+  
   appInsights.defaultClient.flush()
-  await delay(5000)
 
   return workload()
 }
@@ -103,11 +82,10 @@ const getStorageResources = async () => {
     containerAccessType: 'private'
   })
 
-  // Blob trigger
-  azure.eventgrid.events.onGridBlobCreated('StorageTrigger', {
-    resourceGroup,
-    storageAccount,
+  container.onBlobEvent('StorageTrigger',{
+    resourceGroup: resourceGroup,
     location: process.env.PULUMI_AZURE_LOCATION,
+    
     callback: handler,
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
@@ -115,7 +93,7 @@ const getStorageResources = async () => {
       AZURE_TENANT_ID: process.env.AZURE_TENANT_ID,
       AZURE_CLIENT_SECRET: process.env.AZURE_CLIENT_SECRET
     }
-  })
+  });
 
   return {
     storageAccountName: storageAccount.name,
