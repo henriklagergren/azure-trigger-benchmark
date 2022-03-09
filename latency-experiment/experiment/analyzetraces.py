@@ -88,6 +88,8 @@ print('Extracting Traces...')
 for value in traces['value']:
     message_whole = value['trace']['message']
     if 'Custom operationId' in message_whole:
+        print('')
+        print(value)
         # Get operation ids that should be switched
         switch_operation_ids.append(value['customDimensions'])
     else:
@@ -167,21 +169,19 @@ for group in all_groups:
     trace_amount = 0
     request_amount = 0
     dependency_amount = 0
-    print('')
+    # print('')
     isValidRequest = False
     for entry in group:
         if entry['type'] == 'TRACE':
             trace_amount += 1
-            print(f"{trace_amount} - Trace")
-            print(entry)
+            #print(f"{trace_amount} - Trace")
         elif entry['type'] == 'REQUEST':
             request_amount += 1
             isValidRequest = trigger_type.capitalize() in entry['name']
-            print(f"{request_amount} - request {entry['name']}")
+            #print(f"{request_amount} - request {entry['name']}")
         elif entry['type'] == 'DEPENDENCY':
             dependency_amount += 1
-            print(f"{dependency_amount} - dependency")
-            print(entry)
+            #print(f"{dependency_amount} - dependency")
 
     if (request_amount == 2 and isValidRequest):
         all_valid_groups.append(group)
