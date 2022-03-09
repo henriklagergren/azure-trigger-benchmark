@@ -1,5 +1,7 @@
 */bin/
 */.env
+*/.sb/
+*/_pycache_/
 
 latency-experiment/*/node_modules/
 */experiment/*.csv
