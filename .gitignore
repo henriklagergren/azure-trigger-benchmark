@@ -6,3 +6,5 @@
 latency-experiment/*/node_modules/
 */experiment/*.csv
 */experiment/*.png
+*/experiment/.sb/
+*/experiment/__pycache__/
