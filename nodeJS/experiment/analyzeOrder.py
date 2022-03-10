@@ -14,7 +14,7 @@ INSIGHTS_APP_ID = os.getenv('INSIGHTS_APP_ID')
 
 # EDIT THESE PARAMETERS
 trigger_type = 'storage'
-timespan = '2022-03-08T13:46:00Z/2022-03-10T19:00:00Z'  # Time zone GMT
+timespan = '2022-03-09T13:45:00Z/2022-03-10T19:00:00Z'  # Time zone GMT
 # Azure Insights REST API limits to 500 rows by default, many invocations => thousands of rows. Get top 5000 rows
 top = 100000
 application_ID = INSIGHTS_APP_ID
@@ -90,19 +90,28 @@ execute_order.clear()
 execute_order = temp_list.copy()
 
 order_result = []
-count = 0
+
+invoke_duplicates = 0
 for invoke in invoke_order:
-    countTwo = 0
-    for execute in execute_order:
-        if invoke == execute:
-            order_result.append(count - countTwo)
-            break
-        countTwo = countTwo + 1
+    if 1 < invoke_order.count(invoke):
+        invoke_duplicates = invoke_duplicates + 1
 
+execute_duplicates = 0
+for execute in execute_order:
+    if 1 < execute_order.count(execute):
+        execute_duplicates = execute_duplicates + 1
+
+missing_executes = 0
+
+for invoke in invoke_order:
+    if invoke not in execute_order:
+        missing_executes = missing_executes + 1
+        invoke_order.remove(invoke)
+
+count = -1
+for invoke in invoke_order:
     count = count + 1
-
-execute_duplicates = set(execute_order)
-
+    order_result.append(count - execute_order.index(invoke))
 
 print('')
 print('## RESULTS ##')
@@ -110,15 +119,13 @@ print('')
 print('Amount of invokes: ' + str(len(invoke_order)))
 print('Amount of executes: ' + str(len(execute_order)))
 print('')
-print('Invoke order')
-print(invoke_order)
+print('Contains Duplicatess')
+print('Invoke:' + str(invoke_duplicates))
+print('Execute:' + str(execute_duplicates))
 print('')
-print('Execute order')
-print(execute_order)
+print('Missing executes')
+print(missing_executes)
 print('')
-print('In order')
-print(order_result)
-print('')
-print('Contains Duplicates')
-print('Amount: ' + str(len(execute_order) - len(execute_duplicates)))
-print('Percentage: ' + str(1 - (len(execute_duplicates)/len(execute_order))) + "%")
+
+
+#

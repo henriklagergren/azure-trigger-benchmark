@@ -3,8 +3,8 @@
 */.sb/
 */_pycache_/
 
-latency-experiment/*/node_modules/
-*/experiment/*.csv
-*/experiment/*.png
-*/experiment/.sb/
-*/experiment/__pycache__/
+nodeJS/*/node_modules/
+nodeJS/experiment/*.csv
+nodeJS/experiment/*.png
+nodeJS/experiment/.sb/
+nodeJS/experiment/__pycache__/

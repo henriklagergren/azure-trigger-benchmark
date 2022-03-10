@@ -14,7 +14,7 @@ INSIGHTS_APP_ID = os.getenv('INSIGHTS_APP_ID')
 
 # EDIT THESE PARAMETERS
 trigger_type = 'storage'
-timespan = '2022-03-08T11:00:00Z/2022-03-10T19:00:00Z'  # Time zone GMT
+timespan = '2022-03-09T13:45:00Z/2022-03-10T19:00:00Z'  # Time zone GMT
 # Azure Insights REST API limits to 500 rows by default, many invocations => thousands of rows. Get top 5000 rows
 top = 10000
 application_ID = INSIGHTS_APP_ID
