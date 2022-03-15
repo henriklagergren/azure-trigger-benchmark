@@ -37,7 +37,7 @@ const handler = async (context: any) => {
   console.log(newOperationId)
 
   appInsights.defaultClient.trackTrace({
-    message: 'Custom operationId',
+    message: 'Custom operationId database',
     properties: {
       newOperationId: newOperationId,
       oldOperationId: correlationContext!.operation.id
@@ -79,7 +79,7 @@ const getDatabaseResources = async () => {
   const connectionKey = `Cosmos${process.env['ACCOUNTDB_NAME']}ConnectionKey`
 
   // SQL on change trigger
-  sqlAccount.onChange('databaseTrigger', {
+  const sqlEvent = sqlAccount.onChange('databaseTrigger', {
     databaseName: sqlDatabase.name,
     collectionName: sqlContainer.name,
     startFromBeginning: true,
@@ -93,7 +93,8 @@ const getDatabaseResources = async () => {
 
   return {
     databaseName: sqlDatabase.name,
-    containerName: sqlContainer.name
+    containerName: sqlContainer.name,
+    functionApp: sqlEvent.functionApp.endpoint.apply(e => e.replace("/api/",""))
   }
 }
 

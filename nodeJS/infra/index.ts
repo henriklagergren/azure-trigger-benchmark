@@ -19,7 +19,7 @@ type Response = {
   body: string
 }
 
-const getHttpFunction = (url: string) =>
+const getHttpFunction = (url: string,operationId: any) =>
   new Promise<Response>(resolve => {
     axios
       .get(url)
@@ -27,7 +27,8 @@ const getHttpFunction = (url: string) =>
         resolve({
           status: 200,
           headers: {
-            'content-type': 'text/plain'
+            'content-type': 'text/plain',
+            'operationId' : operationId
           },
           body: 'AZURE - HTTP trigger successfully started'
         })
@@ -38,7 +39,7 @@ const getHttpFunction = (url: string) =>
           headers: {
             'content-type': 'text/plain'
           },
-          body: `AZURE - Storage trigger benchmark failed to start\n\nError: ${e.message}`
+          body: `AZURE - Http trigger benchmark failed to start\n\nError: ${e.message}`
         })
       )
   })
@@ -200,13 +201,6 @@ const getTimerFunction = (url: string, operationId: any) =>
 
 const getServiceBusResources = (serviceBusName: string, topicName: string) =>
   new Promise<Response>(async resolve => {
-    /*
-    const credential = new Identity.ClientSecretCredential(
-      process.env.AZURE_TENANT_ID!,
-      process.env.AZURE_CLIENT_ID!,
-      process.env.AZURE_CLIENT_SECRET!
-    )
-    */
 
     let credential = new Identity.EnvironmentCredential()
 
@@ -396,13 +390,22 @@ const handler = async (context: any, req: any) => {
 
   if (validTrigger && triggerInput) {
     const correlationContext: any = appInsights.startOperation(context, req)
+    
+    if(req.query.id != undefined){
+    appInsights.defaultClient.trackTrace({
+      message: 'iterationId',
+      properties: {
+        iterationId: req.query.id,
+      }
+    })
+  }
 
     if (triggerType === 'http') {
       // HTTP trigger
       return appInsights.wrapWithCorrelationContext(async () => {
         const startTime = Date.now() // Start trackRequest timer
 
-        const response = await getHttpFunction(triggerInput)
+        const response = await getHttpFunction(triggerInput,correlationContext.operation.id)
 
         // Track dependency on completion
         appInsights.defaultClient.trackDependency({

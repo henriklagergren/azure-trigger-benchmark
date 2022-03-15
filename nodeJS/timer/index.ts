@@ -32,10 +32,10 @@ const handler = async (context: TimerContext) => {
   );
 
   appInsights.defaultClient.trackTrace({
-    message: 'Custom operationId',
+    message: 'Custom operationId timer',
     properties: {
-      newOperationId: context.bindingData["timer"],
-      oldOperationId: correlationContext.operation.id
+      newOperationId: context.bindingData.timer,
+      oldOperationId: correlationContext!.operation.id
     }
   })
 

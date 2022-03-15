@@ -39,7 +39,7 @@ const handler = async (context: any) => {
   const operationId = context["bindingData"]["metadata"]["operationId"].replace('|', '').split('.')[0];
 
   appInsights.defaultClient.trackTrace({
-    message: 'Custom operationId',
+    message: 'Custom operationId storage',
     properties: {
       newOperationId: operationId,
       oldOperationId: correlationContext!.operation.id
@@ -82,7 +82,7 @@ const getStorageResources = async () => {
     containerAccessType: 'private'
   })
 
-  container.onBlobEvent('StorageTrigger',{
+  const blobEvent = container.onBlobEvent('StorageTrigger',{
     resourceGroup: resourceGroup,
     location: process.env.PULUMI_AZURE_LOCATION,
     
@@ -97,7 +97,8 @@ const getStorageResources = async () => {
 
   return {
     storageAccountName: storageAccount.name,
-    containerName: container.name
+    containerName: container.name,
+    functionApp: blobEvent.functionApp.endpoint.apply(e => e.replace("/api/",""))
   }
 }
 

@@ -32,7 +32,7 @@ const handler = async (context : any) => {
   const operationId = context["bindings"]["message"]["subject"].split('/').pop();
 
   appInsights.defaultClient.trackTrace({
-    message: 'Custom operationId',
+    message: 'Custom operationId eventGrid',
     properties: {
       newOperationId: operationId,
       oldOperationId: correlationContext!.operation.id
@@ -71,7 +71,7 @@ const geteventGridResources = async () => {
   containerAccessType: 'private'
 })
  
- azure.eventgrid.events.onGridBlobCreated("eventGridTrigger", {
+const eventGridEvent = azure.eventgrid.events.onGridBlobCreated("eventGridTrigger", {
     storageAccount,
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
@@ -81,7 +81,8 @@ const geteventGridResources = async () => {
 
   return {
     eventGridStorageAccountName: storageAccount.name,
-    eventGridStorageContainerName: container.name
+    eventGridStorageContainerName: container.name,
+    functionApp: eventGridEvent.functionApp.endpoint.apply(e => e.replace("/api/",""))
   }
 }
 

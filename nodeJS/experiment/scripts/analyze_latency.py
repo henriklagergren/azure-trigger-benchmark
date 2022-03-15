@@ -1,3 +1,4 @@
+from tracemalloc import start
 import requests
 import json
 from itertools import groupby
@@ -6,17 +7,69 @@ import csv
 import re
 import os
 from dotenv import load_dotenv
+from datetime import date
+from datetime import timedelta
+from simple_term_menu import TerminalMenu
 
 load_dotenv('./../../.env')
+
+print("Which trigger should be analyzed?")
+trigger_list = ["All triggers", "http", "storage", "queue",
+                "database", "eventHub", "eventGrid", "serviceBus", "timer"]
+terminal_menu = TerminalMenu(trigger_list)
+menu_entry_index = terminal_menu.show()
+
+if(menu_entry_index == 0):
+    trigger_list = ["http", "storage", "queue",
+                    "database", "eventHub", "eventGrid", "serviceBus", "timer"]
+else:
+    trigger_list = [trigger_list[menu_entry_index]]
+
+
+top = input("How many rows should be fetched (Enter for 1000k)? ")
+if(top == ""):
+    top = 1000000
+
+print("Which start date?")
+start_date = [str(date.today() - timedelta(days=1)), str(date.today())]
+terminal_menu = TerminalMenu(start_date)
+menu_entry_index = terminal_menu.show()
+start_date = start_date[menu_entry_index]
+
+print("Does start time matter?")
+yes_no = ["No", "Yes"]
+terminal_menu = TerminalMenu(yes_no)
+answer = terminal_menu.show()
+
+if(yes_no[answer] == "Yes"):
+    start_time = input("Write start time (HH:MM:SS): ")
+else:
+    start_time = "01:00:00"
+
+
+print("Should end date/time be current time?")
+yes_no = ["Yes", "No"]
+terminal_menu = TerminalMenu(yes_no)
+answer = terminal_menu.show()
+
+if(yes_no[answer] == "Yes"):
+    end_date = str(date.today() + timedelta(days=1))
+    end_time = "01:00:00"
+else:
+    print("Which end date?")
+    end_date = [str(date.today()), str(date.today() - timedelta(days=1)),
+                str(date.today() - timedelta(days=2))]
+    terminal_menu = TerminalMenu(end_date)
+    menu_entry_index = terminal_menu.show()
+    end_time = input("Write end time (HH:MM:SS): ")
+
 
 INSIGHTS_API_KEY = os.getenv('INSIGHTS_API_KEY')
 INSIGHTS_APP_ID = os.getenv('INSIGHTS_APP_ID')
 
-# EDIT THESE PARAMETERS
-trigger_type = 'storage'
-timespan = '2022-03-09T13:45:00Z/2022-03-10T19:00:00Z'  # Time zone GMT
+timespan = str(start_date) + "T" + str(start_time) + "Z/" + \
+    str(end_date) + "T" + str(end_time) + "Z"  # Time zone GMT
 # Azure Insights REST API limits to 500 rows by default, many invocations => thousands of rows. Get top 5000 rows
-top = 10000
 application_ID = INSIGHTS_APP_ID
 api_key = INSIGHTS_API_KEY
 ##
@@ -38,7 +91,7 @@ dependencies = requests.get('https://api.applicationinsights.io/v1/apps/' +
 dependencies = dependencies.json()
 
 params = (('timespan', timespan), ('$filter',
-          'contains(trace/message, \'exec\') or contains(trace/message, \'custom\')'), ('$top', top))
+                                   'contains(trace/message, \'exec\') or contains(trace/message, \'custom\')'), ('$top', top))
 
 print('')
 print('Fetching Traces...')
@@ -88,8 +141,6 @@ print('Extracting Traces...')
 for value in traces['value']:
     message_whole = value['trace']['message']
     if 'Custom operationId' in message_whole:
-        print('')
-        print(value)
         # Get operation ids that should be switched
         switch_operation_ids.append(value['customDimensions'])
     else:
@@ -160,86 +211,84 @@ for entry in all_entries:
             all_groups[index].append(entry)
 
 
-print('')
-print('Checking the validity of traces...')
+for trigger_type in trigger_list:
+    print('Analyzes latency for ' + trigger_type)
+    print('Checking the validity of traces...')
 
-all_valid_groups = []
+    all_valid_groups = []
 
-for group in all_groups:
-    trace_amount = 0
-    request_amount = 0
-    dependency_amount = 0
-    # print('')
-    isValidRequest = False
-    for entry in group:
-        if entry['type'] == 'TRACE':
-            trace_amount += 1
-            #print(f"{trace_amount} - Trace")
-        elif entry['type'] == 'REQUEST':
-            request_amount += 1
-            isValidRequest = trigger_type.capitalize() in entry['name']
-            #print(f"{request_amount} - request {entry['name']}")
-        elif entry['type'] == 'DEPENDENCY':
-            dependency_amount += 1
-            #print(f"{dependency_amount} - dependency")
+    for group in all_groups:
+        trace_amount = 0
+        request_amount = 0
+        dependency_amount = 0
+        # print('')
+        isValidRequest = False
+        for entry in group:
+            if entry['type'] == 'TRACE':
+                trace_amount += 1
+                # print(f"{trace_amount} - Trace")
+            elif entry['type'] == 'REQUEST':
+                request_amount += 1
+                isValidRequest = trigger_type.lower() in entry['name'].lower()
+                # print(f"{request_amount} - request {entry['name']}")
+            elif entry['type'] == 'DEPENDENCY':
+                dependency_amount += 1
+                # print(f"{dependency_amount} - dependency")
 
-    if (request_amount == 2 and isValidRequest):
-        all_valid_groups.append(group)
-        print('Group with id ' + str(group[0]['operation_id']) + ' is valid')
-    else:
-        print('Group with id ' +
-              str(group[0]['operation_id']) + ' was thrown out...')
+        if (request_amount == 2 and isValidRequest):
+            all_valid_groups.append(group)
 
-all_groups = all_valid_groups
+    print('')
+    print('Checks completed')
 
-print('')
-print('Checks completed')
+    all_trigger_delays_ms = []
+    all_completion_tracks = []
 
+    for group in all_valid_groups:
+        dependency_timestamp = datetime.now()
+        request_timestamp = datetime.now()
+        for entry in group:
+            if entry['name'] == ('CompletionTrack' + trigger_type.capitalize()):
+                all_completion_tracks.append(entry['duration'])
+            elif entry['type'] == 'DEPENDENCY':
+                dependency_timestamp = datetime.strptime(
+                    entry['timestamp']+'000', '%Y-%m-%d %H:%M:%S.%f')
+            elif entry['type'] == 'REQUEST' and entry['name'] != 'Functions.InfraEndpoint':
+                request_timestamp = datetime.strptime(
+                    entry['timestamp']+'000', '%Y-%m-%d %H:%M:%S.%f')
 
-all_trigger_delays_ms = []
-all_completion_tracks = []
+        delta = request_timestamp - dependency_timestamp
+        # print(f"{request_timestamp}\n")
+        # print(f"{dependency_timestamp}\n")
+        # print(f"{delta}\n")
+        all_trigger_delays_ms.append(
+            (delta.seconds*1000000 + delta.microseconds) / 1000)
 
-for group in all_groups:
-    dependency_timestamp = datetime.now()
-    request_timestamp = datetime.now()
-    for entry in group:
-        if entry['name'] == ('CompletionTrack' + trigger_type.capitalize()):
-            all_completion_tracks.append(entry['duration'])
-        elif entry['type'] == 'DEPENDENCY':
-            dependency_timestamp = datetime.strptime(
-                entry['timestamp']+'000', '%Y-%m-%d %H:%M:%S.%f')
-        elif entry['type'] == 'REQUEST' and entry['name'] != 'Functions.InfraEndpoint':
-            request_timestamp = datetime.strptime(
-                entry['timestamp']+'000', '%Y-%m-%d %H:%M:%S.%f')
+    print('')
+    print('## RESULTS ' + trigger_type.upper() + " ##")
+    print('')
+    print(all_trigger_delays_ms)
+    print('')
+    print('Average: ' + str(sum(all_trigger_delays_ms) /
+                            max(1, len(all_trigger_delays_ms))) + ' ms')
+    print('')
+    print('Completion tracks')
+    print(all_completion_tracks)
+    print('')
+    print('Average: ' + str(sum(all_completion_tracks) /
+                            max(1, len(all_completion_tracks))) + ' ms')
+    print('')
+    print('Number of valid entries: ' + str(len(all_trigger_delays_ms)))
+    print('')
 
-    delta = request_timestamp - dependency_timestamp
-    # print(f"{request_timestamp}\n")
-    # print(f"{dependency_timestamp}\n")
-    # print(f"{delta}\n")
-    all_trigger_delays_ms.append(
-        (delta.seconds*1000000 + delta.microseconds) / 1000)
+    with open("./../results/latency/" + trigger_type + '.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["trigger_type", "latency"])
+        count = 0
+        for value in all_trigger_delays_ms:
+            writer.writerow([trigger_type, value])
+            count = count + 1
 
-print('')
-print('## RESULTS ##')
-print('')
-print(all_trigger_delays_ms)
-print('')
-print('Average: ' + str(sum(all_trigger_delays_ms) /
-      max(1, len(all_trigger_delays_ms))) + ' ms')
-print('')
-print('Completion tracks')
-print(all_completion_tracks)
-print('')
-print('Average: ' + str(sum(all_completion_tracks) /
-      max(1, len(all_completion_tracks))) + ' ms')
-print('')
-print('Number of valid entries: ' + str(len(all_trigger_delays_ms)))
-print('')
-
-with open("./../results/latency/" + trigger_type + '.csv', 'w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerow(["trigger_type", "latency"])
-    count = 0
-    for value in all_trigger_delays_ms:
-        writer.writerow([trigger_type, value])
-        count = count + 1
+    print('')
+    print('')
+    print('')

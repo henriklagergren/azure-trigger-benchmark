@@ -4,10 +4,11 @@ import * as pulumi from '@pulumi/pulumi'
 import workload from '../workloads/workload'
 import * as automation from '@pulumi/pulumi/automation'
 import * as dotenv from 'dotenv'
+import { Context, HttpResponse } from '@pulumi/azure/appservice'
 
 dotenv.config({ path: './../.env' })
 
-const handler = async () => {
+const handler = async (context : Context<HttpResponse>) => {
   // Setup application insights
   appInsights
     .setup()
@@ -22,6 +23,21 @@ const handler = async () => {
     .setDistributedTracingMode(appInsights.DistributedTracingModes.AI_AND_W3C)
   appInsights.defaultClient.setAutoPopulateAzureProperties(true)
   appInsights.start()
+
+  const correlationContext = appInsights.startOperation(
+    context,
+    'correlationContextHttp'
+  );
+
+  console.log(JSON.stringify(context))
+
+  appInsights.defaultClient.trackTrace({
+    message: 'Custom operationId http',
+    properties: {
+      newOperationId: context.req?.headers["operationId"],
+      oldOperationId: correlationContext!.operation.id
+    }
+  })
 
   return workload()
 }
@@ -43,7 +59,7 @@ const getEndpoint = async () => {
   const insights = azure.appinsights.Insights.get('Insights', insightsId)
 
   // HTTP trigger
-  return new azure.appservice.HttpEventSubscription('HttpTrigger', {
+  const httpEvent = new azure.appservice.HttpEventSubscription('HttpTrigger', {
     resourceGroup,
     location: process.env.PULUMI_AZURE_LOCATION,
     callback: handler,
@@ -51,6 +67,11 @@ const getEndpoint = async () => {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey
     }
   })
+
+  return {
+    url: httpEvent.url,
+    functionApp: httpEvent.functionApp.endpoint.apply(e => e.replace("/api/",""))
+  }
 }
 
-exports.url = getEndpoint().then(endpoint => endpoint.url)
+module.exports = getEndpoint().then(e => e)
