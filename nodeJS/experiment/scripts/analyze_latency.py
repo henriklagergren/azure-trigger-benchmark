@@ -1,3 +1,4 @@
+from cgitb import reset
 from tracemalloc import start
 import requests
 import json
@@ -24,11 +25,6 @@ if(menu_entry_index == 0):
                     "database", "eventHub", "eventGrid", "serviceBus", "timer"]
 else:
     trigger_list = [trigger_list[menu_entry_index]]
-
-
-top = input("How many rows should be fetched (Enter for 1000k)? ")
-if(top == ""):
-    top = 1000000
 
 print("Which start date?")
 start_date = [str(date.today() - timedelta(days=1)), str(date.today())]
@@ -75,42 +71,39 @@ api_key = INSIGHTS_API_KEY
 ##
 
 headers = {'x-api-key': api_key, }
-params = (('timespan', timespan), ('$top', top))
 
 print('')
 print('Fetching Requests...')
 reqs = requests.get('https://api.applicationinsights.io/v1/apps/' +
-                    application_ID + '/events/requests', headers=headers, params=params)
-reqs = reqs.json()
+                    application_ID + '/query?query=requests | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
 
+reqs = reqs.json()
 
 print('')
 print('Fetching Dependencies...')
 dependencies = requests.get('https://api.applicationinsights.io/v1/apps/' +
-                            application_ID + '/events/dependencies', headers=headers, params=params)
+                            application_ID + '/query?query=dependencies | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
 dependencies = dependencies.json()
-
-params = (('timespan', timespan), ('$filter',
-                                   'contains(trace/message, \'exec\') or contains(trace/message, \'custom\')'), ('$top', top))
 
 print('')
 print('Fetching Traces...')
 traces = requests.get('https://api.applicationinsights.io/v1/apps/' +
-                      application_ID + '/events/traces', headers=headers, params=params)
+                      application_ID + '/query?query=traces | where message has "Custom operationId" or operation_Id != "" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
 traces = traces.json()
-
 all_entries = []
 switch_operation_ids = []
 
 print('')
 print('Extracting Requests...')
 
-for value in reqs['value']:
-    timestamp = value['timestamp']
+for value in reqs["tables"][0]["rows"]:
+    timestamp = value[0]
     timestamp = timestamp.replace('T', ' ')
     timestamp = timestamp.replace('Z', '')
-    name = value['customDimensions']['FullName']
-    operation_id = value['operation']['id']
+    milli = (timestamp + ".").split(".")[1] + "000"
+    timestamp = timestamp.split(".")[0] + "." + milli[0:3]
+    name = json.loads(value[10])["FullName"]
+    operation_id = value[13]
     d = {}
     d['type'] = 'REQUEST'
     d['name'] = name
@@ -120,39 +113,39 @@ for value in reqs['value']:
 
 print('')
 print('Extracting Dependencies...')
-for value in dependencies['value']:
-    timestamp = value['timestamp']
+for value in dependencies["tables"][0]["rows"]:
+    timestamp = value[0]
     timestamp = timestamp.replace('T', ' ')
     timestamp = timestamp.replace('Z', '')
-    name = value['dependency']['name']
-    operation_id = value['operation']['id']
+    milli = (timestamp + ".").split(".")[1] + "000"
+    timestamp = timestamp.split(".")[0] + "." + milli[0:3]
+    name = value[3]
+    operation_id = value[14]
     if(name.startswith('POST')):
         name = 'POST'
     d = {}
     d['type'] = 'DEPENDENCY'
     d['name'] = name
     d['timestamp'] = timestamp
-    d['duration'] = value['dependency']['duration']
+    d['duration'] = value[8]
     d['operation_id'] = operation_id
     all_entries.append(d)
 
 print('')
 print('Extracting Traces...')
-for value in traces['value']:
-    message_whole = value['trace']['message']
+for value in traces["tables"][0]["rows"]:
+    message_whole = value[1]
     if 'Custom operationId' in message_whole:
         # Get operation ids that should be switched
-        switch_operation_ids.append(value['customDimensions'])
+        switch_operation_ids.append(json.loads(value[4]))
     else:
-        message_list = message_whole.split(' ')
-        message = message_list[0] + ' ' + message_list[1]
-        timestamp = value['timestamp']
+        timestamp = value[0]
         timestamp = timestamp.replace('T', ' ')
         timestamp = timestamp.replace('Z', '')
-        operation_id = value['operation']['id']
+        operation_id = value[7]
         d = {}
         d['type'] = 'TRACE'
-        d['name'] = message
+        d['name'] = operation_id
         d['timestamp'] = timestamp
         d['operation_id'] = operation_id
         all_entries.append(d)
@@ -248,14 +241,14 @@ for trigger_type in trigger_list:
         dependency_timestamp = datetime.now()
         request_timestamp = datetime.now()
         for entry in group:
-            if entry['name'] == ('CompletionTrack' + trigger_type.capitalize()):
+            if entry['name'].lower() == ('completiontrack' + trigger_type.lower()):
                 all_completion_tracks.append(entry['duration'])
             elif entry['type'] == 'DEPENDENCY':
                 dependency_timestamp = datetime.strptime(
-                    entry['timestamp']+'000', '%Y-%m-%d %H:%M:%S.%f')
+                    entry['timestamp'], '%Y-%m-%d %H:%M:%S.%f')
             elif entry['type'] == 'REQUEST' and entry['name'] != 'Functions.InfraEndpoint':
                 request_timestamp = datetime.strptime(
-                    entry['timestamp']+'000', '%Y-%m-%d %H:%M:%S.%f')
+                    entry['timestamp'], '%Y-%m-%d %H:%M:%S.%f')
 
         delta = request_timestamp - dependency_timestamp
         # print(f"{request_timestamp}\n")

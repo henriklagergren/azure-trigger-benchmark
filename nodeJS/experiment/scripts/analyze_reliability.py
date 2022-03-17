@@ -24,11 +24,6 @@ if(menu_entry_index == 0):
 else:
     trigger_list = [trigger_list[menu_entry_index]]
 
-
-top = input("How many rows should be fetched (Enter for 1000k)? ")
-if(top == ""):
-    top = 1000000
-
 print("Which start date?")
 start_date = [str(date.today() - timedelta(days=1)), str(date.today())]
 terminal_menu = TerminalMenu(start_date)
@@ -73,19 +68,17 @@ api_key = INSIGHTS_API_KEY
 ##
 
 headers = {'x-api-key': api_key, }
-params = (('timespan', timespan), ('$top', top))
 
 print('')
 print('Fetching Requests...')
 reqs = requests.get('https://api.applicationinsights.io/v1/apps/' +
-                    application_ID + '/events/requests', headers=headers, params=params)
+                    application_ID + '/query?query=requests | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
 reqs = reqs.json()
-
 
 print('')
 print('Fetching Traces...')
 traces = requests.get('https://api.applicationinsights.io/v1/apps/' +
-                      application_ID + '/events/traces', headers=headers, params=params)
+                      application_ID + '/query?query=traces | where message has "Custom operationId" or message has "iterationId" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
 traces = traces.json()
 
 for trigger_type in trigger_list:
@@ -95,18 +88,19 @@ for trigger_type in trigger_list:
     invoke_duplicates = []
     execute_duplicates = []
 
-    print('')
+    print('## TRIGGER TYPE:' + trigger_type.upper())
     print('Extracting Invoking order...')
-
     invoke_amount = 0
-    for value in reqs['value']:
-        name = value['customDimensions']['FullName']
-        if 'InfraEndpoint' in name:
+    for value in reqs["tables"][0]["rows"]:
+
+        if 'infraendpoint' + trigger_type.lower() in json.loads(value[10])["FullName"].lower():
             invoke_amount = invoke_amount + 1
-            timestamp = value['timestamp']
+            timestamp = value[0]
             timestamp = timestamp.replace('T', ' ')
             timestamp = timestamp.replace('Z', '')
-            operation_id = value['operation']['id']
+            milli = (timestamp + ".").split(".")[1] + "000"
+            timestamp = timestamp.split(".")[0] + "." + milli[0:3]
+            operation_id = value[13]
             d = {}
             d['timestamp'] = timestamp
             d['operation_id'] = operation_id
@@ -124,23 +118,25 @@ for trigger_type in trigger_list:
     print('')
     print('Extracting Executing order...')
     execute_amount = 0
-    for value in traces['value']:
-        message_whole = value['trace']['message']
-        if 'Custom operationId' in message_whole:
+    for value in traces["tables"][0]["rows"]:
+        message_whole = value[1]
+        if 'custom operationid ' + trigger_type.lower() in message_whole.lower():
             execute_amount = execute_amount + 1
-            timestamp = value['timestamp']
+            timestamp = value[0]
             timestamp = timestamp.replace('T', ' ')
             timestamp = timestamp.replace('Z', '')
-            operation_id = value['customDimensions']['newOperationId']
+            custom_body = json.loads(value[4])
+            operation_id = custom_body['newOperationId'].replace('|', '').split('.')[
+                0]
             execute_duplicates.append(
-                value['customDimensions']['oldOperationId'])
+                custom_body['oldOperationId'])
             d = {}
             d['timestamp'] = timestamp
             d['operation_id'] = operation_id
             execute_order.append(d)
 
-        if 'iterationId' in message_whole:
-            invoke_duplicates.append(value['customDimensions']['iterationId'])
+        if 'iterationId' + trigger_type.lower() in message_whole:
+            invoke_duplicates.append(json.loads(value[4])['iterationId'])
 
     # Sort by timestamp, must be done before switching operation ids
     execute_order.sort(key=lambda x: x['timestamp'])
@@ -182,7 +178,7 @@ for trigger_type in trigger_list:
                 execute_order.insert(count, invoke)
 
     print('')
-    print('## RESULTS ##')
+    print('## Results ' + trigger_type + ' ##')
     print('')
     print('Original amount of invokes: ' + str(invoke_amount))
     print('Original amount of executes: ' + str(execute_amount))
@@ -193,10 +189,6 @@ for trigger_type in trigger_list:
     print('')
     print('Missing executes: ' + str(len(missing_executes)))
     print('')
-    print('')
-    print('Amount of invokes: ' + str(len(invoke_order)))
-    print('Amount of executes: ' + str(len(execute_order)))
-    print('')
     print('Out of order: ' + str(out_of_order))
     print('')
     with open("./../results/reliability/" + trigger_type + '.csv', 'w', newline='') as file:
@@ -205,3 +197,6 @@ for trigger_type in trigger_list:
                         "duplicates_executes", "missing_executes", "out_of_order", "amount_invokes_after", "amount_executes_after"])
         writer.writerow([trigger_type, invoke_amount, execute_amount, invoke_duplicates_amount,
                         execute_duplicates_amount, len(missing_executes), out_of_order, len(invoke_order), len(execute_order)])
+    print('')
+    print('')
+    print('')
