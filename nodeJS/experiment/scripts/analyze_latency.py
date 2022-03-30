@@ -82,7 +82,7 @@ reqs = reqs.json()
 print('')
 print('Fetching Dependencies...')
 dependencies = requests.get('https://api.applicationinsights.io/v1/apps/' +
-                            application_ID + '/query?query=dependencies | where name contains "CompletionTrack" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
+                            application_ID + '/query?query=dependencies | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
 dependencies = dependencies.json()
 
 print('')
@@ -234,7 +234,7 @@ for trigger_type in trigger_list:
         dependency_timestamp = datetime.now()
         request_timestamp = datetime.now()
         for entry in group:
-            if entry['type'] == 'DEPENDENCY' and entry['name'].lower() == ('completiontrack' + trigger_type.lower()):
+            if entry['type'] == 'DEPENDENCY':
                 dependency_timestamp = datetime.strptime(
                     entry['timestamp'], '%Y-%m-%d %H:%M:%S.%f')
             elif entry['type'] == 'REQUEST' and entry['name'] != 'Functions.InfraEndpoint':

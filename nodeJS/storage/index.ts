@@ -10,10 +10,6 @@ import * as dotenv from 'dotenv'
 
 dotenv.config({ path: './../.env' })
 
-function delay (ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
-
 const handler = async (context: any) => {
 
   // Setup application insights
