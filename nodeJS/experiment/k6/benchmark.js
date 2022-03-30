@@ -4,8 +4,8 @@ import exec from 'k6/execution';
 export let options = {
   insecureSkipTLSVerify: true,
   noConnectionReuse: false,
-  vus: 2,
-  duration: '10s'
+  vus: 3,
+  duration: '40s'
 }
 
 // 1. init code

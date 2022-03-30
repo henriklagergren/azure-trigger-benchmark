@@ -4,11 +4,10 @@ import * as pulumi from '@pulumi/pulumi'
 import workload from '../workloads/workload'
 import * as automation from '@pulumi/pulumi/automation'
 import * as dotenv from 'dotenv'
-import { Context, HttpResponse } from '@pulumi/azure/appservice'
 
 dotenv.config({ path: './../.env' })
 
-const handler = async (context : Context<HttpResponse>) => {
+const handler = async (context: any, req: any) => {
   // Setup application insights
   appInsights
     .setup()
@@ -29,12 +28,10 @@ const handler = async (context : Context<HttpResponse>) => {
     'correlationContextHttp'
   );
 
-  console.log(JSON.stringify(context))
-
   appInsights.defaultClient.trackTrace({
     message: 'Custom operationId http',
     properties: {
-      newOperationId: context.req?.headers["operationId"],
+      newOperationId: req.query.operationId,
       oldOperationId: correlationContext!.operation.id
     }
   })

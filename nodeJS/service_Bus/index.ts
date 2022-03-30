@@ -29,12 +29,10 @@ const handler = async (context: any, message: any) => {
     'correlationContextDatabase'
   )
 
-  console.log('Operation id ' + message)
-
   appInsights.defaultClient.trackTrace({
     message: 'Custom operationId serviceBus',
     properties: {
-      newOperationId: message,
+      newOperationId: message.replace("|","").split(".")[0],
       oldOperationId: correlationContext!.operation.id
     }
   })

@@ -28,6 +28,8 @@ deploy_http_trigger() {
   # Deploy HTTP trigger
   cd http/ && pulumi stack select trigger -c && pulumi up -f -y
 
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"Http\"" >>$FILE_NAME
   # Get url to HTTP trigger gateway
   TRIGGER_URL=$(pulumi stack output url)
   FUNCTION_APP=$(pulumi stack output functionApp)
@@ -59,6 +61,9 @@ deploy_storage_trigger() {
 
   # Deploy storage trigger
   cd storage/ && pulumi stack select trigger -c && pulumi up -f -y
+
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"Storage\"" >>$FILE_NAME
 
   # Assign required roles, get storage account name and container name
   STORAGE_ACCOUNT_NAME=$(pulumi stack output storageAccountName)
@@ -95,6 +100,9 @@ deploy_queue_trigger() {
 
   # Deploy queue trigger
   cd queue/ && pulumi stack select trigger -c && pulumi up -f -y
+
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"Queue\"" >>$FILE_NAME
 
   # Get storage account name and queue name
   STORAGE_ACCOUNT_NAME=$(pulumi stack output storageAccountName)
@@ -133,6 +141,9 @@ deploy_database_trigger() {
   # Deploy database trigger
   cd database/ && pulumi stack select trigger -c && pulumi up -f -y
 
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"Database\"" >>$FILE_NAME
+
   # Get storage account name and database name
   CONTAINER_NAME=$(pulumi stack output containerName)
   DATABASE_NAME=$(pulumi stack output databaseName)
@@ -167,6 +178,9 @@ deploy_timer_trigger() {
   # Deploy database trigger
   cd timer/ && pulumi stack select trigger -c && pulumi up -f -y
 
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"Timer\"" >>$FILE_NAME
+
   # Get timer function app name and trigger name
   TIMER_FUNCTION_APP_NAME=$(pulumi stack output timerFunctionAppName)
   TIMER_TRIGGER_NAME=$(pulumi stack output timerTriggerAppName)
@@ -198,6 +212,9 @@ deploy_serviceBus_trigger() {
   # Deploy serviceBus trigger
   cd service_Bus/ && pulumi stack select trigger -c && pulumi up -f -y
 
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"ServiceBus\"" >>$FILE_NAME
+
   # Get storage account name and serviceBus name
   SERVICE_BUS_NAMESPACE=$(pulumi stack output serviceBusNamespace)
   TOPIC_NAME=$(pulumi stack output topicName)
@@ -228,6 +245,9 @@ deploy_eventHub_trigger() {
   # Deploy database trigger
   cd event_hub/ && pulumi stack select trigger -c && pulumi up -f -y
 
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"EventHub\"" >>$FILE_NAME
+
   # Get timer function app name and trigger name
   EVENT_HUB_NAME=$(pulumi stack output eventHubName)
   EVENT_HUB_NAMESPACE=$(pulumi stack output eventHubNamespace)
@@ -257,6 +277,9 @@ deploy_eventGrid_trigger() {
 
   # Deploy database trigger
   cd event_grid/ && pulumi stack select trigger -c && pulumi up -f -y
+
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"EventGrid\"" >>$FILE_NAME
 
   # Get timer function app name and trigger name
   EVENT_GRID_STORAGE_NAME=$(pulumi stack output eventGridStorageAccountName)

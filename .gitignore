@@ -4,7 +4,7 @@
 */_pycache_/
 
 nodeJS/*/node_modules/
-nodeJS/experiment/*.csv
-nodeJS/experiment/*.png
+nodeJS/experiment/results/reliability/*
+nodeJS/experiment/results/latency/*
 nodeJS/experiment/.sb/
 nodeJS/experiment/__pycache__/

@@ -70,10 +70,10 @@ api_key = INSIGHTS_API_KEY
 headers = {'x-api-key': api_key, }
 
 print('')
-print('Fetching Requests...')
-reqs = requests.get('https://api.applicationinsights.io/v1/apps/' +
-                    application_ID + '/query?query=requests | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
-reqs = reqs.json()
+print('Fetching Dependencies...')
+dependencies = requests.get('https://api.applicationinsights.io/v1/apps/' +
+                            application_ID + '/query?query=dependencies | where name contains "CompletionTrack" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
+dependencies = dependencies.json()
 
 print('')
 print('Fetching Traces...')
@@ -91,16 +91,17 @@ for trigger_type in trigger_list:
     print('## TRIGGER TYPE:' + trigger_type.upper())
     print('Extracting Invoking order...')
     invoke_amount = 0
-    for value in reqs["tables"][0]["rows"]:
 
-        if 'infraendpoint' + trigger_type.lower() in json.loads(value[10])["FullName"].lower():
+    for value in dependencies["tables"][0]["rows"]:
+        if (('completiontrack' + trigger_type.lower()) in value[4].lower()):
             invoke_amount = invoke_amount + 1
             timestamp = value[0]
             timestamp = timestamp.replace('T', ' ')
             timestamp = timestamp.replace('Z', '')
             milli = (timestamp + ".").split(".")[1] + "000"
             timestamp = timestamp.split(".")[0] + "." + milli[0:3]
-            operation_id = value[13]
+            name = value[4]
+            operation_id = value[14]
             d = {}
             d['timestamp'] = timestamp
             d['operation_id'] = operation_id

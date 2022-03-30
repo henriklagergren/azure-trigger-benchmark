@@ -4,12 +4,11 @@ import * as pulumi from '@pulumi/pulumi'
 import workload from '../workloads/workload'
 import * as automation from '@pulumi/pulumi/automation'
 import * as dotenv from 'dotenv'
-import { TimerContext, } from '@pulumi/azure/appservice';
 
 dotenv.config({ path: './../.env',});
 
 
-const handler = async (context: TimerContext) => {
+const handler = async (context: any) => {
 
   // Setup application insights
   appInsights
@@ -34,7 +33,7 @@ const handler = async (context: TimerContext) => {
   appInsights.defaultClient.trackTrace({
     message: 'Custom operationId timer',
     properties: {
-      newOperationId: context.bindingData.timer,
+      newOperationId: context.bindingData["timer"].replace("|","").split(".")[0],
       oldOperationId: correlationContext!.operation.id
     }
   })

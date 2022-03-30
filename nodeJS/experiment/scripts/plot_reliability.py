@@ -58,4 +58,4 @@ plot = (p9.ggplot(result_df, p9.aes(
     + p9.geom_col())
 
 plot.save(
-    filename="./../results/reliability/results_out_of_order.png")
+    filename="./../results/reliability/results_out_of_order.pdf")

@@ -82,7 +82,7 @@ reqs = reqs.json()
 print('')
 print('Fetching Dependencies...')
 dependencies = requests.get('https://api.applicationinsights.io/v1/apps/' +
-                            application_ID + '/query?query=dependencies | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
+                            application_ID + '/query?query=dependencies | where name contains "CompletionTrack" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
 dependencies = dependencies.json()
 
 print('')
@@ -119,7 +119,7 @@ for value in dependencies["tables"][0]["rows"]:
     timestamp = timestamp.replace('Z', '')
     milli = (timestamp + ".").split(".")[1] + "000"
     timestamp = timestamp.split(".")[0] + "." + milli[0:3]
-    name = value[3]
+    name = value[4]
     operation_id = value[14]
     if(name.startswith('POST')):
         name = 'POST'
@@ -129,6 +129,7 @@ for value in dependencies["tables"][0]["rows"]:
     d['timestamp'] = timestamp
     d['duration'] = value[8]
     d['operation_id'] = operation_id
+    print(d)
     all_entries.append(d)
 
 print('')
@@ -217,17 +218,10 @@ for trigger_type in trigger_list:
         # print('')
         isValidRequest = False
         for entry in group:
-            if entry['type'] == 'TRACE':
-                trace_amount += 1
-                # print(f"{trace_amount} - Trace")
-            elif entry['type'] == 'REQUEST':
+            if entry['type'] == 'REQUEST':
                 request_amount += 1
                 isValidRequest = trigger_type.lower() in entry['name'].lower()
                 # print(f"{request_amount} - request {entry['name']}")
-            elif entry['type'] == 'DEPENDENCY':
-                dependency_amount += 1
-                # print(f"{dependency_amount} - dependency")
-
         if (request_amount == 2 and isValidRequest):
             all_valid_groups.append(group)
 
@@ -235,15 +229,12 @@ for trigger_type in trigger_list:
     print('Checks completed')
 
     all_trigger_delays_ms = []
-    all_completion_tracks = []
 
     for group in all_valid_groups:
         dependency_timestamp = datetime.now()
         request_timestamp = datetime.now()
         for entry in group:
-            if entry['name'].lower() == ('completiontrack' + trigger_type.lower()):
-                all_completion_tracks.append(entry['duration'])
-            elif entry['type'] == 'DEPENDENCY':
+            if entry['type'] == 'DEPENDENCY' and entry['name'].lower() == ('completiontrack' + trigger_type.lower()):
                 dependency_timestamp = datetime.strptime(
                     entry['timestamp'], '%Y-%m-%d %H:%M:%S.%f')
             elif entry['type'] == 'REQUEST' and entry['name'] != 'Functions.InfraEndpoint':
@@ -264,12 +255,6 @@ for trigger_type in trigger_list:
     print('')
     print('Average: ' + str(sum(all_trigger_delays_ms) /
                             max(1, len(all_trigger_delays_ms))) + ' ms')
-    print('')
-    print('Completion tracks')
-    print(all_completion_tracks)
-    print('')
-    print('Average: ' + str(sum(all_completion_tracks) /
-                            max(1, len(all_completion_tracks))) + ' ms')
     print('')
     print('Number of valid entries: ' + str(len(all_trigger_delays_ms)))
     print('')
