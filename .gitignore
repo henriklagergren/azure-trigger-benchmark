@@ -12,3 +12,4 @@ nodeJS/experiment/*.png
 nodeJS/experiment/.sb/
 nodeJS/experiment/__pycache__/
 nodeJS/*/package-lock.json
+nodeJS/*/triggers/*/package-lock.json
