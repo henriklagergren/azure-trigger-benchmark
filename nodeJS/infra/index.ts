@@ -19,15 +19,16 @@ type Response = {
   body: string
 }
 
-const getHttpFunction = (url: string) =>
+const getHttpFunction = (url: string,operationId: any) =>
   new Promise<Response>(resolve => {
     axios
-      .get(url)
+      .get(url + "?operationId=" + operationId)
       .then(() =>
         resolve({
           status: 200,
           headers: {
-            'content-type': 'text/plain'
+            'content-type': 'text/plain',
+            'operationId' : operationId
           },
           body: 'AZURE - HTTP trigger successfully started'
         })
@@ -198,15 +199,8 @@ const getTimerFunction = (url: string, operationId: any) =>
       )
   })
 
-const getServiceBusResources = (serviceBusName: string, topicName: string) =>
+const getServiceBusResources = (serviceBusName: string, topicName: string, operationId: string) =>
   new Promise<Response>(async resolve => {
-    /*
-    const credential = new Identity.ClientSecretCredential(
-      process.env.AZURE_TENANT_ID!,
-      process.env.AZURE_CLIENT_ID!,
-      process.env.AZURE_CLIENT_SECRET!
-    )
-    */
 
     let credential = new Identity.EnvironmentCredential()
 
@@ -215,7 +209,7 @@ const getServiceBusResources = (serviceBusName: string, topicName: string) =>
       credential
     )
 
-    const messages = [{ body: 'Azure Service Bus Trigger' }]
+    const messages = [{ body: operationId }]
 
     const sender = client.createSender(topicName)
 
@@ -399,13 +393,22 @@ const handler = async (context: any, req: any) => {
 
   if (validTrigger && triggerInput) {
     const correlationContext: any = appInsights.startOperation(context, req)
+    
+    if(req.query.id != undefined){
+    appInsights.defaultClient.trackTrace({
+      message: 'iterationId' + triggerType,
+      properties: {
+        iterationId: req.query.id,
+      }
+    })
+  }
 
     if (triggerType === 'http') {
       // HTTP trigger
       return appInsights.wrapWithCorrelationContext(async () => {
         const startTime = Date.now() // Start trackRequest timer
 
-        const response = await getHttpFunction(triggerInput)
+        const response = await getHttpFunction(triggerInput,correlationContext.operation.id)
 
         // Track dependency on completion
         appInsights.defaultClient.trackDependency({
@@ -528,7 +531,8 @@ const handler = async (context: any, req: any) => {
         const startTime = Date.now() // Start trackRequest timer
         const response = await getServiceBusResources(
           serviceBusInputs[0],
-          serviceBusInputs[1]
+          serviceBusInputs[1],
+          correlationContext.operation.parentId
         )
         // Track dependency on completion
         appInsights.defaultClient.trackDependency({

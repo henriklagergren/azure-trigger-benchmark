@@ -28,7 +28,7 @@ const handler = async (context: any, queueMessage: any) => {
     'correlationContextQueue'
   )
   appInsights.defaultClient.trackTrace({
-    message: 'Custom operationId',
+    message: 'Custom operationId queue',
     properties: {
       newOperationId: queueMessage, // queueMessage only consists of operationId
       oldOperationId: correlationContext!.operation.id
@@ -69,7 +69,7 @@ const getStorageResources = async () => {
   })
 
   // Queue trigger
-  queue.onEvent('QueueTrigger', {
+  const queueEvent = queue.onEvent('QueueTrigger', {
     resourceGroup,
     location: process.env.PULUMI_AZURE_LOCATION,
     callback: handler,
@@ -94,7 +94,8 @@ const getStorageResources = async () => {
 
   return {
     storageAccountName: storageAccount.name,
-    queueName: queue.name
+    queueName: queue.name,
+    functionApp: queueEvent.functionApp.endpoint.apply(e => e.replace("/api/",""))
   }
 }
 

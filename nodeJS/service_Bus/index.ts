@@ -29,12 +29,10 @@ const handler = async (context: any, message: any) => {
     'correlationContextDatabase'
   )
 
-  console.log('Operation id ' + message)
-
   appInsights.defaultClient.trackTrace({
-    message: 'Custom operationId',
+    message: 'Custom operationId serviceBus',
     properties: {
-      newOperationId: message,
+      newOperationId: message.replace("|","").split(".")[0],
       oldOperationId: correlationContext!.operation.id
     }
   })
@@ -91,7 +89,8 @@ const getServiceBusResources = async () => {
 
   return {
     serviceBusNamespace: serviceBusNamespace.name,
-    topicName: topic.name
+    topicName: topic.name,
+    functionApp: subscription2.functionApp.endpoint.apply(e => e.replace("/api/",""))
   }
 }
 

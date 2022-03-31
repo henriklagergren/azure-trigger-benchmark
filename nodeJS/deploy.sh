@@ -32,8 +32,11 @@ deploy_http_trigger() {
   # Deploy HTTP trigger
   cd http/ && pulumi stack select trigger -c && pulumi up -f -y
 
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"Http\"" >>$FILE_NAME
   # Get url to HTTP trigger gateway
   TRIGGER_URL=$(pulumi stack output url)
+  FUNCTION_APP=$(pulumi stack output functionApp)
 
   # Correct runtime
   if [ "$RUNTIME" = 'dotnet' ]; then
@@ -61,7 +64,7 @@ deploy_http_trigger() {
 
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=http&input=$FUNCTION_URL\"" >>$FILE_NAME
-
+  curl -s ${FUNCTION_APP} > /tmp/output.html
   echo "Start HTTP trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=http&input=$FUNCTION_URL"
 }
@@ -78,10 +81,13 @@ deploy_storage_trigger() {
   # Deploy storage trigger
   cd storage/ && pulumi stack select trigger -c && pulumi up -f -y
 
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"Storage\"" >>$FILE_NAME
+
   # Assign required roles, get storage account name and container name
   STORAGE_ACCOUNT_NAME=$(pulumi stack output storageAccountName)
   CONTAINER_NAME=$(pulumi stack output containerName)
-
+  FUNCTION_APP=$(pulumi stack output functionApp)
   ##
   # assign role "Storage Blob Data Contributor" to relevant asignees
   ##
@@ -96,7 +102,8 @@ deploy_storage_trigger() {
 
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=storage&input=$CONTAINER_NAME,$STORAGE_ACCOUNT_NAME\"" >>$FILE_NAME
-
+  echo "Initilize Function App"
+  curl -s ${FUNCTION_APP} > /tmp/output.html
   echo "Start storage trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=storage&input=$CONTAINER_NAME,$STORAGE_ACCOUNT_NAME"
 }
@@ -113,9 +120,13 @@ deploy_queue_trigger() {
   # Deploy queue trigger
   cd queue/ && pulumi stack select trigger -c && pulumi up -f -y
 
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"Queue\"" >>$FILE_NAME
+
   # Get storage account name and queue name
   STORAGE_ACCOUNT_NAME=$(pulumi stack output storageAccountName)
   QUEUE_NAME=$(pulumi stack output queueName)
+  FUNCTION_APP=$(pulumi stack output functionApp)
 
   ##
   # assign role "Storage Blob Data Contributor" to relevant asignees
@@ -131,7 +142,8 @@ deploy_queue_trigger() {
 
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=queue&input=$QUEUE_NAME,$STORAGE_ACCOUNT_NAME\"" >>$FILE_NAME
-
+  echo "Initilize Function App"
+  curl -s ${FUNCTION_APP} > /tmp/output.html
   echo "Start queue trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=queue&input=$QUEUE_NAME,$STORAGE_ACCOUNT_NAME"
 }
@@ -148,9 +160,13 @@ deploy_database_trigger() {
   # Deploy database trigger
   cd database/ && pulumi stack select trigger -c && pulumi up -f -y
 
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"Database\"" >>$FILE_NAME
+
   # Get storage account name and database name
   CONTAINER_NAME=$(pulumi stack output containerName)
   DATABASE_NAME=$(pulumi stack output databaseName)
+  FUNCTION_APP=$(pulumi stack output functionApp)
 
   ##
   # assign role "Storage Blob Data Contributor" to relevant asignees
@@ -166,7 +182,8 @@ deploy_database_trigger() {
 
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=database&input=$DATABASE_NAME,$CONTAINER_NAME\"" >>$FILE_NAME
-
+  echo "Initilize Function App"
+  curl -s ${FUNCTION_APP} > /tmp/output.html
   echo "Start database trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=database&input=$DATABASE_NAME,$CONTAINER_NAME"
 }
@@ -179,6 +196,9 @@ deploy_timer_trigger() {
 
   # Deploy database trigger
   cd timer/ && pulumi stack select trigger -c && pulumi up -f -y
+
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"Timer\"" >>$FILE_NAME
 
   # Get timer function app name and trigger name
   TIMER_FUNCTION_APP_NAME=$(pulumi stack output timerFunctionAppName)
@@ -211,9 +231,13 @@ deploy_serviceBus_trigger() {
   # Deploy serviceBus trigger
   cd service_Bus/ && pulumi stack select trigger -c && pulumi up -f -y
 
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"ServiceBus\"" >>$FILE_NAME
+
   # Get storage account name and serviceBus name
   SERVICE_BUS_NAMESPACE=$(pulumi stack output serviceBusNamespace)
   TOPIC_NAME=$(pulumi stack output topicName)
+  FUNCTION_APP=$(pulumi stack output functionApp)
 
   cd ..
 
@@ -225,7 +249,8 @@ deploy_serviceBus_trigger() {
 
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=serviceBus&input=$SERVICE_BUS_NAMESPACE,$TOPIC_NAME\"" >>$FILE_NAME
-
+  echo "Initilize Function App"
+  curl -s ${FUNCTION_APP} > /tmp/output.html
   echo "Start serviceBus trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=serviceBus&input=$SERVICE_BUS_NAMESPACE,$TOPIC_NAME"
 }
@@ -239,9 +264,13 @@ deploy_eventHub_trigger() {
   # Deploy database trigger
   cd event_hub/ && pulumi stack select trigger -c && pulumi up -f -y
 
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"EventHub\"" >>$FILE_NAME
+
   # Get timer function app name and trigger name
   EVENT_HUB_NAME=$(pulumi stack output eventHubName)
   EVENT_HUB_NAMESPACE=$(pulumi stack output eventHubNamespace)
+  FUNCTION_APP=$(pulumi stack output functionApp)
 
   cd ..
 
@@ -253,7 +282,8 @@ deploy_eventHub_trigger() {
 
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=eventHub&input=$EVENT_HUB_NAME,$EVENT_HUB_NAMESPACE\"" >>$FILE_NAME
-
+  echo "Initilize Function App"
+  curl -s ${FUNCTION_APP} > /tmp/output.html
   echo "Start event hub trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=eventHub&input=$EVENT_HUB_NAME,$EVENT_HUB_NAMESPACE"
 }
@@ -267,9 +297,13 @@ deploy_eventGrid_trigger() {
   # Deploy database trigger
   cd event_grid/ && pulumi stack select trigger -c && pulumi up -f -y
 
+  #Write picked trigger
+  echo "TRIGGER_TYPE=\"EventGrid\"" >>$FILE_NAME
+
   # Get timer function app name and trigger name
   EVENT_GRID_STORAGE_NAME=$(pulumi stack output eventGridStorageAccountName)
   EVENT_GRID_CONTAINER_NAME=$(pulumi stack output eventGridStorageContainerName)
+  FUNCTION_APP=$(pulumi stack output functionApp)
 
   cd ..
 
@@ -281,7 +315,8 @@ deploy_eventGrid_trigger() {
 
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=eventGrid&input=$EVENT_GRID_STORAGE_NAME,$EVENT_GRID_CONTAINER_NAME\"" >>$FILE_NAME
-
+  echo "Initilize Function App"
+  curl -s ${FUNCTION_APP} > /tmp/output.html
   echo "Start event grid trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=eventGrid&input=$EVENT_GRID_STORAGE_NAME,$EVENT_GRID_CONTAINER_NAME"
 }

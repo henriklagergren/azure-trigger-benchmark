@@ -42,6 +42,6 @@ result_df = pd.concat(result_list)
 
 plot = (p9.ggplot(result_df, p9.aes(
     x="trigger_type", y="latency"))
-    + p9.geom_violin() + p9.ylim(0, 1000))
+    + p9.geom_violin())
 
-plot.save(filename="./../results/latency/results.png")
+plot.save(filename="./../results/latency/results.pdf")

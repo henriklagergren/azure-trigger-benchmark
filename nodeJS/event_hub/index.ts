@@ -30,7 +30,7 @@ const handler = async (context : any, message : any) => {
   )
 
   appInsights.defaultClient.trackTrace({
-    message: 'Custom operationId',
+    message: 'Custom operationId eventHub',
     properties: {
       newOperationId: message,
       oldOperationId: correlationContext!.operation.id
@@ -75,7 +75,7 @@ const eventHub = new azure.eventhub.EventHub("eventHubTrigger", {
 
 
 //Event hub trigger
-eventHub.onEvent('eventHubTrigger',{
+const eventHubEvent = eventHub.onEvent('eventHubTrigger',{
   location: process.env.PULUMI_AZURE_LOCATION,
   callback: handler,
   appSettings: {
@@ -85,7 +85,8 @@ eventHub.onEvent('eventHubTrigger',{
 
   return {
     eventHubName: eventHub.name,
-    eventHubNamespace: eventHubNamespace.name
+    eventHubNamespace: eventHubNamespace.name,
+    functionApp: eventHubEvent.functionApp.endpoint.apply(e => e.replace("/api/",""))
   }
 }
 

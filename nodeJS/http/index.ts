@@ -11,9 +11,8 @@ dotenv.config({ path: './../.env' })
 const name = pulumi.getStack()
 
 const runtime = process.env.RUNTIME!
-
 /*
-const handler = async () => {
+const handler = async (context: any, req: any) => {
   // Setup application insights
   appInsights
     .setup()
@@ -28,6 +27,19 @@ const handler = async () => {
     .setDistributedTracingMode(appInsights.DistributedTracingModes.AI_AND_W3C)
   appInsights.defaultClient.setAutoPopulateAzureProperties(true)
   appInsights.start()
+
+  const correlationContext = appInsights.startOperation(
+    context,
+    'correlationContextHttp'
+  );
+
+  appInsights.defaultClient.trackTrace({
+    message: 'Custom operationId http',
+    properties: {
+      newOperationId: req.query.operationId,
+      oldOperationId: correlationContext!.operation.id
+    }
+  })
 
   return workload()
 }
@@ -80,7 +92,7 @@ const getEndpoint = async () => {
 
   /*
   // HTTP trigger
-  return new azure.appservice.HttpEventSubscription('HttpTrigger', {
+  const httpEvent = new azure.appservice.HttpEventSubscription('HttpTrigger', {
     resourceGroup,
     location: process.env.PULUMI_AZURE_LOCATION,
     callback: handler,
@@ -92,6 +104,8 @@ const getEndpoint = async () => {
 }
 
 const endpoint = getEndpoint().then(endpoint => endpoint)
+
+//functionApp: httpEvent.functionApp.endpoint.apply(e => e.replace("/api/","")
 
 exports.url = endpoint.then(endpoint => endpoint.url)
 exports.functionAppName = endpoint.then(endpoint => endpoint.functionAppName)
