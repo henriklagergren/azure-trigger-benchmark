@@ -1,5 +1,7 @@
 TRIGGER_TYPE=''
+RUNTIME=''
 FILE_NAME='../.env'
+FUNCTION_URL=''
 
 deploy_shared_resources() {
   cd shared/ && pulumi stack select shared -c && pulumi up -f -y
@@ -10,6 +12,8 @@ deploy_shared_resources() {
   INSIGHTS_NAME=$(pulumi stack output insightsName)
   # Get Resource group name
   RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
+
+  echo "RUNTIME=\"$RUNTIME\"" >>$FILE_NAME
 
   # Create API key to be able to use Azure Insights REST API TODO use it with REST API
   az config set extension.use_dynamic_install=yes_without_prompt # Required to install and use app-insights module
@@ -31,6 +35,22 @@ deploy_http_trigger() {
   # Get url to HTTP trigger gateway
   TRIGGER_URL=$(pulumi stack output url)
 
+  # Correct runtime
+  if [ "$RUNTIME" = 'dotnet' ]; then
+    cd triggers/dotnet
+  elif [ "$RUNTIME" = 'node' ]; then
+    cd triggers/node
+  fi
+
+
+  FUNCTIONAPP_NAME=$(pulumi stack output functionAppName)
+  func azure functionapp publish $FUNCTIONAPP_NAME --force
+  FUNCTION_URL=$(func azure functionapp list-functions $FUNCTIONAPP_NAME --show-keys)
+
+  FUNCTION_URL=$(echo "$FUNCTION_URL"|grep -Eo "https://[^ >]+"|head -1)
+
+  cd ..
+  cd ..
   cd ..
 
   # Deploy infrastructure
@@ -40,10 +60,10 @@ deploy_http_trigger() {
   BENCHMARK_URL=$(pulumi stack output url)
 
   echo "Write URL to .env"
-  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=http&input=$TRIGGER_URL\"" >>$FILE_NAME
+  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=http&input=$FUNCTION_URL\"" >>$FILE_NAME
 
   echo "Start HTTP trigger benchmark:"
-  echo "$BENCHMARK_URL?trigger=http&input=$TRIGGER_URL"
+  echo "$BENCHMARK_URL?trigger=http&input=$FUNCTION_URL"
 }
 
 deploy_storage_trigger() {
@@ -267,12 +287,20 @@ deploy_eventGrid_trigger() {
 }
 
 # Read input flags
-while getopts 't:' flag; do
+while getopts 't:r:' flag; do
   case "${flag}" in
   t) TRIGGER_TYPE="${OPTARG}" ;;
+  r) RUNTIME="${OPTARG}" ;;
   *) exit 1 ;;
   esac
 done
+
+if [ "$RUNTIME" = 'node' ] || [ "$RUNTIME" = 'dotnet' ]; then
+  echo 'Runtime valid'
+else
+  echo 'ERROR: Unsupported runtime'
+  exit
+fi
 
 # Decide which trigger to deploy based on input flag
 if [ "$TRIGGER_TYPE" = 'http' ]; then

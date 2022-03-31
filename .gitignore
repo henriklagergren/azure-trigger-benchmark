@@ -2,9 +2,13 @@
 */.env
 */.sb/
 */_pycache_/
+*/package.json
+*/package-lock.json
+package.json
 
 nodeJS/*/node_modules/
 nodeJS/experiment/*.csv
 nodeJS/experiment/*.png
 nodeJS/experiment/.sb/
 nodeJS/experiment/__pycache__/
+nodeJS/*/package-lock.json

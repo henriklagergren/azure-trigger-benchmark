@@ -3,7 +3,6 @@ import * as azuread from '@pulumi/azuread'
 import * as cosmosdb from '@pulumi/azure/cosmosdb'
 import * as fs from 'fs'
 
-
 const resourceGroup = new azure.core.ResourceGroup('ResourceGroup', {
   location: 'northeurope'
 })
@@ -11,7 +10,7 @@ const resourceGroup = new azure.core.ResourceGroup('ResourceGroup', {
 const insights = new azure.appinsights.Insights('Insights', {
   location: resourceGroup.location,
   resourceGroupName: resourceGroup.name,
-  applicationType: 'Node.JS'
+  applicationType: 'other'
 })
 
 const readTelemetry = new azure.appinsights.ApiKey('readTelemetry', {
@@ -338,7 +337,7 @@ function writeEnv () {
 
   fs.writeFile(
     '../.env',
-    'PULUMI_PROJECT_NAME="azure-triggers-study" \nPULUMI_AZURE_LOCATION="northeurope" \n',
+    'PULUMI_PROJECT_NAME="azure-triggers-study" \nPULUMI_AZURE_LOCATION="northeurope" \nRUNTIME=""\n',
     { flag: 'a' },
     (err: any) => {
       if (err) {

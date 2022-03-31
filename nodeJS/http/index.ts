@@ -4,9 +4,15 @@ import * as pulumi from '@pulumi/pulumi'
 import workload from '../workloads/workload'
 import * as automation from '@pulumi/pulumi/automation'
 import * as dotenv from 'dotenv'
+import { FunctionApp } from './functionApp'
 
 dotenv.config({ path: './../.env' })
 
+const name = pulumi.getStack()
+
+const runtime = process.env.RUNTIME!
+
+/*
 const handler = async () => {
   // Setup application insights
   appInsights
@@ -25,6 +31,7 @@ const handler = async () => {
 
   return workload()
 }
+*/
 
 const getEndpoint = async () => {
   const user = await automation.LocalWorkspace.create({}).then(ws =>
@@ -41,7 +48,37 @@ const getEndpoint = async () => {
   )
   const insightsId = shared.requireOutput('insightsId')
   const insights = azure.appinsights.Insights.get('Insights', insightsId)
+  const resourceGroupArgs = {
+    resourceGroupName: resourceGroup.name,
+    location: resourceGroup.location
+  }
 
+  const storageAccount = new azure.storage.Account(`${runtime}sa`, {
+    ...resourceGroupArgs,
+
+    accountKind: 'StorageV2',
+    accountTier: 'Standard',
+    accountReplicationType: 'LRS'
+  })
+
+  const runAsPackageContainer = new azure.storage.Container(`${runtime}-c`, {
+    storageAccountName: storageAccount.name,
+    containerAccessType: 'private'
+  })
+
+  var endpoint = new FunctionApp(`${runtime}`, {
+    resourceGroup: resourceGroup,
+    storageAccount: storageAccount,
+    appInsights: insights,
+    storageContainer: runAsPackageContainer,
+    //path: 'azuretrigger/httpcs/bin/publish',
+    version: '~6',
+    runtime: runtime
+  })
+
+  return endpoint
+
+  /*
   // HTTP trigger
   return new azure.appservice.HttpEventSubscription('HttpTrigger', {
     resourceGroup,
@@ -51,6 +88,10 @@ const getEndpoint = async () => {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey
     }
   })
+  */
 }
 
-exports.url = getEndpoint().then(endpoint => endpoint.url)
+const endpoint = getEndpoint().then(endpoint => endpoint)
+
+exports.url = endpoint.then(endpoint => endpoint.url)
+exports.functionAppName = endpoint.then(endpoint => endpoint.functionAppName)
