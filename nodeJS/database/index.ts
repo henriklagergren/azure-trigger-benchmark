@@ -5,8 +5,6 @@ import * as dotenv from 'dotenv'
 import * as automation from '@pulumi/pulumi/automation'
 import * as pulumi from '@pulumi/pulumi'
 import workload from '../workloads/workload'
-import * as azurefunctions from '@azure/functions'
-import { CosmosChangeFeedSubscription } from '@pulumi/azure/cosmosdb'
 
 dotenv.config({ path: './../.env' })
 
@@ -94,7 +92,9 @@ const getDatabaseResources = async () => {
   return {
     databaseName: sqlDatabase.name,
     containerName: sqlContainer.name,
-    functionApp: sqlEvent.functionApp.endpoint.apply(e => e.replace("/api/",""))
+    functionApp: sqlEvent.functionApp.endpoint.apply(e =>
+      e.replace('/api/', '')
+    )
   }
 }
 

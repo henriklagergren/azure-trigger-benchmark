@@ -4,7 +4,6 @@ import * as pulumi from '@pulumi/pulumi'
 import * as automation from '@pulumi/pulumi/automation'
 import workload from '../workloads/workload'
 import * as dotenv from 'dotenv'
-import * as azure_native from '@pulumi/azure-native'
 
 dotenv.config({ path: './../.env' })
 
@@ -32,7 +31,7 @@ const handler = async (context: any, message: any) => {
   appInsights.defaultClient.trackTrace({
     message: 'Custom operationId serviceBus',
     properties: {
-      newOperationId: message.replace("|","").split(".")[0],
+      newOperationId: message.replace('|', '').split('.')[0],
       oldOperationId: correlationContext!.operation.id
     }
   })
@@ -59,15 +58,12 @@ const getServiceBusResources = async () => {
   const insightsId = shared.requireOutput('insightsId')
   const insights = azure.appinsights.Insights.get('Insights', insightsId)
 
-  const serviceBusNamespace = new azure_native.servicebus.Namespace(
+  const serviceBusNamespace = new azure.servicebus.Namespace(
     'serviceBusNamespace',
     {
       location: resourceGroup.location,
       resourceGroupName: resourceGroup.name,
-      sku: {
-        name: 'Standard',
-        tier: 'Standard'
-      },
+      sku: 'standard',
       tags: {
         source: 'example'
       }
@@ -90,7 +86,9 @@ const getServiceBusResources = async () => {
   return {
     serviceBusNamespace: serviceBusNamespace.name,
     topicName: topic.name,
-    functionApp: subscription2.functionApp.endpoint.apply(e => e.replace("/api/",""))
+    functionApp: subscription2.functionApp.endpoint.apply(e =>
+      e.replace('/api/', '')
+    )
   }
 }
 

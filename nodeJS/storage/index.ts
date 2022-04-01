@@ -1,7 +1,5 @@
 /* eslint-disable no-restricted-syntax */
 import * as appInsights from 'applicationinsights'
-import * as Storage from '@azure/storage-blob'
-import * as Identity from '@azure/identity'
 import * as azure from '@pulumi/azure'
 import * as pulumi from '@pulumi/pulumi'
 import * as automation from '@pulumi/pulumi/automation'
@@ -11,7 +9,6 @@ import * as dotenv from 'dotenv'
 dotenv.config({ path: './../.env' })
 
 const handler = async (context: any) => {
-
   // Setup application insights
   appInsights
     .setup()
@@ -30,9 +27,11 @@ const handler = async (context: any) => {
   const correlationContext = appInsights.startOperation(
     context,
     'correlationContextStorage'
-  );
+  )
 
-  const operationId = context["bindingData"]["metadata"]["operationId"].replace('|', '').split('.')[0];
+  const operationId = context['bindingData']['metadata']['operationId']
+    .replace('|', '')
+    .split('.')[0]
 
   appInsights.defaultClient.trackTrace({
     message: 'Custom operationId storage',
@@ -41,8 +40,7 @@ const handler = async (context: any) => {
       oldOperationId: correlationContext!.operation.id
     }
   })
-    
-  
+
   appInsights.defaultClient.flush()
 
   return workload()
@@ -78,10 +76,10 @@ const getStorageResources = async () => {
     containerAccessType: 'private'
   })
 
-  const blobEvent = container.onBlobEvent('StorageTrigger',{
+  const blobEvent = container.onBlobEvent('StorageTrigger', {
     resourceGroup: resourceGroup,
     location: process.env.PULUMI_AZURE_LOCATION,
-    
+
     callback: handler,
     appSettings: {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
@@ -89,12 +87,14 @@ const getStorageResources = async () => {
       AZURE_TENANT_ID: process.env.AZURE_TENANT_ID,
       AZURE_CLIENT_SECRET: process.env.AZURE_CLIENT_SECRET
     }
-  });
+  })
 
   return {
     storageAccountName: storageAccount.name,
     containerName: container.name,
-    functionApp: blobEvent.functionApp.endpoint.apply(e => e.replace("/api/",""))
+    functionApp: blobEvent.functionApp.endpoint.apply(e =>
+      e.replace('/api/', '')
+    )
   }
 }
 

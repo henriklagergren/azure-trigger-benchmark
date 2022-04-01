@@ -95,7 +95,9 @@ const getStorageResources = async () => {
   return {
     storageAccountName: storageAccount.name,
     queueName: queue.name,
-    functionApp: queueEvent.functionApp.endpoint.apply(e => e.replace("/api/",""))
+    functionApp: queueEvent.functionApp.endpoint.apply(e =>
+      e.replace('/api/', '')
+    )
   }
 }
 

@@ -1,4 +1,3 @@
-import * as appInsights from 'applicationinsights'
 import * as azure from '@pulumi/azure'
 import * as pulumi from '@pulumi/pulumi'
 import workload from '../workloads/workload'
@@ -87,9 +86,6 @@ const getEndpoint = async () => {
     version: '~6',
     runtime: runtime
   })
-
-  return endpoint
-
   /*
   // HTTP trigger
   const httpEvent = new azure.appservice.HttpEventSubscription('HttpTrigger', {
@@ -101,6 +97,8 @@ const getEndpoint = async () => {
     }
   })
   */
+
+  return endpoint
 }
 
 const endpoint = getEndpoint().then(endpoint => endpoint)

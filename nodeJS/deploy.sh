@@ -17,11 +17,18 @@ deploy_shared_resources() {
 
   # Create API key to be able to use Azure Insights REST API TODO use it with REST API
   az config set extension.use_dynamic_install=yes_without_prompt # Required to install and use app-insights module
-  API_KEY_NAME=$(date +%s%N)                                     # Set current time as name
-  API_KEY=$(
-    az monitor app-insights api-key create --api-key $API_KEY_NAME --read-properties ReadTelemetry --resource-group $RESOURCE_GROUP --app $INSIGHTS_NAME | \
-    python3 -c "import sys, json; print(json.load(sys.stdin)['apiKey'])"
-  ) # Get apiKey from resulting JSON using python
+
+  #Set current time as name
+  
+  #API_KEY_NAME=$(date +%s%N)   
+  #API_KEY_NAME='master'                                  
+
+  #API_KEY=$(az monitor app-insights api-key show --app $INSIGHTS_NAME -g $RESOURCE_GROUP --api-key $API_KEY_NAME)
+
+  #if [ "$API_KEY" = "" ]; then
+    #API_KEY=$(
+     # az monitor app-insights api-key create --api-key $API_KEY_NAME --read-properties ReadTelemetry --resource-group $RESOURCE_GROUP --app $INSIGHTS_NAME ) 
+  #fi
 }
 
 deploy_http_trigger() {
@@ -35,8 +42,8 @@ deploy_http_trigger() {
   #Write picked trigger
   echo "TRIGGER_TYPE=\"Http\"" >>$FILE_NAME
   # Get url to HTTP trigger gateway
-  TRIGGER_URL=$(pulumi stack output url)
-  FUNCTION_APP=$(pulumi stack output functionApp)
+  #TRIGGER_URL=$(pulumi stack output url)
+  FUNCTION_APP_ROOT=$(pulumi stack output url)
 
   # Correct runtime
   if [ "$RUNTIME" = 'dotnet' ]; then
@@ -64,7 +71,7 @@ deploy_http_trigger() {
 
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=http&input=$FUNCTION_URL\"" >>$FILE_NAME
-  curl -s ${FUNCTION_APP} > /tmp/output.html
+  curl -s $FUNCTION_APP_ROOT > /tmp/output.html
   echo "Start HTTP trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=http&input=$FUNCTION_URL"
 }
