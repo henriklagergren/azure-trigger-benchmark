@@ -2,9 +2,15 @@
 */.env
 */.sb/
 */_pycache_/
+*/package.json
+*/package-lock.json
+package.json
+.DS_Store
 
 nodeJS/*/node_modules/
 nodeJS/experiment/results/reliability/*
 nodeJS/experiment/results/latency/*
 nodeJS/experiment/.sb/
 nodeJS/experiment/__pycache__/
+nodeJS/*/package-lock.json
+nodeJS/*/triggers/*/package-lock.json

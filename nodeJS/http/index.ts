@@ -1,12 +1,16 @@
-import * as appInsights from 'applicationinsights'
 import * as azure from '@pulumi/azure'
 import * as pulumi from '@pulumi/pulumi'
 import workload from '../workloads/workload'
 import * as automation from '@pulumi/pulumi/automation'
 import * as dotenv from 'dotenv'
+import { FunctionApp } from './functionApp'
 
 dotenv.config({ path: './../.env' })
 
+const name = pulumi.getStack()
+
+const runtime = process.env.RUNTIME!
+/*
 const handler = async (context: any, req: any) => {
   // Setup application insights
   appInsights
@@ -42,6 +46,7 @@ const handler = async (context: any, req: any) => {
 
   return workload()
 }
+*/
 
 const getEndpoint = async () => {
   const user = await automation.LocalWorkspace.create({}).then(ws =>
@@ -58,7 +63,34 @@ const getEndpoint = async () => {
   )
   const insightsId = shared.requireOutput('insightsId')
   const insights = azure.appinsights.Insights.get('Insights', insightsId)
+  const resourceGroupArgs = {
+    resourceGroupName: resourceGroup.name,
+    location: resourceGroup.location
+  }
 
+  const storageAccount = new azure.storage.Account(`${runtime}sa`, {
+    ...resourceGroupArgs,
+
+    accountKind: 'StorageV2',
+    accountTier: 'Standard',
+    accountReplicationType: 'LRS'
+  })
+
+  const runAsPackageContainer = new azure.storage.Container(`${runtime}-c`, {
+    storageAccountName: storageAccount.name,
+    containerAccessType: 'private'
+  })
+
+  var endpoint = new FunctionApp(`${runtime}`, {
+    resourceGroup: resourceGroup,
+    storageAccount: storageAccount,
+    appInsights: insights,
+    storageContainer: runAsPackageContainer,
+    //path: 'azuretrigger/httpcs/bin/publish',
+    version: '~6',
+    runtime: runtime
+  })
+  /*
   // HTTP trigger
   const httpEvent = new azure.appservice.HttpEventSubscription('HttpTrigger', {
     resourceGroup,
@@ -68,11 +100,14 @@ const getEndpoint = async () => {
       APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey
     }
   })
+  */
 
-  return {
-    url: httpEvent.url,
-    functionApp: httpEvent.functionApp.endpoint.apply(e => e.replace("/api/",""))
-  }
+  return endpoint
 }
 
-module.exports = getEndpoint().then(e => e)
+const endpoint = getEndpoint().then(endpoint => endpoint)
+
+//functionApp: httpEvent.functionApp.endpoint.apply(e => e.replace("/api/","")
+
+exports.url = endpoint.then(endpoint => endpoint.url)
+exports.functionAppName = endpoint.then(endpoint => endpoint.functionAppName)

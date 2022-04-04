@@ -4,10 +4,7 @@
         "@types/node": "^17.0.14"
     },
     "dependencies": {
-        "@azure/identity": "^2.0.1",
-        "@azure/service-bus": "^7.5.0",
         "@pulumi/azure": "^4.36.0",
-        "@pulumi/azure-native": "^1.54.0",
         "@pulumi/pulumi": "^3.23.2",
         "applicationinsights": "^2.2.1",
         "automation": "*",

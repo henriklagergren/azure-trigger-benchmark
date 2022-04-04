@@ -7,7 +7,7 @@ import * as dotenv from 'dotenv'
 
 dotenv.config({ path: './../.env' })
 
-const handler = async (context : any) => {
+const handler = async (context: any) => {
   // Setup application insights
 
   appInsights
@@ -27,7 +27,7 @@ const handler = async (context : any) => {
   const correlationContext = appInsights.startOperation(
     context,
     'correlationContexteventGrid'
-  );
+  )
 
   const invocationId = context["bindings"]["message"]["subject"].split('/').pop();
 
@@ -62,31 +62,36 @@ const geteventGridResources = async () => {
   const insightsId = shared.requireOutput('insightsId')
   const insights = azure.appinsights.Insights.get('Insights', insightsId)
 
-  const storageAccount = new azure.storage.Account("eventgridsa", {
+  const storageAccount = new azure.storage.Account('eventgridsa', {
     resourceGroupName: resourceGroup.name,
     location: resourceGroup.location,
-    accountReplicationType: "LRS",
-    accountTier: "Standard",
-    accountKind: "StorageV2",
- });
+    accountReplicationType: 'LRS',
+    accountTier: 'Standard',
+    accountKind: 'StorageV2'
+  })
 
- const container = new azure.storage.Container('container', {
-  storageAccountName: storageAccount.name,
-  containerAccessType: 'private'
-})
- 
-const eventGridEvent = azure.eventgrid.events.onGridBlobCreated("eventGridTrigger", {
-    storageAccount,
-    appSettings: {
-      APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
-    },
-    callback: handler
- });
+  const container = new azure.storage.Container('container', {
+    storageAccountName: storageAccount.name,
+    containerAccessType: 'private'
+  })
+
+  const eventGridEvent = azure.eventgrid.events.onGridBlobCreated(
+    'eventGridTrigger',
+    {
+      storageAccount,
+      appSettings: {
+        APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey
+      },
+      callback: handler
+    }
+  )
 
   return {
     eventGridStorageAccountName: storageAccount.name,
     eventGridStorageContainerName: container.name,
-    functionApp: eventGridEvent.functionApp.endpoint.apply(e => e.replace("/api/",""))
+    functionApp: eventGridEvent.functionApp.endpoint.apply(e =>
+      e.replace('/api/', '')
+    )
   }
 }
 

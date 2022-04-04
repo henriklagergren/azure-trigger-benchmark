@@ -93,7 +93,9 @@ const getDatabaseResources = async () => {
   return {
     databaseName: sqlDatabase.name,
     containerName: sqlContainer.name,
-    functionApp: sqlEvent.functionApp.endpoint.apply(e => e.replace("/api/",""))
+    functionApp: sqlEvent.functionApp.endpoint.apply(e =>
+      e.replace('/api/', '')
+    )
   }
 }
 

@@ -22,6 +22,7 @@
     "database/index.ts",
     "service_Bus/index.ts",
     "timer/index.ts",
-    "event_hub/index.ts"
+    "event_hub/index.ts",
+    "http/triggers/node/HttpTrigger/index.ts"
   ]
 }
