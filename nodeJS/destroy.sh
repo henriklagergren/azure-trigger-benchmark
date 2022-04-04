@@ -9,28 +9,8 @@ while getopts 't:' flag; do
 done
 
 # Decide which trigger to deploy based on input flag
-if [ "$TRIGGER_TYPE" = 'eventHub' ]; then
-    cd eventHub/ && pulumi destroy -f -y
-    cd ..
-    cd infra/ && pulumi destroy -f -y
-    cd ..
-    cd shared/ && pulumi destroy -f -y
-elif [ "$TRIGGER_TYPE" = 'eventGrid' ]; then
-    cd eventGrid/ && pulumi destroy -f -y
-    cd ..
-    cd infra/ && pulumi destroy -f -y
-    cd ..
-    cd shared/ && pulumi destroy -f -y
-elif [ "$TRIGGER_TYPE" = 'serviceBus' ]; then
-    cd serviceBus/ && pulumi destroy -f -y
-    cd ..
-    cd infra/ && pulumi destroy -f -y
-    cd ..
-    cd shared/ && pulumi destroy -f -y
-elif [[ "$TRIGGER_TYPE" = 'http' || "$TRIGGER_TYPE" = 'storage' || "$TRIGGER_TYPE" = 'database' || "$TRIGGER_TYPE" = 'queue' || "$TRIGGER_TYPE" = 'timer' ]]; then
     cd $TRIGGER_TYPE/ && pulumi destroy -f -y
     cd ..
     cd infra/ && pulumi destroy -f -y
     cd ..
     cd shared/ && pulumi destroy -f -y
-fi
