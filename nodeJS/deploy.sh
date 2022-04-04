@@ -6,12 +6,15 @@ LOCATION=''
 
 deploy_shared_resources() {
   # Deploy location
+  cd http
   if [ "$LOCATION" = '' ]; then
     echo "PULUMI_AZURE_LOCATION=\"northeurope\"" >>$FILE_NAME
   else 
     echo "PULUMI_AZURE_LOCATION=\"$LOCATION\"" >>$FILE_NAME
   fi
 
+  cd ..
+  
   cd shared/ && pulumi stack select shared -c && pulumi up -f -y
 
   # Get App Id
