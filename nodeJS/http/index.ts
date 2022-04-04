@@ -9,7 +9,7 @@ dotenv.config({ path: './../.env' })
 
 const name = pulumi.getStack()
 
-const runtime = process.env.RUNTIME!
+const runtime = process.env.RUNTIME!.length > 0 ? process.env.RUNTIME! : 'node'
 /*
 const handler = async (context: any, req: any) => {
   // Setup application insights
