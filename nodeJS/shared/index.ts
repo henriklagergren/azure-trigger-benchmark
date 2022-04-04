@@ -2,9 +2,12 @@ import * as azure from '@pulumi/azure'
 import * as azuread from '@pulumi/azuread'
 import * as cosmosdb from '@pulumi/azure/cosmosdb'
 import * as fs from 'fs'
+import * as dotenv from 'dotenv'
+
+dotenv.config({ path: './../.env' })
 
 const resourceGroup = new azure.core.ResourceGroup('ResourceGroup', {
-  location: 'northeurope'
+  location: process.env.PULUMI_AZURE_LOCATION!
 })
 
 const insights = new azure.appinsights.Insights('Insights', {
@@ -334,9 +337,24 @@ function writeEnv () {
     )
   )
 
+  resourceGroup.location.apply(location =>
+    fs.writeFile(
+      '../.env',
+      'PULUMI_AZURE_LOCATION="' + location + '"\n',
+      { flag: 'a' },
+      (err: any) => {
+        if (err) {
+          console.log('ERROR: Location not added')
+          throw err
+        }
+        console.log('Location - Added')
+      }
+    )
+  )
+
   fs.writeFile(
     '../.env',
-    'PULUMI_PROJECT_NAME="azure-triggers-study" \nPULUMI_AZURE_LOCATION="northeurope" \nRUNTIME=""\n',
+    'PULUMI_PROJECT_NAME="azure-triggers-study" \n',
     { flag: 'a' },
     (err: any) => {
       if (err) {

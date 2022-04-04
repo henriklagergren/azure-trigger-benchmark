@@ -2,8 +2,16 @@ TRIGGER_TYPE=''
 RUNTIME=''
 FILE_NAME='../.env'
 FUNCTION_URL=''
+LOCATION=''
 
 deploy_shared_resources() {
+  # Deploy location
+  if [ "$LOCATION" = '' ]; then
+    echo "PULUMI_AZURE_LOCATION=\"northeurope\"" >>$FILE_NAME
+  else 
+    echo "PULUMI_AZURE_LOCATION=\"$LOCATION\"" >>$FILE_NAME
+  fi
+
   cd shared/ && pulumi stack select shared -c && pulumi up -f -y
 
   # Get App Id
@@ -329,10 +337,11 @@ deploy_eventGrid_trigger() {
 }
 
 # Read input flags
-while getopts 't:r:' flag; do
+while getopts 't:r:l:' flag; do
   case "${flag}" in
   t) TRIGGER_TYPE="${OPTARG}" ;;
   r) RUNTIME="${OPTARG}" ;;
+  l) LOCATION="${OPTARG}" ;;
   *) exit 1 ;;
   esac
 done
@@ -341,6 +350,13 @@ if [ "$RUNTIME" = 'node' ] || [ "$RUNTIME" = 'dotnet' ]; then
   echo 'Runtime valid'
 else
   echo 'ERROR: Unsupported runtime'
+  exit
+fi
+
+if [ "$LOCATION" = 'northeurope' ] || [ "$LOCATION" = 'eastus' ] || [ "$LOCATION" = ''] ; then
+  echo 'Location valid'
+else
+  echo 'ERROR: Unsupported location'
   exit
 fi
 

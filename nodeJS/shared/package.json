@@ -5,6 +5,7 @@
     },
     "dependencies": {
         "@pulumi/azure": "^4.36.0",
-        "@pulumi/azuread": "^5.16.0"
+        "@pulumi/azuread": "^5.16.0",
+        "dotenv": "^16.0.0"
     }
 }
