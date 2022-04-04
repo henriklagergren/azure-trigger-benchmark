@@ -7,7 +7,7 @@ import * as dotenv from 'dotenv'
 
 dotenv.config({ path: './../.env' })
 
-const handler = async (context: any, queueMessage: any) => {
+const handler = async (context: any, invocationId: any) => {
   // Setup application insights
   appInsights
     .setup()
@@ -26,15 +26,19 @@ const handler = async (context: any, queueMessage: any) => {
   const correlationContext = appInsights.startOperation(
     context,
     'correlationContextQueue'
-  )
-  appInsights.defaultClient.trackTrace({
-    message: 'Custom operationId queue',
-    properties: {
-      newOperationId: queueMessage, // queueMessage only consists of operationId
-      oldOperationId: correlationContext!.operation.id
-    }
-  })
-  appInsights.defaultClient.flush()
+  );
+
+  appInsights.defaultClient.trackDependency({
+    name: 'Custom operationId queue',
+    dependencyTypeName: 'HTTP',
+    resultCode: 200,
+    success: true,
+    data: correlationContext!.operation.id,
+    duration: 10,
+    id: invocationId
+  });
+
+  appInsights.defaultClient.flush();
 
   return workload()
 }

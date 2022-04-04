@@ -15,16 +15,16 @@ from simple_term_menu import TerminalMenu
 load_dotenv('./../../.env')
 
 print("Which trigger should be analyzed?")
-trigger_list = ["All triggers", "http", "storage", "queue",
+trigger_pick = ["All triggers", "http", "storage", "queue",
                 "database", "eventHub", "eventGrid", "serviceBus", "timer"]
-terminal_menu = TerminalMenu(trigger_list)
+terminal_menu = TerminalMenu(trigger_pick)
 menu_entry_index = terminal_menu.show()
 
-if(menu_entry_index == 0):
-    trigger_list = ["http", "storage", "queue",
-                    "database", "eventHub", "eventGrid", "serviceBus", "timer"]
-else:
-    trigger_list = [trigger_list[menu_entry_index]]
+trigger_list = [["http", "GET /api/HttpTrigger"], ["storage", "Azure.Storage.Blob.BlockBlobClient-upload"], ["queue", "Azure.Storage.Queue.QueueClient-sendMessage"],
+                ["database", "POST"], ["eventHub", "POST"], ["eventGrid", "Azure.Storage.Blob.BlockBlobClient-upload"], ["serviceBus", ""], ["timer", ""]]
+
+if(menu_entry_index != 0):
+    trigger_list = [trigger_list[menu_entry_index-1]]
 
 print("Which start date?")
 start_date = [str(date.today() - timedelta(days=1)), str(date.today())]
@@ -88,7 +88,7 @@ dependencies = dependencies.json()
 print('')
 print('Fetching Traces...')
 traces = requests.get('https://api.applicationinsights.io/v1/apps/' +
-                      application_ID + '/query?query=traces | where message has "Custom operationId" or operation_Id != "" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
+                      application_ID + '/query?query=traces | where customDimensions contains "Coldstart" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
 traces = traces.json()
 all_entries = []
 switch_operation_ids = []
@@ -114,42 +114,38 @@ for value in reqs["tables"][0]["rows"]:
 print('')
 print('Extracting Dependencies...')
 for value in dependencies["tables"][0]["rows"]:
-    timestamp = value[0]
-    timestamp = timestamp.replace('T', ' ')
-    timestamp = timestamp.replace('Z', '')
-    milli = (timestamp + ".").split(".")[1] + "000"
-    timestamp = timestamp.split(".")[0] + "." + milli[0:3]
-    name = value[4]
-    operation_id = value[14]
-    if(name.startswith('POST')):
-        name = 'POST'
-    d = {}
-    d['type'] = 'DEPENDENCY'
-    d['name'] = name
-    d['timestamp'] = timestamp
-    d['duration'] = value[8]
-    d['operation_id'] = operation_id
-    print(d)
-    all_entries.append(d)
-
-print('')
-print('Extracting Traces...')
-for value in traces["tables"][0]["rows"]:
-    message_whole = value[1]
-    if 'Custom operationId' in message_whole:
-        # Get operation ids that should be switched
-        switch_operation_ids.append(json.loads(value[4]))
+    if("Custom operationId" in value[4]):
+        switch_operation_ids.append([value[1], value[5]])
     else:
         timestamp = value[0]
         timestamp = timestamp.replace('T', ' ')
         timestamp = timestamp.replace('Z', '')
-        operation_id = value[7]
+        milli = (timestamp + ".").split(".")[1] + "000"
+        timestamp = timestamp.split(".")[0] + "." + milli[0:3]
+        name = value[4]
+        operation_id = value[14]
+        if(name.startswith('POST')):
+            name = 'POST'
         d = {}
-        d['type'] = 'TRACE'
-        d['name'] = operation_id
+        d['type'] = 'DEPENDENCY'
+        d['name'] = name
         d['timestamp'] = timestamp
+        d['duration'] = value[8]
         d['operation_id'] = operation_id
+        print(operation_id)
         all_entries.append(d)
+
+print('')
+print('Extracting Traces...')
+for value in traces["tables"][0]["rows"]:
+    custom_dimensions = json.loads(value[4])
+    d = {}
+    d['type'] = 'TRACE'
+    d['name'] = 'Cold start'
+    d['timestamp'] = timestamp
+    d['operation_id'] = value[7]
+    print(value[7])
+    all_entries.append(d)
 
 # Sort by timestamp, must be done before switching operation ids
 all_entries.sort(key=lambda x: x['timestamp'])
@@ -161,9 +157,9 @@ print('Setting correct operation IDs...')
 if len(switch_operation_ids) > 0:
     for entry in all_entries:
         for switch in switch_operation_ids:
-            if entry['operation_id'] == switch['oldOperationId']:
+            if entry['operation_id'] == switch[1]:
                 entry['operation_id'] = (
-                    switch['newOperationId'].replace('|', '').split('.')[0])
+                    switch[0].replace('|', '').split('.')[0])
 
 
 # Remove entries without operation_id
@@ -206,7 +202,7 @@ for entry in all_entries:
 
 
 for trigger_type in trigger_list:
-    print('Analyzes latency for ' + trigger_type)
+    print('Analyzes latency for ' + trigger_type[0])
     print('Checking the validity of traces...')
 
     all_valid_groups = []
@@ -220,7 +216,8 @@ for trigger_type in trigger_list:
         for entry in group:
             if entry['type'] == 'REQUEST':
                 request_amount += 1
-                isValidRequest = trigger_type.lower() in entry['name'].lower()
+                isValidRequest = trigger_type[0].lower(
+                ) in entry['name'].lower()
                 # print(f"{request_amount} - request {entry['name']}")
         if (request_amount == 2 and isValidRequest):
             all_valid_groups.append(group)
@@ -249,7 +246,7 @@ for trigger_type in trigger_list:
             (delta.seconds*1000000 + delta.microseconds) / 1000)
 
     print('')
-    print('## RESULTS ' + trigger_type.upper() + " ##")
+    print('## RESULTS ' + trigger_type[0].upper() + " ##")
     print('')
     print(all_trigger_delays_ms)
     print('')
@@ -259,12 +256,12 @@ for trigger_type in trigger_list:
     print('Number of valid entries: ' + str(len(all_trigger_delays_ms)))
     print('')
 
-    with open("./../results/latency/" + trigger_type + '.csv', 'w', newline='') as file:
+    with open("./../results/latency/" + trigger_type[0] + '.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["trigger_type", "latency"])
         count = 0
         for value in all_trigger_delays_ms:
-            writer.writerow([trigger_type, value])
+            writer.writerow([trigger_type[0], value])
             count = count + 1
 
     print('')

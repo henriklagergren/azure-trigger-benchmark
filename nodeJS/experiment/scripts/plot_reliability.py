@@ -41,21 +41,21 @@ if(os.isfile('./../results/reliability/eventGrid.csv')):
 result_df = pd.concat(result_list)
 
 plot = (p9.ggplot(result_df, p9.aes(
-    x="trigger_type", y="missing_executes"))
-    + p9.geom_col())
+    x="trigger_type", y="missing_executes")) + p9.labs(title="Box plot - Missing executes", x="Trigger type", y="")
+    + p9.theme(axis_text_x=p9.element_text(angle=45, hjust=1)) + p9.geom_col())
 
-plot.save(filename="./../results/reliability/results_missing_executes.png")
-
-plot = (p9.ggplot(result_df, p9.aes(
-    x="trigger_type", y="duplicates_executes"))
-    + p9.geom_col())
-
-plot.save(
-    filename="./../results/reliability/results_duplicates_executes.png")
+plot.save(filename="./../results/reliability/reliability_missing_executes.png")
 
 plot = (p9.ggplot(result_df, p9.aes(
-    x="trigger_type", y="out_of_order"))
-    + p9.geom_col())
+    x="trigger_type", y="duplicates_executes")) + p9.labs(title="Box plot - Duplicates executes", x="Trigger type", y="")
+    + p9.theme(axis_text_x=p9.element_text(angle=45, hjust=1)) + p9.geom_col())
 
 plot.save(
-    filename="./../results/reliability/results_out_of_order.pdf")
+    filename="./../results/reliability/reliability_duplicates_executes.png")
+
+plot = (p9.ggplot(result_df, p9.aes(
+    x="trigger_type", y="out_of_order")) + p9.labs(title="Box plot - Out of order", x="Trigger type", y="")
+    + p9.theme(axis_text_x=p9.element_text(angle=45, hjust=1)) + p9.geom_col())
+
+plot.save(
+    filename="./../results/reliability/reliability_out_of_order.png")

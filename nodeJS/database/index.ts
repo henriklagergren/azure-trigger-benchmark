@@ -5,8 +5,6 @@ import * as dotenv from 'dotenv'
 import * as automation from '@pulumi/pulumi/automation'
 import * as pulumi from '@pulumi/pulumi'
 import workload from '../workloads/workload'
-import * as azurefunctions from '@azure/functions'
-import { CosmosChangeFeedSubscription } from '@pulumi/azure/cosmosdb'
 
 dotenv.config({ path: './../.env' })
 
@@ -32,19 +30,20 @@ const handler = async (context: any) => {
     'correlationContextDatabase'
   )
 
-  const newOperationId = context['bindings']['items'][0]['newOperationId']
+  const invocationId = context['bindings']['items'][0]['newOperationId']
 
-  console.log(newOperationId)
 
-  appInsights.defaultClient.trackTrace({
-    message: 'Custom operationId database',
-    properties: {
-      newOperationId: newOperationId,
-      oldOperationId: correlationContext!.operation.id
-    }
-  })
+  appInsights.defaultClient.trackDependency({
+    name: 'Custom operationId database',
+    dependencyTypeName: 'HTTP',
+    resultCode: 200,
+    success: true,
+    data: correlationContext!.operation.id,
+    duration: 10,
+    id: invocationId
+  });
 
-  appInsights.defaultClient.flush()
+  appInsights.defaultClient.flush();
 
   return workload()
 }

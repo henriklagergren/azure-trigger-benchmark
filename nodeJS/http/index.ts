@@ -28,13 +28,17 @@ const handler = async (context: any, req: any) => {
     'correlationContextHttp'
   );
 
-  appInsights.defaultClient.trackTrace({
-    message: 'Custom operationId http',
-    properties: {
-      newOperationId: req.query.operationId,
-      oldOperationId: correlationContext!.operation.id
-    }
-  })
+  appInsights.defaultClient.trackDependency({
+    name: 'Custom operationId http',
+    dependencyTypeName: 'HTTP',
+    resultCode: 200,
+    success: true,
+    data: correlationContext!.operation.id,
+    duration: 10,
+    id: req.query.operationId
+  });
+
+  appInsights.defaultClient.flush();
 
   return workload()
 }

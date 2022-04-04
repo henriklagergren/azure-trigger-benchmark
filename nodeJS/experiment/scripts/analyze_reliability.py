@@ -72,13 +72,13 @@ headers = {'x-api-key': api_key, }
 print('')
 print('Fetching Dependencies...')
 dependencies = requests.get('https://api.applicationinsights.io/v1/apps/' +
-                            application_ID + '/query?query=dependencies | where name contains "CompletionTrack" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
+                            application_ID + '/query?query=dependencies | where name contains "CompletionTrack" or name contains "Custom operationId" or name contains "GET /api/HttpTrigger" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
 dependencies = dependencies.json()
 
 print('')
 print('Fetching Traces...')
 traces = requests.get('https://api.applicationinsights.io/v1/apps/' +
-                      application_ID + '/query?query=traces | where message has "Custom operationId" or message has "iterationId" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
+                      application_ID + '/query?query=traces | where message has "iterationId" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
 traces = traces.json()
 
 for trigger_type in trigger_list:
@@ -91,9 +91,34 @@ for trigger_type in trigger_list:
     print('## TRIGGER TYPE:' + trigger_type.upper())
     print('Extracting Invoking order...')
     invoke_amount = 0
+    execute_amount = 0
 
     for value in dependencies["tables"][0]["rows"]:
-        if (('completiontrack' + trigger_type.lower()) in value[4].lower()):
+        if("custom operationid " + trigger_type.lower() in value[4].lower()):
+            execute_amount = execute_amount + 1
+            timestamp = value[0]
+            timestamp = timestamp.replace('T', ' ')
+            timestamp = timestamp.replace('Z', '')
+            operation_id = value[1]
+            execute_duplicates.append(value[5])
+            d = {}
+            d['timestamp'] = timestamp
+            d['operation_id'] = operation_id
+            execute_order.append(d)
+        elif "completiontrack" + trigger_type.lower() in value[4].lower():
+            invoke_amount = invoke_amount + 1
+            timestamp = value[0]
+            timestamp = timestamp.replace('T', ' ')
+            timestamp = timestamp.replace('Z', '')
+            milli = (timestamp + ".").split(".")[1] + "000"
+            timestamp = timestamp.split(".")[0] + "." + milli[0:3]
+            name = value[4]
+            operation_id = value[14]
+            d = {}
+            d['timestamp'] = timestamp
+            d['operation_id'] = operation_id
+            invoke_order.append(d)
+        elif trigger_type.lower() == "http" and "GET /api/HttpTrigger".lower() in value[4].lower():
             invoke_amount = invoke_amount + 1
             timestamp = value[0]
             timestamp = timestamp.replace('T', ' ')
@@ -118,23 +143,8 @@ for trigger_type in trigger_list:
 
     print('')
     print('Extracting Executing order...')
-    execute_amount = 0
     for value in traces["tables"][0]["rows"]:
         message_whole = value[1]
-        if 'custom operationid ' + trigger_type.lower() in message_whole.lower():
-            execute_amount = execute_amount + 1
-            timestamp = value[0]
-            timestamp = timestamp.replace('T', ' ')
-            timestamp = timestamp.replace('Z', '')
-            custom_body = json.loads(value[4])
-            operation_id = custom_body['newOperationId'].replace('|', '').split('.')[
-                0]
-            execute_duplicates.append(
-                custom_body['oldOperationId'])
-            d = {}
-            d['timestamp'] = timestamp
-            d['operation_id'] = operation_id
-            execute_order.append(d)
 
         if 'iterationId' + trigger_type.lower() in message_whole:
             invoke_duplicates.append(json.loads(value[4])['iterationId'])
@@ -196,8 +206,8 @@ for trigger_type in trigger_list:
         writer = csv.writer(file)
         writer.writerow(["trigger_type", "original_invokes", "original_executes", "duplicates_invokes",
                         "duplicates_executes", "missing_executes", "out_of_order", "amount_invokes_after", "amount_executes_after"])
-        writer.writerow([trigger_type, invoke_amount, execute_amount, invoke_duplicates_amount,
-                        execute_duplicates_amount, len(missing_executes), out_of_order, len(invoke_order), len(execute_order)])
+        writer.writerow([trigger_type, invoke_amount, execute_amount, invoke_duplicates_amount/invoke_amount,
+                        execute_duplicates_amount/execute_amount, len(missing_executes)/invoke_amount, out_of_order/invoke_amount, len(invoke_order), len(execute_order)])
     print('')
     print('')
     print('')

@@ -32,18 +32,19 @@ const handler = async (context: any) => {
     'correlationContextStorage'
   );
 
-  const operationId = context["bindingData"]["metadata"]["operationId"].replace('|', '').split('.')[0];
+  const invocationId = context["bindingData"]["metadata"]["operationId"].replace('|', '').split('.')[0];
 
-  appInsights.defaultClient.trackTrace({
-    message: 'Custom operationId storage',
-    properties: {
-      newOperationId: operationId,
-      oldOperationId: correlationContext!.operation.id
-    }
-  })
-    
-  
-  appInsights.defaultClient.flush()
+  appInsights.defaultClient.trackDependency({
+    name: 'Custom operationId storage',
+    dependencyTypeName: 'HTTP',
+    resultCode: 200,
+    success: true,
+    data: correlationContext!.operation.id,
+    duration: 10,
+    id: invocationId
+  });
+
+  appInsights.defaultClient.flush();
 
   return workload()
 }
