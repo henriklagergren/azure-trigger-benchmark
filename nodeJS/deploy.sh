@@ -333,7 +333,7 @@ else
   exit
 fi
 
-if [ "$LOCATION" = 'northeurope' ] || [ "$LOCATION" = 'eastus' ] || [ "$LOCATION" = ''] ; then
+if [ "$LOCATION" = 'northeurope' ] || [ "$LOCATION" = 'eastus' ] || ["$LOCATION" = '']; then
   echo 'Location valid'
 else
   echo 'ERROR: Unsupported location'
