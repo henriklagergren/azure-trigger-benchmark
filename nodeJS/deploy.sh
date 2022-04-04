@@ -236,7 +236,7 @@ deploy_serviceBus_trigger() {
   cd ..
 
   # Deploy serviceBus trigger
-  cd service_Bus/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd serviceBus/ && pulumi stack select trigger -c && pulumi up -f -y
 
   #Write picked trigger
   echo "TRIGGER_TYPE=\"ServiceBus\"" >>$FILE_NAME
@@ -269,7 +269,7 @@ deploy_eventHub_trigger() {
   cd ..
 
   # Deploy database trigger
-  cd event_hub/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd eventHub/ && pulumi stack select trigger -c && pulumi up -f -y
 
   #Write picked trigger
   echo "TRIGGER_TYPE=\"EventHub\"" >>$FILE_NAME
@@ -302,7 +302,7 @@ deploy_eventGrid_trigger() {
   cd ..
 
   # Deploy database trigger
-  cd event_grid/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd eventGrid/ && pulumi stack select trigger -c && pulumi up -f -y
 
   #Write picked trigger
   echo "TRIGGER_TYPE=\"EventGrid\"" >>$FILE_NAME

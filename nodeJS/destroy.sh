@@ -10,19 +10,19 @@ done
 
 # Decide which trigger to deploy based on input flag
 if [ "$TRIGGER_TYPE" = 'eventHub' ]; then
-    cd event_hub/ && pulumi destroy -f -y
+    cd eventHub/ && pulumi destroy -f -y
     cd ..
     cd infra/ && pulumi destroy -f -y
     cd ..
     cd shared/ && pulumi destroy -f -y
 elif [ "$TRIGGER_TYPE" = 'eventGrid' ]; then
-    cd event_grid/ && pulumi destroy -f -y
+    cd eventGrid/ && pulumi destroy -f -y
     cd ..
     cd infra/ && pulumi destroy -f -y
     cd ..
     cd shared/ && pulumi destroy -f -y
 elif [ "$TRIGGER_TYPE" = 'serviceBus' ]; then
-    cd service_Bus/ && pulumi destroy -f -y
+    cd serviceBus/ && pulumi destroy -f -y
     cd ..
     cd infra/ && pulumi destroy -f -y
     cd ..
