@@ -18,7 +18,23 @@ cd database/ && npm install
 
 cd ..
 
+cd eventGrid/ && npm install
+
+cd ..
+
+cd eventHub/ && npm install
+
+cd ..
+
+cd serviceBus/ && npm install
+
+cd ..
+
 cd queue/ && npm install
+
+cd ..
+
+cd timer/ && npm install
 
 cd ..
 
