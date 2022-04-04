@@ -28,7 +28,6 @@ const handler = async (context: any, message: any) => {
     'correlationContextDatabase'
   )
 
-<<<<<<< HEAD
   appInsights.defaultClient.trackDependency({
     name: 'Custom operationId serviceBus',
     dependencyTypeName: 'HTTP',
@@ -38,15 +37,6 @@ const handler = async (context: any, message: any) => {
     duration: 10,
     id: message.replace("|","").split(".")[0]
   });
-=======
-  appInsights.defaultClient.trackTrace({
-    message: 'Custom operationId serviceBus',
-    properties: {
-      newOperationId: message.replace('|', '').split('.')[0],
-      oldOperationId: correlationContext!.operation.id
-    }
-  })
->>>>>>> 4e0768e89db7e2ff97beb3e14b32041999792331
 
   appInsights.defaultClient.flush();
 
