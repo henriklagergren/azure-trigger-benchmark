@@ -47,8 +47,7 @@ let sqlAccount = new cosmosdb.Account('databaseTrigger', {
 
 const sqlDatabase = new cosmosdb.SqlDatabase('sqlDatabase', {
   accountName: sqlAccount.name,
-  resourceGroupName: resourceGroup.name,
-  throughput: 400
+  resourceGroupName: resourceGroup.name
 })
 
 const sqlContainer = new cosmosdb.SqlContainer('sqlContainer', {
