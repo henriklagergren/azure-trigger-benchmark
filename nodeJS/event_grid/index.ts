@@ -29,15 +29,19 @@ const handler = async (context: any) => {
     'correlationContexteventGrid'
   )
 
-  const operationId = context['bindings']['message']['subject'].split('/').pop()
+  const invocationId = context["bindings"]["message"]["subject"].split('/').pop();
 
-  appInsights.defaultClient.trackTrace({
-    message: 'Custom operationId eventGrid',
-    properties: {
-      newOperationId: operationId,
-      oldOperationId: correlationContext!.operation.id
-    }
-  })
+  appInsights.defaultClient.trackDependency({
+    name: 'Custom operationId eventGrid',
+    dependencyTypeName: 'HTTP',
+    resultCode: 200,
+    success: true,
+    data: correlationContext!.operation.id,
+    duration: 10,
+    id: invocationId
+  });
+
+  appInsights.defaultClient.flush();
 
   return workload()
 }

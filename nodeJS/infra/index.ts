@@ -406,21 +406,8 @@ const handler = async (context: any, req: any) => {
     if (triggerType === 'http') {
       // HTTP trigger
       return appInsights.wrapWithCorrelationContext(async () => {
-        const startTime = Date.now() // Start trackRequest timer
 
         const response = await getHttpFunction(triggerInput,correlationContext.operation.id)
-
-        // Track dependency on completion
-        appInsights.defaultClient.trackDependency({
-          name: 'CompletionTrackHttp',
-          dependencyTypeName: 'HTTP',
-          resultCode: response.status,
-          success: true,
-          data: req.query.input,
-          duration: Date.now() - startTime,
-          id: correlationContext.operation.parentId
-        })
-        appInsights.defaultClient.flush()
 
         return response
       }, correlationContext)()
@@ -436,6 +423,7 @@ const handler = async (context: any, req: any) => {
           queueInputs[1],
           correlationContext.operation.id
         )
+
         // Track dependency on completion
         appInsights.defaultClient.trackDependency({
           name: 'CompletionTrackQueue',
@@ -568,7 +556,8 @@ const handler = async (context: any, req: any) => {
           duration: Date.now() - startTime,
           id: correlationContext.operation.parentId,
           data: ''
-        })
+        });
+
         appInsights.defaultClient.flush()
         return response
       }, correlationContext)()

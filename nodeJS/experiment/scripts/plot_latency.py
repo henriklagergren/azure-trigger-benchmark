@@ -41,7 +41,12 @@ if(os.isfile('./../results/latency/eventGrid.csv')):
 result_df = pd.concat(result_list)
 
 plot = (p9.ggplot(result_df, p9.aes(
-    x="trigger_type", y="latency"))
-    + p9.geom_violin())
+    x="trigger_type", y="latency")) + p9.labs(title="Violin plot - Latency", x="Trigger Type", y="Latency (milliseconds)")
+    + p9.theme(axis_text_x=p9.element_text(angle=45, hjust=1)) + p9.geom_violin())
 
-plot.save(filename="./../results/latency/results.pdf")
+plot.save(filename="./../results/latency/latency_violin.png")
+
+plotTwo = (p9.ggplot(result_df, p9.aes(x='latency', col='trigger_type', colour='trigger_type')) + p9.labs(title="Cumulative Distribution Function - Latency", y="", x="Duration Time (milliseconds)", color="Trigger Type")
+           + p9.theme(axis_text_x=p9.element_text(angle=45, hjust=1)) + p9.stat_ecdf(geom="step"))
+
+plotTwo.save(filename="./../results/latency/latency_cdf.png")

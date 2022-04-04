@@ -29,6 +29,21 @@ const handler = async (context: any) => {
     'correlationContextStorage'
   )
 
+<<<<<<< HEAD
+  const invocationId = context["bindingData"]["metadata"]["operationId"].replace('|', '').split('.')[0];
+
+  appInsights.defaultClient.trackDependency({
+    name: 'Custom operationId storage',
+    dependencyTypeName: 'HTTP',
+    resultCode: 200,
+    success: true,
+    data: correlationContext!.operation.id,
+    duration: 10,
+    id: invocationId
+  });
+
+  appInsights.defaultClient.flush();
+=======
   const operationId = context['bindingData']['metadata']['operationId']
     .replace('|', '')
     .split('.')[0]
@@ -42,6 +57,7 @@ const handler = async (context: any) => {
   })
 
   appInsights.defaultClient.flush()
+>>>>>>> 4e0768e89db7e2ff97beb3e14b32041999792331
 
   return workload()
 }

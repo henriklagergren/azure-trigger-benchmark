@@ -30,13 +30,19 @@ const handler = async (context: any) => {
     'correlationContextTimer'
   );
 
-  appInsights.defaultClient.trackTrace({
-    message: 'Custom operationId timer',
-    properties: {
-      newOperationId: context.bindingData["timer"].replace("|","").split(".")[0],
-      oldOperationId: correlationContext!.operation.id
-    }
-  })
+  const invocationId = context.bindingData["timer"].replace("|","").split(".")[0];
+
+  appInsights.defaultClient.trackDependency({
+    name: 'Custom operationId timer',
+    dependencyTypeName: 'HTTP',
+    resultCode: 200,
+    success: true,
+    data: correlationContext!.operation.id,
+    duration: 10,
+    id: invocationId
+  });
+
+  appInsights.defaultClient.flush();
 
   return workload();
 };
