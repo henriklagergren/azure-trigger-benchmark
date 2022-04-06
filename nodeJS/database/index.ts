@@ -1,70 +1,10 @@
-import * as appInsights from 'applicationinsights'
-import * as azure from '@pulumi/azure'
 import * as cosmosdb from '@pulumi/azure/cosmosdb'
 import * as dotenv from 'dotenv'
-import * as automation from '@pulumi/pulumi/automation'
-import * as pulumi from '@pulumi/pulumi'
-import workload from '../workloads/workload'
 
 dotenv.config({ path: './../.env' })
 
-const handler = async (context: any) => {
-  // Setup application insights
-  appInsights
-    .setup()
-    .setAutoDependencyCorrelation(true)
-    .setAutoCollectRequests(true)
-    .setAutoCollectPerformance(true, true)
-    .setAutoCollectExceptions(true)
-    .setAutoCollectDependencies(true)
-    .setAutoCollectConsole(true)
-    .setUseDiskRetryCaching(false)
-    .setSendLiveMetrics(false)
-    .setUseDiskRetryCaching(false)
-    .setDistributedTracingMode(appInsights.DistributedTracingModes.AI_AND_W3C)
-  appInsights.defaultClient.setAutoPopulateAzureProperties(true)
-  appInsights.start()
-
-  const correlationContext = appInsights.startOperation(
-    context,
-    'correlationContextDatabase'
-  )
-
-  const invocationId = context['bindings']['items'][0]['newOperationId']
-
-
-  appInsights.defaultClient.trackDependency({
-    name: 'Custom operationId database',
-    dependencyTypeName: 'HTTP',
-    resultCode: 200,
-    success: true,
-    data: correlationContext!.operation.id,
-    duration: 10,
-    id: invocationId
-  });
-
-  appInsights.defaultClient.flush();
-
-  return workload()
-}
-
+// CODE WILL LATER BE REFACTORED AND THIS FILE WILL NOT BE NECESSARY ANYMORE
 const getDatabaseResources = async () => {
-  // Import shared resources
-  const user = await automation.LocalWorkspace.create({}).then(ws =>
-    ws.whoAmI().then(i => i.user)
-  )
-  const shared = new pulumi.StackReference(
-    `${user}/${process.env.PULUMI_PROJECT_NAME}/shared`
-  )
-
-  const insightsId = shared.requireOutput('insightsId')
-  const insights = azure.appinsights.Insights.get('Insights', insightsId)
-
-  const sqlAccount = cosmosdb.Account.get(
-    process.env.ACCOUNTDB_NAME!,
-    process.env.ACCOUNTDB_ID!
-  )
-
   const sqlDatabase = cosmosdb.SqlDatabase.get(
     process.env.DATABASE_NAME!,
     process.env.DATABASE_ID!
@@ -75,27 +15,9 @@ const getDatabaseResources = async () => {
     process.env.CONTAINER_ID!
   )
 
-  const connectionKey = `Cosmos${process.env['ACCOUNTDB_NAME']}ConnectionKey`
-
-  // SQL on change trigger
-  const sqlEvent = sqlAccount.onChange('databaseTrigger', {
-    databaseName: sqlDatabase.name,
-    collectionName: sqlContainer.name,
-    startFromBeginning: true,
-    location: process.env.PULUMI_AZURE_LOCATION,
-    callback: handler,
-    appSettings: {
-      APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
-      [connectionKey]: `AccountEndpoint=${process.env.ACCOUNTDB_ENDPOINT};AccountKey=${process.env.ACCOUNTDB_PRIMARYKEY};`
-    }
-  })
-
   return {
     databaseName: sqlDatabase.name,
-    containerName: sqlContainer.name,
-    functionApp: sqlEvent.functionApp.endpoint.apply(e =>
-      e.replace('/api/', '')
-    )
+    containerName: sqlContainer.name
   }
 }
 

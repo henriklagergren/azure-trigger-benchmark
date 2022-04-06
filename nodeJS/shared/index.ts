@@ -3,8 +3,11 @@ import * as azuread from '@pulumi/azuread'
 import * as cosmosdb from '@pulumi/azure/cosmosdb'
 import * as fs from 'fs'
 import * as dotenv from 'dotenv'
+import { FunctionApp } from './../functionApp'
 
 dotenv.config({ path: './../.env' })
+
+const runtime = process.env.RUNTIME!.length > 0 ? process.env.RUNTIME! : 'node'
 
 const resourceGroup = new azure.core.ResourceGroup('ResourceGroup', {
   location: process.env.PULUMI_AZURE_LOCATION!
@@ -60,6 +63,42 @@ const sqlContainer = new cosmosdb.SqlContainer('sqlContainer', {
   partitionKeyPath: '/newOperationId'
 })
 
+const resourceGroupArgs = {
+  resourceGroupName: resourceGroup.name,
+  location: resourceGroup.location
+}
+
+const storageAccount = new azure.storage.Account(`${runtime}sa`, {
+  ...resourceGroupArgs,
+
+  accountKind: 'StorageV2',
+  accountTier: 'Standard',
+  accountReplicationType: 'LRS'
+})
+
+const runAsPackageContainer = new azure.storage.Container(`${runtime}-c`, {
+  storageAccountName: storageAccount.name,
+  containerAccessType: 'private'
+})
+
+const connectionKey = `Cosmos${process.env['ACCOUNTDB_NAME']}ConnectionKey`
+
+var endpoint = new FunctionApp(`${runtime}`, {
+  resourceGroup: resourceGroup,
+  storageAccount: storageAccount,
+  appInsights: insights,
+  storageContainer: runAsPackageContainer,
+  //path: 'azuretrigger/httpcs/bin/publish',
+  version: '~4',
+  runtime: runtime,
+  appSettings: {
+    [connectionKey]: `AccountEndpoint=${process.env.ACCOUNTDB_ENDPOINT};AccountKey=${process.env.ACCOUNTDB_PRIMARYKEY};`,
+    DATABASE_NAME: sqlDatabase.name,
+    CONTAINER_NAME: sqlContainer.name,
+    APPLICATIONINSIGHTS_CONNECTION_STRING: insights.connectionString
+  }
+})
+
 new azure.authorization.Assignment('storageBlobDataContributor', {
   scope: resourceGroup.id,
   roleDefinitionName: 'Storage Blob Data Contributor',
@@ -90,14 +129,6 @@ new azure.authorization.Assignment('serviceBusOwner', {
   principalId: servicePrincipal.objectId
 })
 
-/*
-new azure.authorization.Assignment('databaseContributor', {
-  scope: resourceGroup.id,
-  roleDefinitionName: 'Contributor',
-  principalId: servicePrincipal.objectId
-})
-*/
-
 writeEnv()
 
 // Export ids and names of resources to import them in other projects
@@ -106,6 +137,8 @@ exports.resourceGroupName = resourceGroup.name
 exports.insightsId = insights.id
 exports.insightsName = insights.name
 exports.insightsAppId = insights.appId // Required by Azure Insights REST API
+exports.functionAppName = endpoint.functionAppName
+exports.functionAppUrl = endpoint.url
 
 function writeEnv () {
   if (fs.existsSync('../.env')) {
@@ -348,6 +381,21 @@ function writeEnv () {
           throw err
         }
         console.log('Location - Added')
+      }
+    )
+  )
+
+  insights.connectionString.apply(cs =>
+    fs.writeFile(
+      '../.env',
+      'INSIGHTS_CONNECTION_STRING="' + cs + '"\n',
+      { flag: 'a' },
+      (err: any) => {
+        if (err) {
+          console.log('ERROR: Insight connection string not added')
+          throw err
+        }
+        console.log('Insight connection string - Added')
       }
     )
   )

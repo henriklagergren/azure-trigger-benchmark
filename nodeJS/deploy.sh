@@ -3,6 +3,8 @@ RUNTIME=''
 FILE_NAME='../.env'
 FUNCTION_URL=''
 LOCATION=''
+FUNCTION_APP_URL=''
+FUNCTIONAPP_NAME=''
 
 deploy_shared_resources() {
   # Deploy location
@@ -23,23 +25,15 @@ deploy_shared_resources() {
   INSIGHTS_NAME=$(pulumi stack output insightsName)
   # Get Resource group name
   RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
+  # Get Function app name
+  FUNCTION_APP_URL=$(pulumi stack output functionAppUrl)
+  FUNCTIONAPP_NAME=$(pulumi stack output functionAppName)
 
   echo "RUNTIME=\"$RUNTIME\"" >>$FILE_NAME
 
   # Create API key to be able to use Azure Insights REST API TODO use it with REST API
   az config set extension.use_dynamic_install=yes_without_prompt # Required to install and use app-insights module
 
-  #Set current time as name
-  
-  #API_KEY_NAME=$(date +%s%N)   
-  #API_KEY_NAME='master'                                  
-
-  #API_KEY=$(az monitor app-insights api-key show --app $INSIGHTS_NAME -g $RESOURCE_GROUP --api-key $API_KEY_NAME)
-
-  #if [ "$API_KEY" = "" ]; then
-    #API_KEY=$(
-     # az monitor app-insights api-key create --api-key $API_KEY_NAME --read-properties ReadTelemetry --resource-group $RESOURCE_GROUP --app $INSIGHTS_NAME ) 
-  #fi
 }
 
 deploy_http_trigger() {
@@ -61,8 +55,6 @@ deploy_http_trigger() {
     cd triggers/node
   fi
 
-
-  FUNCTIONAPP_NAME=$(pulumi stack output functionAppName)
   func azure functionapp publish $FUNCTIONAPP_NAME --force
   FUNCTION_URL=$(func azure functionapp list-functions $FUNCTIONAPP_NAME --show-keys)
 
@@ -173,12 +165,14 @@ deploy_database_trigger() {
   # Get storage account name and database name
   CONTAINER_NAME=$(pulumi stack output containerName)
   DATABASE_NAME=$(pulumi stack output databaseName)
-  FUNCTION_APP=$(pulumi stack output functionApp)
 
-  ##
-  # assign role "Storage Blob Data Contributor" to relevant asignees
-  ##
+  cd runtimes/node
+  npm run build
+  
+  func azure functionapp publish $FUNCTIONAPP_NAME 
 
+  cd ..
+  cd ..
   cd ..
 
   # Deploy infrastructure
@@ -190,7 +184,7 @@ deploy_database_trigger() {
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=database&input=$DATABASE_NAME,$CONTAINER_NAME\"" >>$FILE_NAME
   echo "Initilize Function App"
-  curl -s ${FUNCTION_APP} > /tmp/output.html
+  curl -s ${FUNCTION_APP_URL} > /tmp/output.html
   echo "Start database trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=database&input=$DATABASE_NAME,$CONTAINER_NAME"
 }
@@ -326,8 +320,11 @@ while getopts 't:r:l:' flag; do
   esac
 done
 
-if [ "$RUNTIME" = 'node' ] || [ "$RUNTIME" = 'dotnet' ] || [ "$RUNTIME" = '' ]; then
+if [ "$RUNTIME" = 'node' ] || [ "$RUNTIME" = 'dotnet' ]; then
   echo 'Runtime valid'
+elif [ "$RUNTIME" = '' ]; then
+  echo 'Default runtime: node'
+  RUNTIME='node'
 else
   echo 'ERROR: Unsupported runtime'
   exit

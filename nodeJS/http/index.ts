@@ -3,7 +3,7 @@ import * as pulumi from '@pulumi/pulumi'
 import workload from '../workloads/workload'
 import * as automation from '@pulumi/pulumi/automation'
 import * as dotenv from 'dotenv'
-import { FunctionApp } from './functionApp'
+import { FunctionApp } from './../functionApp'
 
 dotenv.config({ path: './../.env' })
 
@@ -87,9 +87,10 @@ const getEndpoint = async () => {
     appInsights: insights,
     storageContainer: runAsPackageContainer,
     //path: 'azuretrigger/httpcs/bin/publish',
-    version: '~6',
+    version: '~4',
     runtime: runtime
   })
+
   /*
   // HTTP trigger
   const httpEvent = new azure.appservice.HttpEventSubscription('HttpTrigger', {
