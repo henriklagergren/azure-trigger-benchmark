@@ -1,5 +1,6 @@
 import * as azure from '@pulumi/azure'
 import * as azuread from '@pulumi/azuread'
+import * as pulumi from '@pulumi/pulumi'
 import * as cosmosdb from '@pulumi/azure/cosmosdb'
 import * as fs from 'fs'
 import * as dotenv from 'dotenv'
@@ -7,7 +8,7 @@ import { FunctionApp } from './../functionApp'
 
 dotenv.config({ path: './../.env' })
 
-const runtime = process.env.RUNTIME!.length > 0 ? process.env.RUNTIME! : 'node'
+const runtime = process.env.RUNTIME!
 
 const resourceGroup = new azure.core.ResourceGroup('ResourceGroup', {
   location: process.env.PULUMI_AZURE_LOCATION!
@@ -81,7 +82,7 @@ const runAsPackageContainer = new azure.storage.Container(`${runtime}-c`, {
   containerAccessType: 'private'
 })
 
-const connectionKey = `Cosmos${process.env['ACCOUNTDB_NAME']}ConnectionKey`
+const connectionString = pulumi.interpolate`AccountEndpoint=${sqlAccount.endpoint};AccountKey=${sqlAccount.primaryKey};`
 
 var endpoint = new FunctionApp(`${runtime}`, {
   resourceGroup: resourceGroup,
@@ -92,10 +93,12 @@ var endpoint = new FunctionApp(`${runtime}`, {
   version: '~4',
   runtime: runtime,
   appSettings: {
-    [connectionKey]: `AccountEndpoint=${process.env.ACCOUNTDB_ENDPOINT};AccountKey=${process.env.ACCOUNTDB_PRIMARYKEY};`,
     DATABASE_NAME: sqlDatabase.name,
     CONTAINER_NAME: sqlContainer.name,
-    APPLICATIONINSIGHTS_CONNECTION_STRING: insights.connectionString
+    APPLICATIONINSIGHTS_CONNECTION_STRING: insights.connectionString,
+    ACCOUNTDB_ENDPOINT: sqlAccount.endpoint,
+    ACCOUNTDB_KEY: sqlAccount.primaryKey,
+    DATABASE_CONNECTION_STRING: connectionString
   }
 })
 
@@ -366,21 +369,6 @@ function writeEnv () {
           throw err
         }
         console.log('APP ID - Added')
-      }
-    )
-  )
-
-  resourceGroup.location.apply(location =>
-    fs.writeFile(
-      '../.env',
-      'PULUMI_AZURE_LOCATION="' + location + '"\n',
-      { flag: 'a' },
-      (err: any) => {
-        if (err) {
-          console.log('ERROR: Location not added')
-          throw err
-        }
-        console.log('Location - Added')
       }
     )
   )

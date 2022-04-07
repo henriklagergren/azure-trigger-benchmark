@@ -7,17 +7,13 @@ FUNCTION_APP_URL=''
 FUNCTIONAPP_NAME=''
 
 deploy_shared_resources() {
-  # Deploy location
-  cd http
-  if [ "$LOCATION" = '' ]; then
-    echo "PULUMI_AZURE_LOCATION=\"northeurope\"" >>$FILE_NAME
-  else 
-    echo "PULUMI_AZURE_LOCATION=\"$LOCATION\"" >>$FILE_NAME
-  fi
-
-  cd ..
+  echo "PULUMI_AZURE_LOCATION=\"$LOCATION\"" >>'./.env'
+  echo "RUNTIME=\"$RUNTIME\"" >>'./.env'
   
   cd shared/ && pulumi stack select shared -c && pulumi up -f -y
+
+  echo "PULUMI_AZURE_LOCATION=\"$LOCATION\"" >>$FILE_NAME
+  echo "RUNTIME=\"$RUNTIME\"" >>$FILE_NAME
 
   # Get App Id
   APP_ID=$(pulumi stack output insightsAppId)
@@ -28,8 +24,6 @@ deploy_shared_resources() {
   # Get Function app name
   FUNCTION_APP_URL=$(pulumi stack output functionAppUrl)
   FUNCTIONAPP_NAME=$(pulumi stack output functionAppName)
-
-  echo "RUNTIME=\"$RUNTIME\"" >>$FILE_NAME
 
   # Create API key to be able to use Azure Insights REST API TODO use it with REST API
   az config set extension.use_dynamic_install=yes_without_prompt # Required to install and use app-insights module
@@ -330,8 +324,11 @@ else
   exit
 fi
 
-if [ "$LOCATION" = 'northeurope' ] || [ "$LOCATION" = 'eastus' ] || ["$LOCATION" = '']; then
+if [ "$LOCATION" = 'northeurope' ] || [ "$LOCATION" = 'eastus' ]; then
   echo 'Location valid'
+elif ["$LOCATION" = '']; then
+  echo 'Default Location: northeurope'
+  LOCATION='northeurope'
 else
   echo 'ERROR: Unsupported location'
   exit
