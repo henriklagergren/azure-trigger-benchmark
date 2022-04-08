@@ -4,7 +4,7 @@ import * as pulumi from '@pulumi/pulumi'
 import * as cosmosdb from '@pulumi/azure/cosmosdb'
 import * as fs from 'fs'
 import * as dotenv from 'dotenv'
-import { FunctionApp } from './../functionApp'
+import { FunctionApp } from './functionApp'
 
 dotenv.config({ path: './../.env' })
 
@@ -30,6 +30,7 @@ const application = new azuread.Application('application', {
   displayName: 'azure-triggers-study',
   owners: [current.then((current: { objectId: any }) => current.objectId)]
 })
+
 const servicePrincipal = new azuread.ServicePrincipal('servicePrincipal', {
   applicationId: application.applicationId,
   appRoleAssignmentRequired: false,

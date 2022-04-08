@@ -1,6 +1,5 @@
 import { AzureFunction, Context, HttpRequest } from '@azure/functions'
-import * as appInsights from 'applicationinsights'
-import workload from './../../../../workloads/workload'
+import workload from '../../../../workloads/workload'
 
 const httpTrigger: AzureFunction = async function (
   context: Context,

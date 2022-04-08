@@ -3,7 +3,7 @@ import * as pulumi from '@pulumi/pulumi'
 import workload from '../workloads/workload'
 import * as automation from '@pulumi/pulumi/automation'
 import * as dotenv from 'dotenv'
-import { FunctionApp } from './../functionApp'
+import { FunctionApp } from '../shared/functionApp'
 
 dotenv.config({ path: './../.env' })
 
