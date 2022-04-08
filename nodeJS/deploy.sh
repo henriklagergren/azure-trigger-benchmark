@@ -49,7 +49,7 @@ deploy_http_trigger() {
     cd triggers/node
   fi
 
-  func azure functionapp publish $FUNCTIONAPP_NAME --force
+  func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
   FUNCTION_URL=$(func azure functionapp list-functions $FUNCTIONAPP_NAME --show-keys)
 
   FUNCTION_URL=$(echo "$FUNCTION_URL"|grep -Eo "https://[^ >]+"|head -1)
@@ -97,7 +97,7 @@ deploy_storage_trigger() {
 
   cd runtimes/node
   
-  func azure functionapp publish $FUNCTIONAPP_NAME --force
+  func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
   cd ..
   cd ..
@@ -172,7 +172,7 @@ deploy_database_trigger() {
 
   cd runtimes/node
   
-  func azure functionapp publish $FUNCTIONAPP_NAME 
+  func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
   cd ..
   cd ..
