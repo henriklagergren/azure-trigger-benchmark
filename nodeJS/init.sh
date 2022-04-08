@@ -52,4 +52,8 @@ cd ../../..
 cd database/runtimes/node && npm install
 npm run build && func extensions install
 
+cd ..
+cd dotnet
+dotnet build
+
 cd ../../..

@@ -95,7 +95,7 @@ deploy_storage_trigger() {
   --resource-group $RESOURCE_GROUP \
   --settings STORAGE_CONTAINER_PATH=$CONTAINER_NAME
 
-  cd runtimes/node
+  cd runtimes/$RUNTIME
   
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
@@ -170,7 +170,7 @@ deploy_database_trigger() {
   CONTAINER_NAME=$(pulumi stack output containerName)
   DATABASE_NAME=$(pulumi stack output databaseName)
 
-  cd runtimes/node
+  cd runtimes/$RUNTIME
   
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
