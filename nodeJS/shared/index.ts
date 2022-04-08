@@ -97,12 +97,9 @@ var endpoint = new FunctionApp(`${runtime}`, {
     DATABASE_NAME: sqlDatabase.name,
     CONTAINER_NAME: sqlContainer.name,
     APPLICATIONINSIGHTS_CONNECTION_STRING: insights.connectionString,
-<<<<<<< HEAD
-=======
     ACCOUNTDB_ENDPOINT: sqlAccount.endpoint,
     ACCOUNTDB_KEY: sqlAccount.primaryKey,
     DATABASE_CONNECTION_STRING: connectionString
->>>>>>> e1a402bbf677396df1cbde87e3de0c9e78cc3f13
   }
 })
 
