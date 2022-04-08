@@ -5,7 +5,7 @@
       "name": "documents",
       "direction": "in",
       "leaseCollectionName": "leases",
-      "connectionStringSetting": "Cosmosdatabasetriggerd52d40b1ConnectionKey",
+      "connectionStringSetting": "DATABASE_CONNECTION_STRING",
       "databaseName": "%DATABASE_NAME%",
       "collectionName": "%CONTAINER_NAME%",
       "createLeaseCollectionIfNotExists": true,
