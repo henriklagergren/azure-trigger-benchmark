@@ -10,55 +10,59 @@ import os
 from dotenv import load_dotenv
 from datetime import date
 from datetime import timedelta
-from simple_term_menu import TerminalMenu
+#from simple_term_menu import TerminalMenu
 
 load_dotenv('./../../.env')
 
-print("Which trigger should be analyzed?")
-trigger_pick = ["All triggers", "http", "storage", "queue",
-                "database", "eventHub", "eventGrid", "serviceBus", "timer"]
-terminal_menu = TerminalMenu(trigger_pick)
-menu_entry_index = terminal_menu.show()
+# print("Which trigger should be analyzed?")
+# trigger_pick = ["All triggers", "http", "storage", "queue",
+#                "database", "eventHub", "eventGrid", "serviceBus", "timer"]
+# terminal_menu = TerminalMenu(trigger_pick)
+# menu_entry_index = terminal_menu.show()
 
 trigger_list = [["http", "GET /api/HttpTrigger"], ["blob", "Azure.Storage.Blob.BlockBlobClient-upload"], ["queue", "Azure.Storage.Queue.QueueClient-sendMessage"],
-                ["database", "POST"], ["eventHub", "POST"], ["eventGrid", "Azure.Storage.Blob.BlockBlobClient-upload"], ["serviceBus", ""], ["timer", ""]]
+                ["cosmos", "POST"], ["eventHub", "POST"], ["eventGrid", "Azure.Storage.Blob.BlockBlobClient-upload"], ["serviceBus", ""], ["timer", ""]]
 
-if(menu_entry_index != 0):
-    trigger_list = [trigger_list[menu_entry_index-1]]
+trigger_list = [trigger_list[1]]
 
-print("Which start date?")
+# if(menu_entry_index != 0): trigger_list = [trigger_list[menu_entry_index-1]]
+
+# print("Which start date?")
 start_date = [str(date.today() - timedelta(days=1)), str(date.today())]
-terminal_menu = TerminalMenu(start_date)
-menu_entry_index = terminal_menu.show()
-start_date = start_date[menu_entry_index]
+# terminal_menu = TerminalMenu(start_date)
+# menu_entry_index = terminal_menu.show()
+start_date = start_date[1]
 
-print("Does start time matter?")
-yes_no = ["No", "Yes"]
-terminal_menu = TerminalMenu(yes_no)
-answer = terminal_menu.show()
+# print("Does start time matter?")
+# yes_no = ["No", "Yes"]
+# terminal_menu = TerminalMenu(yes_no)
+# answer = terminal_menu.show()
 
-if(yes_no[answer] == "Yes"):
-    start_time = input("Write start time (HH:MM:SS): ")
-else:
-    start_time = "01:00:00"
+# if(yes_no[answer] == "Yes"):
+#    start_time = input("Write start time (HH:MM:SS): ")
+# else:
+start_time = "10:40:00"
 
 
-print("Should end date/time be current time?")
-yes_no = ["Yes", "No"]
-terminal_menu = TerminalMenu(yes_no)
-answer = terminal_menu.show()
+# print("Should end date/time be current time?")
+# yes_no = ["Yes", "No"]
+# terminal_menu = TerminalMenu(yes_no)
+# answer = terminal_menu.show()
 
-if(yes_no[answer] == "Yes"):
-    end_date = str(date.today() + timedelta(days=1))
-    end_time = "01:00:00"
-else:
-    print("Which end date?")
-    end_date = [str(date.today()), str(date.today() - timedelta(days=1)),
-                str(date.today() - timedelta(days=2))]
-    terminal_menu = TerminalMenu(end_date)
-    menu_entry_index = terminal_menu.show()
-    end_time = input("Write end time (HH:MM:SS): ")
+# if(yes_no[answer] == "Yes"):
+#    end_date = str(date.today() + timedelta(days=1))
+#end_time = "01:00:00"
+# else:
+#    print("Which end date?")
+# end_date = [str(date.today()), str(date.today() - timedelta(days=1)),
+#           str(date.today() - timedelta(days=2))]
+#    terminal_menu = TerminalMenu(end_date)
+#    menu_entry_index = terminal_menu.show()
+#    end_time = input("Write end time (HH:MM:SS): ")
+#end_date = end_date[0]
 
+end_date = str(date.today() + timedelta(days=1))
+end_time = "23:00:00"
 
 INSIGHTS_API_KEY = os.getenv('INSIGHTS_API_KEY')
 INSIGHTS_APP_ID = os.getenv('INSIGHTS_APP_ID')
@@ -255,13 +259,13 @@ for trigger_type in trigger_list:
     print('Number of valid entries: ' + str(len(all_trigger_delays_ms)))
     print('')
 
-    with open("./../results/latency/" + trigger_type[0] + '.csv', 'w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(["trigger_type", "latency"])
-        count = 0
-        for value in all_trigger_delays_ms:
-            writer.writerow([trigger_type[0], value])
-            count = count + 1
+    # with open("./../results/latency/" + trigger_type[0] + '.csv', 'w', newline='') as file:
+    #    writer = csv.writer(file)
+    #    writer.writerow(["trigger_type", "latency"])
+    #    count = 0
+    #    for value in all_trigger_delays_ms:
+    #        writer.writerow([trigger_type[0], value])
+    #        count = count + 1
 
     print('')
     print('')

@@ -115,7 +115,7 @@ print('')
 print('Extracting Dependencies...')
 for value in dependencies["tables"][0]["rows"]:
     if("Custom operationId" in value[4]):
-        switch_operation_ids.append([value[5], value[14]])
+        switch_operation_ids.append([value[1], value[5]])
     else:
         timestamp = value[0]
         timestamp = timestamp.replace('T', ' ')
@@ -132,7 +132,7 @@ for value in dependencies["tables"][0]["rows"]:
         d['timestamp'] = timestamp
         d['duration'] = value[8]
         d['operation_id'] = operation_id
-        # print(operation_id)
+        print(operation_id)
         all_entries.append(d)
 
 print('')
@@ -144,7 +144,7 @@ for value in traces["tables"][0]["rows"]:
     d['name'] = 'Cold start'
     d['timestamp'] = timestamp
     d['operation_id'] = value[7]
-    # print(value[7])
+    print(value[7])
     all_entries.append(d)
 
 # Sort by timestamp, must be done before switching operation ids
@@ -199,6 +199,7 @@ for entry in all_entries:
             if(entry['type'] == 'REQUEST'):
                 requestCount += 1
             all_groups[index].append(entry)
+
 
 for trigger_type in trigger_list:
     print('Analyzes latency for ' + trigger_type[0])

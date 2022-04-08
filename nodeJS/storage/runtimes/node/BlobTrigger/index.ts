@@ -29,24 +29,30 @@ const blobTrigger: AzureFunction = async function (
 }
 
 export default async function contextPropagatingBlobTrigger (context, req) {
-  const correlationContext = appInsights.startOperation(context, 'correlationContextStorage')
+  const correlationContext = appInsights.startOperation(
+    context,
+    'correlationContextStorage'
+  )
 
   return appInsights.wrapWithCorrelationContext(async () => {
+    const invocationId = context['bindingData']['metadata']['operationId']
+      .replace('|', '')
+      .split('.')[0]
 
-    const invocationId = context["bindingData"]["metadata"]["operationId"].replace('|', '').split('.')[0];
+    //console.log(JSON.stringify(context))
 
-   appInsights.defaultClient.trackDependency({
-    name: 'Custom operationId storage',
-    dependencyTypeName: 'HTTP',
-    resultCode: 200,
-    success: true,
-    data: correlationContext!.operation.id,
-    duration: 10,
-    id: invocationId
-  });
+    appInsights.defaultClient.trackDependency({
+      target: `http://`,
+      name: 'Custom operationId storage',
+      dependencyTypeName: 'HTTP',
+      resultCode: 200,
+      success: true,
+      data: invocationId,
+      duration: 10
+    })
 
     appInsights.defaultClient.flush()
-    
+
     return await blobTrigger(context, req)
   }, correlationContext)()
 }

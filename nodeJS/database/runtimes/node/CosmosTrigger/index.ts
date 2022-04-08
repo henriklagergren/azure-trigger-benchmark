@@ -37,21 +37,20 @@ export default async function contextPropagatingCosmosTrigger (context, req) {
   return appInsights.wrapWithCorrelationContext(async () => {
     const startTime = Date.now()
 
-    const result = await cosmosDBTrigger(context, req)
+    const invocationId = context['bindings']['documents'][0]['newOperationId']
+    console.log(context['bindings']['documents'][0]['newOperationId'])
 
-    const invocationId = context['bindings']['documents']['newOperationId']
     appInsights.defaultClient.trackDependency({
       target: `http://${process.env.DATABASE_NAME}`,
       name: 'Custom operationId database',
       dependencyTypeName: 'HTTP',
       resultCode: 200,
       success: true,
-      data: correlationContext!.operation.id,
-      duration: Date.now() - startTime,
-      id: invocationId
+      data: invocationId,
+      duration: Date.now() - startTime
     })
 
     appInsights.defaultClient.flush()
-    return result
+    return await cosmosDBTrigger(context, req)
   }, correlationContext)()
 }
