@@ -89,14 +89,25 @@ deploy_storage_trigger() {
   # Deploy storage trigger
   cd storage/ && pulumi stack select trigger -c && pulumi up -f -y
 
-  # Assign required roles, get storage account name and container name
+  STORAGE_CONNECTION_STRING=$(pulumi stack output storageConnectionString)
   STORAGE_ACCOUNT_NAME=$(pulumi stack output storageAccountName)
   CONTAINER_NAME=$(pulumi stack output containerName)
-  FUNCTION_APP=$(pulumi stack output functionApp)
-  ##
-  # assign role "Storage Blob Data Contributor" to relevant asignees
-  ##
 
+  az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --settings BLOB_CONNECTION_STRING=$STORAGE_CONNECTION_STRING
+
+  az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --settings STORAGE_CONTAINER_PATH=$CONTAINER_NAME
+
+  cd runtimes/node
+  npm run build
+  
+  func azure functionapp publish $FUNCTIONAPP_NAME --force
+
+  cd ..
+  cd ..
   cd ..
 
   # Deploy infrastructure
@@ -108,7 +119,7 @@ deploy_storage_trigger() {
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=storage&input=$CONTAINER_NAME,$STORAGE_ACCOUNT_NAME\"" >>$FILE_NAME
   echo "Initilize Function App"
-  curl -s ${FUNCTION_APP} > /tmp/output.html
+  curl -s ${FUNCTION_APP_URL} > /tmp/output.html
   echo "Start storage trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=storage&input=$CONTAINER_NAME,$STORAGE_ACCOUNT_NAME"
 }

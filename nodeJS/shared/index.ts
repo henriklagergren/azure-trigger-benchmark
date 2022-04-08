@@ -3,7 +3,7 @@ import * as azuread from '@pulumi/azuread'
 import * as cosmosdb from '@pulumi/azure/cosmosdb'
 import * as fs from 'fs'
 import * as dotenv from 'dotenv'
-import { FunctionApp } from './../functionApp'
+import { FunctionApp } from './functionApp'
 
 dotenv.config({ path: './../.env' })
 
@@ -29,6 +29,7 @@ const application = new azuread.Application('application', {
   displayName: 'azure-triggers-study',
   owners: [current.then((current: { objectId: any }) => current.objectId)]
 })
+
 const servicePrincipal = new azuread.ServicePrincipal('servicePrincipal', {
   applicationId: application.applicationId,
   appRoleAssignmentRequired: false,
@@ -95,7 +96,7 @@ var endpoint = new FunctionApp(`${runtime}`, {
     [connectionKey]: `AccountEndpoint=${process.env.ACCOUNTDB_ENDPOINT};AccountKey=${process.env.ACCOUNTDB_PRIMARYKEY};`,
     DATABASE_NAME: sqlDatabase.name,
     CONTAINER_NAME: sqlContainer.name,
-    APPLICATIONINSIGHTS_CONNECTION_STRING: insights.connectionString
+    APPLICATIONINSIGHTS_CONNECTION_STRING: insights.connectionString,
   }
 })
 
