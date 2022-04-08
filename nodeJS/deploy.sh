@@ -96,7 +96,6 @@ deploy_storage_trigger() {
   --settings STORAGE_CONTAINER_PATH=$CONTAINER_NAME
 
   cd runtimes/node
-  npm run build
   
   func azure functionapp publish $FUNCTIONAPP_NAME --force
 
@@ -172,7 +171,6 @@ deploy_database_trigger() {
   DATABASE_NAME=$(pulumi stack output databaseName)
 
   cd runtimes/node
-  npm run build
   
   func azure functionapp publish $FUNCTIONAPP_NAME 
 
