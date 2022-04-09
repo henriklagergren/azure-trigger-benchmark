@@ -38,15 +38,11 @@ deploy_http_trigger() {
   # Deploy HTTP trigger
   cd http/ && pulumi stack select trigger -c && pulumi up -f -y
 
-  # Get url to HTTP trigger gateway
-  #TRIGGER_URL=$(pulumi stack output url)
-  FUNCTION_APP_ROOT=$(pulumi stack output url)
-
   # Correct runtime
   if [ "$RUNTIME" = 'dotnet' ]; then
-    cd triggers/dotnet
+    cd runtimes/dotnet
   elif [ "$RUNTIME" = 'node' ] || [ "$RUNTIME" = '' ]; then
-    cd triggers/node
+    cd runtimes/node
   fi
 
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
@@ -54,9 +50,7 @@ deploy_http_trigger() {
 
   FUNCTION_URL=$(echo "$FUNCTION_URL"|grep -Eo "https://[^ >]+"|head -1)
 
-  cd ..
-  cd ..
-  cd ..
+  cd ../../..
 
   # Deploy infrastructure
   cd infra/ && pulumi stack select infra -c && pulumi up -f -y
@@ -66,7 +60,7 @@ deploy_http_trigger() {
 
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=http&input=$FUNCTION_URL\"" >>$FILE_NAME
-  curl -s $FUNCTION_APP_ROOT > /tmp/output.html
+  curl -s $FUNCTION_APP_URL > /tmp/output.html
   echo "Start HTTP trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=http&input=$FUNCTION_URL"
 }
@@ -324,7 +318,7 @@ while getopts 't:r:l:' flag; do
 done
 
 if [ "$RUNTIME" = 'node' ] || [ "$RUNTIME" = 'dotnet' ]; then
-  echo 'Runtime valid'
+  echo "Runtime valid: $RUNTIME"
 elif [ "$RUNTIME" = '' ]; then
   echo 'Default runtime: node'
   RUNTIME='node'
@@ -334,7 +328,7 @@ else
 fi
 
 if [ "$LOCATION" = 'northeurope' ] || [ "$LOCATION" = 'eastus' ]; then
-  echo 'Location valid'
+  echo "Location valid: $LOCATION"
 elif ["$LOCATION" = '']; then
   echo 'Default Location: northeurope'
   LOCATION='northeurope'

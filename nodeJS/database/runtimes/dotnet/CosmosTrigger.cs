@@ -21,7 +21,7 @@ namespace dotnet
     {
       this.telemetryClient = new TelemetryClient(telemetryConfiguration);
     }
-    [FunctionName("CosmosTrigger")]
+    [FunctionName("CosmosTrigger-cs")]
     public static void Run([CosmosDBTrigger(
             databaseName: "%DATABASE_NAME%",
             collectionName: "%CONTAINER_NAME%",
