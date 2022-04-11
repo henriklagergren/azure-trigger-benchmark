@@ -1,10 +1,12 @@
 TRIGGER_TYPE=''
+RUNTIME=''
+LOCATION=''
 
 deploy_http_benchmark() {
   echo "Deploying http trigger"
   cd ..
   cd ..
-  bash ./deploy.sh -t http
+  bash ./deploy.sh -t http -r $RUNTIME -l $LOCATION
   cd experiment/k6
   echo "Http trigger deployed"
   echo "Wait 10s before starting benchmark"
@@ -18,7 +20,7 @@ deploy_storage_benchmark() {
   echo "Deploying storage trigger"
   cd ..
   cd ..
-  bash ./deploy.sh -t storage
+  bash ./deploy.sh -t storage -r $RUNTIME -l $LOCATION
   cd experiment/k6
   echo "Storage trigger deployed"
   echo "Wait 10s before starting benchmark"
@@ -32,7 +34,7 @@ deploy_queue_benchmark() {
   echo "Deploying queue trigger"
   cd ..
   cd ..
-  bash ./deploy.sh -t queue
+  bash ./deploy.sh -t queue -r $RUNTIME -l $LOCATION
   cd experiment/k6
   echo "Queue trigger deployed"
   echo "Wait 10s before starting benchmark"
@@ -46,7 +48,7 @@ deploy_database_benchmark() {
   echo "Deploying database trigger"
   cd ..
   cd ..
-  bash ./deploy.sh -t database
+  bash ./deploy.sh -t database -r $RUNTIME -l $LOCATION
   cd experiment/k6
   echo "Database trigger deployed"
   echo "Wait 10s before starting benchmark"
@@ -60,7 +62,7 @@ deploy_timer_benchmark() {
   echo "Deploying timer trigger"
   cd ..
   cd ..
-  bash ./deploy.sh -t timer
+  bash ./deploy.sh -t timer -r $RUNTIME -l $LOCATION
   cd experiment/k6
   echo "Timer trigger deployed"
   echo "Wait 10s before starting benchmark"
@@ -74,7 +76,7 @@ deploy_serviceBus_benchmark() {
   echo "Deploying Service bus trigger"
   cd ..
   cd ..
-  bash ./deploy.sh -t serviceBus
+  bash ./deploy.sh -t serviceBus -r $RUNTIME -l $LOCATION
   cd experiment/k6
   echo "Service bus trigger deployed"
   echo "Wait 10s before starting benchmark"
@@ -88,7 +90,7 @@ deploy_eventHub_benchmark() {
   echo "Deploying Event hub trigger"
   cd ..
   cd ..
-  bash ./deploy.sh -t eventHub
+  bash ./deploy.sh -t eventHub -r $RUNTIME -l $LOCATION
   cd experiment/k6
   echo "Event hub trigger deployed"
   echo "Wait 10s before starting benchmark"
@@ -102,7 +104,7 @@ deploy_eventGrid_benchmark() {
   echo "Deploying Event grid trigger"
   cd ..
   cd ..
-  bash ./deploy.sh -t eventGrid
+  bash ./deploy.sh -t eventGrid -r $RUNTIME -l $LOCATION
   cd experiment/k6
   echo "Event grid trigger deployed"
   echo "Wait 10s before starting benchmark"
@@ -124,12 +126,34 @@ deploy_all_benchmarks() {
 }
 
 # Read input flags
-while getopts 't:' flag; do
+while getopts 't:r:' flag; do
   case "${flag}" in
   t) TRIGGER_TYPE="${OPTARG}" ;;
+  r) RUNTIME="${OPTARG}" ;; 
+  l) LOCATION="${OPTARG}" ;;
   *) exit 1 ;;
   esac
 done
+
+if [ "$RUNTIME" = 'node' ] || [ "$RUNTIME" = 'dotnet' ]; then
+  echo "Runtime valid: $RUNTIME"
+elif [ "$RUNTIME" = '' ]; then
+  echo 'Default runtime: node'
+  RUNTIME='node'
+else
+  echo 'ERROR: Unsupported runtime'
+  exit
+fi
+
+if [ "$LOCATION" = 'northeurope' ] || [ "$LOCATION" = 'eastus' ]; then
+  echo "Location valid: $LOCATION"
+elif ["$LOCATION" = '']; then
+  echo 'Default Location: northeurope'
+  LOCATION='northeurope'
+else
+  echo 'ERROR: Unsupported location'
+  exit
+fi
 
 # Decide which trigger to deploy based on input flag
 if [ "$TRIGGER_TYPE" = 'http' ]; then
