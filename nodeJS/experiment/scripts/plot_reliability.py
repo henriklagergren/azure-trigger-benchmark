@@ -13,9 +13,9 @@ if(os.isfile('./../results/reliability/storage.csv')):
     result_list.append(pd.read_csv(
         './../results/reliability/storage.csv', delimiter=","))
 
-if(os.isfile('./../results/reliability/database.csv')):
+if(os.isfile('./../results/reliability/cosmos.csv')):
     result_list.append(pd.read_csv(
-        './../results/reliability/database.csv', delimiter=","))
+        './../results/reliability/cosmos.csv', delimiter=","))
 
 if(os.isfile('./../results/reliability/queue.csv')):
     result_list.append(pd.read_csv(
