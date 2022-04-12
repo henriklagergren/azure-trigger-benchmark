@@ -15,13 +15,13 @@ from simple_term_menu import TerminalMenu
 load_dotenv('./../../.env')
 
 print("Which trigger should be analyzed?")
-trigger_pick = ["All triggers", "http", "storage", "queue",
-                "database", "eventHub", "eventGrid", "serviceBus", "timer"]
+trigger_pick = ["All triggers", "http", "blob", "queue",
+                "cosmos", "eventHub", "eventGrid", "serviceBus", "timer"]
 terminal_menu = TerminalMenu(trigger_pick)
 menu_entry_index = terminal_menu.show()
 
 trigger_list = [["http", "GET /api/HttpTrigger"], ["blob", "Azure.Storage.Blob.BlockBlobClient-upload"], ["queue", "Azure.Storage.Queue.QueueClient-sendMessage"],
-                ["database", "POST"], ["eventHub", "POST"], ["eventGrid", "Azure.Storage.Blob.BlockBlobClient-upload"], ["serviceBus", ""], ["timer", ""]]
+                ["cosmos", "POST"], ["eventHub", "POST"], ["eventGrid", "Azure.Storage.Blob.BlockBlobClient-upload"], ["serviceBus", ""], ["timer", ""]]
 
 if(menu_entry_index != 0):
     trigger_list = [trigger_list[menu_entry_index-1]]

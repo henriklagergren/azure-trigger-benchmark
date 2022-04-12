@@ -5,7 +5,7 @@ export let options = {
   insecureSkipTLSVerify: true,
   noConnectionReuse: false,
   vus: 3,
-  duration: '10s'
+  duration: '40s'
 }
 
 // 1. init code

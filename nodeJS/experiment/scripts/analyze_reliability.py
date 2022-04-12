@@ -14,13 +14,13 @@ load_dotenv('./../../.env')
 
 print("Which trigger should be analyzed?")
 trigger_list = ["All triggers", "http", "storage", "queue",
-                "database", "eventHub", "eventGrid", "serviceBus", "timer"]
+                "cosmos", "eventHub", "eventGrid", "serviceBus", "timer"]
 terminal_menu = TerminalMenu(trigger_list)
 menu_entry_index = terminal_menu.show()
 
 if(menu_entry_index == 0):
     trigger_list = ["http", "storage", "queue",
-                    "database", "eventHub", "eventGrid", "serviceBus", "timer"]
+                    "cosmos", "eventHub", "eventGrid", "serviceBus", "timer"]
 else:
     trigger_list = [trigger_list[menu_entry_index]]
 
@@ -94,18 +94,19 @@ for trigger_type in trigger_list:
     execute_amount = 0
 
     for value in dependencies["tables"][0]["rows"]:
-        if("custom operationid " + trigger_type.lower() in value[4].lower()):
+        if("custom operationid " + "database" in value[4].lower()):
+            print("Hej")
             execute_amount = execute_amount + 1
             timestamp = value[0]
             timestamp = timestamp.replace('T', ' ')
             timestamp = timestamp.replace('Z', '')
-            operation_id = value[1]
-            execute_duplicates.append(value[5])
+            operation_id = value[5]
+            execute_duplicates.append(value[14])
             d = {}
             d['timestamp'] = timestamp
             d['operation_id'] = operation_id
             execute_order.append(d)
-        elif "completiontrack" + trigger_type.lower() in value[4].lower():
+        elif "completiontrack" + "database" in value[4].lower():
             invoke_amount = invoke_amount + 1
             timestamp = value[0]
             timestamp = timestamp.replace('T', ' ')

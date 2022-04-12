@@ -10,7 +10,8 @@
       "collectionName": "%CONTAINER_NAME%",
       "createLeaseCollectionIfNotExists": true,
       "maxItemsPerInvocation": 1,
-      "checkpointDocumentCount": 1
+      "checkpointDocumentCount": 1,
+      "feedPollDelay": 1
     }
   ],
   "scriptFile": "../dist/CosmosTrigger/index.js"
