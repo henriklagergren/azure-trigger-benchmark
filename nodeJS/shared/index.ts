@@ -149,6 +149,21 @@ function writeEnv () {
     fs.unlinkSync('../.env')
   }
 
+  endpoint.functionAppId.apply(id =>
+    fs.writeFile(
+      '../.env',
+      'FUNCTIONAPP_ID="' + id + '"\n',
+      { flag: 'a' },
+      (err: any) => {
+        if (err) {
+          console.log('ERROR: Function App Id not added')
+          throw err
+        }
+        console.log('Function App Id - Added')
+      }
+    )
+  )
+
   sqlAccount.name.apply(name =>
     fs.writeFile(
       '../.env',

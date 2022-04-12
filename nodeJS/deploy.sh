@@ -5,6 +5,7 @@ FUNCTION_URL=''
 LOCATION=''
 FUNCTION_APP_URL=''
 FUNCTIONAPP_NAME=''
+RESOURCE_GROUP=''
 
 deploy_shared_resources() {
   echo "PULUMI_AZURE_LOCATION=\"$LOCATION\"" >>'./.env'
@@ -152,9 +153,6 @@ deploy_database_trigger() {
   # Deploy shared resources
   deploy_shared_resources
 
-  # Get name of resource group
-  RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
-
   cd ..
 
   # Deploy database trigger
@@ -168,9 +166,7 @@ deploy_database_trigger() {
   
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
-  cd ..
-  cd ..
-  cd ..
+  cd ../../..
 
   # Deploy infrastructure
   cd infra/ && pulumi stack select infra -c && pulumi up -f -y
@@ -283,15 +279,19 @@ deploy_eventGrid_trigger() {
 
   cd ..
 
-  # Deploy database trigger
+  # Deploy eventGrid trigger
   cd eventGrid/ && pulumi stack select trigger -c && pulumi up -f -y
 
   # Get timer function app name and trigger name
   EVENT_GRID_STORAGE_NAME=$(pulumi stack output eventGridStorageAccountName)
   EVENT_GRID_CONTAINER_NAME=$(pulumi stack output eventGridStorageContainerName)
-  FUNCTION_APP=$(pulumi stack output functionApp)
 
-  cd ..
+  cd runtimes/$RUNTIME
+
+  npm run build
+  func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
+
+  cd ../../..
 
   # Deploy infrastructure
   cd infra/ && pulumi stack select infra -c && pulumi up -f -y
@@ -302,7 +302,7 @@ deploy_eventGrid_trigger() {
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=eventGrid&input=$EVENT_GRID_STORAGE_NAME,$EVENT_GRID_CONTAINER_NAME\"" >>$FILE_NAME
   echo "Initilize Function App"
-  curl -s ${FUNCTION_APP} > /tmp/output.html
+  curl -s ${FUNCTION_APP_URL} > /tmp/output.html
   echo "Start event grid trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=eventGrid&input=$EVENT_GRID_STORAGE_NAME,$EVENT_GRID_CONTAINER_NAME"
 }
