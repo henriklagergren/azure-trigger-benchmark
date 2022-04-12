@@ -41,13 +41,20 @@ const geteventGridResources = async () => {
     topicType: 'Microsoft.Storage.StorageAccounts'
   })
 
+  var functionId = ''
+  if (process.env.RUNTIME == 'node') {
+    functionId = `${process.env.FUNCTIONAPP_ID}/functions/EventGridTrigger`
+  } else if (process.env.RUNTIME == 'dotnet') {
+    functionId = `${process.env.FUNCTIONAPP_ID}/functions/EventGridTrigger-cs`
+  }
+
   const subscription = new azure.eventgrid.SystemTopicEventSubscription(
     'eventGridSubscr',
     {
       resourceGroupName: resourceGroup.name,
       systemTopic: systemTopic.name,
       azureFunctionEndpoint: {
-        functionId: `${process.env.FUNCTIONAPP_ID}/functions/EventGridTrigger`,
+        functionId: functionId,
         maxEventsPerBatch: 1
       },
       name: 'eventGridSubscr',
