@@ -255,9 +255,21 @@ deploy_eventHub_trigger() {
   # Get timer function app name and trigger name
   EVENT_HUB_NAME=$(pulumi stack output eventHubName)
   EVENT_HUB_NAMESPACE=$(pulumi stack output eventHubNamespace)
-  FUNCTION_APP=$(pulumi stack output functionApp)
+  EVENT_HUB_CONNTECTION_STRING=$(pulumi stack output eventHubConnectionString)
 
-  cd ..
+  az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --settings EVENT_HUB_CONNTECTION_STRING=$EVENT_HUB_CONNTECTION_STRING
+
+  az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --settings EVENT_HUB_NAME=$EVENT_HUB_NAME
+
+  cd runtimes/$RUNTIME
+
+  func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
+
+  cd ../../..
 
   # Deploy infrastructure
   cd infra/ && pulumi stack select infra -c && pulumi up -f -y
@@ -268,7 +280,7 @@ deploy_eventHub_trigger() {
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=eventHub&input=$EVENT_HUB_NAME,$EVENT_HUB_NAMESPACE\"" >>$FILE_NAME
   echo "Initilize Function App"
-  curl -s ${FUNCTION_APP} > /tmp/output.html
+  curl -s ${FUNCTION_APP_URL} > /tmp/output.html
   echo "Start event hub trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=eventHub&input=$EVENT_HUB_NAME,$EVENT_HUB_NAMESPACE"
 }

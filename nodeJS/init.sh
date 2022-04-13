@@ -81,3 +81,13 @@ cd dotnet
 dotnet build
 
 cd ../../..
+
+# Init Event Hub Trigger
+cd eventHub/runtimes/node && npm install
+npm run build && func extensions install
+
+cd ..
+cd dotnet
+dotnet build
+
+cd ../../..
