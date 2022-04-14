@@ -21,7 +21,7 @@ namespace dotnet
     {
       this.telemetryClient = new TelemetryClient(telemetryConfiguration);
     }
-    [FunctionName("EventGridTrigger-cs")]
+    [FunctionName("EventGridTrigger-dotnet")]
     public static void Run([EventGridTrigger] EventGridEvent eventGridEvent, ILogger log)
     {
 

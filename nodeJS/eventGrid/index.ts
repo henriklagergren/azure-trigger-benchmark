@@ -45,7 +45,7 @@ const geteventGridResources = async () => {
   if (process.env.RUNTIME == 'node') {
     functionId = `${process.env.FUNCTIONAPP_ID}/functions/EventGridTrigger`
   } else if (process.env.RUNTIME == 'dotnet') {
-    functionId = `${process.env.FUNCTIONAPP_ID}/functions/EventGridTrigger-cs`
+    functionId = `${process.env.FUNCTIONAPP_ID}/functions/EventGridTrigger-dotnet`
   }
 
   const subscription = new azure.eventgrid.SystemTopicEventSubscription(

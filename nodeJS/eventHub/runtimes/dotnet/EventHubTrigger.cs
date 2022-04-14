@@ -20,7 +20,7 @@ namespace dotnet
     {
       this.telemetryClient = new TelemetryClient(telemetryConfiguration);
     }
-    [FunctionName("EventHubTrigger-cs")]
+    [FunctionName("EventHubTrigger-dotnet")]
     public async Task Run([EventHubTrigger("%EVENT_HUB_NAME%", Connection = "EVENT_HUB_CONNTECTION_STRING")] EventData[] events, ILogger log)
     {
       var exceptions = new List<Exception>();

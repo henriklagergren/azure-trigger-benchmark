@@ -12,7 +12,7 @@ namespace dotnet
 {
   public static class HttpTrigger
   {
-    [FunctionName("HttpTrigger-cs")]
+    [FunctionName("HttpTrigger-dotnet")]
     public static async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
         ILogger log)
