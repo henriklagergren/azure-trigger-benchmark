@@ -92,11 +92,10 @@ deploy_storage_trigger() {
 
   cd runtimes/$RUNTIME
   
+  dotnet build
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
-  cd ..
-  cd ..
-  cd ..
+  cd ../../..
 
   # Deploy infrastructure
   cd infra/ && pulumi stack select infra -c && pulumi up -f -y
@@ -225,9 +224,26 @@ deploy_serviceBus_trigger() {
   # Get storage account name and serviceBus name
   SERVICE_BUS_NAMESPACE=$(pulumi stack output serviceBusNamespace)
   TOPIC_NAME=$(pulumi stack output topicName)
-  FUNCTION_APP=$(pulumi stack output functionApp)
+  SERVICE_BUS_NAMESPACE_CONNECTION=$(pulumi stack output serviceBusNamespaceConnection)
+  TOPIC_SUBSCRIPTION_NAME=$(pulumi stack output topicSubscriptionName)
 
-  cd ..
+  az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --settings "TOPIC_NAME=$TOPIC_NAME" "TOPIC_SUBSCRIPTION_NAME=$TOPIC_SUBSCRIPTION_NAME" "SERVICE_BUS_NAMESPACE_CONNECTION=$SERVICE_BUS_NAMESPACE_CONNECTION"
+
+  #az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+  #--resource-group $RESOURCE_GROUP \
+  #--settings SERVICE_BUS_NAMESPACE_CONNECTION=$SERVICE_BUS_NAMESPACE_CONNECTION
+
+  #az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+  #--resource-group $RESOURCE_GROUP \
+  #--settings "TOPIC_SUBSCRIPTION_NAME=$TOPIC_SUBSCRIPTION_NAME" 
+
+  cd runtimes/$RUNTIME
+  
+  func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
+
+  cd ../../..
 
   # Deploy infrastructure
   cd infra/ && pulumi stack select infra -c && pulumi up -f -y
@@ -238,7 +254,7 @@ deploy_serviceBus_trigger() {
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=serviceBus&input=$SERVICE_BUS_NAMESPACE,$TOPIC_NAME\"" >>$FILE_NAME
   echo "Initilize Function App"
-  curl -s ${FUNCTION_APP} > /tmp/output.html
+  curl -s ${FUNCTION_APP_URL} > /tmp/output.html
   echo "Start serviceBus trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=serviceBus&input=$SERVICE_BUS_NAMESPACE,$TOPIC_NAME"
 }

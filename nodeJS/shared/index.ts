@@ -276,10 +276,10 @@ function writeEnv () {
       { flag: 'a' },
       (err: any) => {
         if (err) {
-          console.log('ERROR: Cosmos DB primary key not added')
+          console.log('ERROR: CONTAINER_ID not added')
           throw err
         }
-        console.log('Cosmos DB primary key - Added')
+        console.log('CONTAINER_ID - Added')
       }
     )
   )
@@ -309,7 +309,7 @@ function writeEnv () {
           console.log('ERROR: Principal ID not added')
           throw err
         }
-        console.log('Tenant ID - Added')
+        console.log('Principal ID - Added')
       }
     )
   )

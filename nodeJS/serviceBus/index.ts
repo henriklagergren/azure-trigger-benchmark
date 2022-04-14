@@ -1,47 +1,9 @@
-import * as appInsights from 'applicationinsights'
 import * as azure from '@pulumi/azure'
 import * as pulumi from '@pulumi/pulumi'
 import * as automation from '@pulumi/pulumi/automation'
-import workload from '../workloads/workload'
 import * as dotenv from 'dotenv'
 
 dotenv.config({ path: './../.env' })
-
-const handler = async (context: any, message: any) => {
-  // Setup application insights
-  appInsights
-    .setup()
-    .setAutoDependencyCorrelation(true)
-    .setAutoCollectRequests(true)
-    .setAutoCollectPerformance(true, true)
-    .setAutoCollectExceptions(true)
-    .setAutoCollectDependencies(true)
-    .setAutoCollectConsole(true)
-    .setUseDiskRetryCaching(false)
-    .setSendLiveMetrics(false)
-    .setDistributedTracingMode(appInsights.DistributedTracingModes.AI_AND_W3C)
-  appInsights.defaultClient.setAutoPopulateAzureProperties(true)
-  appInsights.start()
-
-  const correlationContext = appInsights.startOperation(
-    context,
-    'correlationContextDatabase'
-  )
-
-  appInsights.defaultClient.trackDependency({
-    name: 'Custom operationId serviceBus',
-    dependencyTypeName: 'HTTP',
-    resultCode: 200,
-    success: true,
-    data: correlationContext!.operation.id,
-    duration: 10,
-    id: message.replace("|","").split(".")[0]
-  });
-
-  appInsights.defaultClient.flush();
-
-  return workload()
-}
 
 const getServiceBusResources = async () => {
   // Import shared resources
@@ -57,8 +19,6 @@ const getServiceBusResources = async () => {
     'ResourceGroup',
     resourceGroupId
   )
-  const insightsId = shared.requireOutput('insightsId')
-  const insights = azure.appinsights.Insights.get('Insights', insightsId)
 
   const serviceBusNamespace = new azure.servicebus.Namespace(
     'serviceBusNamespace',
@@ -77,20 +37,22 @@ const getServiceBusResources = async () => {
     enablePartitioning: true
   })
 
-  const subscription2 = topic.onEvent('serviceBusTrigger', {
-    location: process.env.PULUMI_AZURE_LOCATION,
-    callback: handler,
-    appSettings: {
-      APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey
+  const topicSubscription = new azure.servicebus.Subscription(
+    'serviceBusTopicSub',
+    {
+      name: 'serviceBusTopicSub',
+      topicId: topic.id,
+      maxDeliveryCount: 1
     }
-  })
+  )
 
   return {
     serviceBusNamespace: serviceBusNamespace.name,
+    serviceBusNamespaceConnection: pulumi.unsecret(
+      serviceBusNamespace.defaultPrimaryConnectionString
+    ),
     topicName: topic.name,
-    functionApp: subscription2.functionApp.endpoint.apply(e =>
-      e.replace('/api/', '')
-    )
+    topicSubscriptionName: topicSubscription.name
   }
 }
 
