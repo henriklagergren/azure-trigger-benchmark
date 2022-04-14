@@ -34,20 +34,6 @@ const getStorageResources = async () => {
     containerAccessType: 'private'
   })
 
-  /*const blobEvent = container.onBlobEvent('StorageTrigger', {
-    resourceGroup: resourceGroup,
-    location: process.env.PULUMI_AZURE_LOCATION,
-
-    callback: handler,
-    appSettings: {
-      APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
-      AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
-      AZURE_TENANT_ID: process.env.AZURE_TENANT_ID,
-      AZURE_CLIENT_SECRET: process.env.AZURE_CLIENT_SECRET
-    }
-  })*/
-  
-
   return {
     storageAccountName: storageAccount.name,
     containerName: container.name,

@@ -62,6 +62,12 @@ npm run build && func extensions install
 
 cd ../../..
 
+# Init Queue Trigger
+cd queue/runtimes/node && npm install
+npm run build && func extensions install
+
+cd ../../..
+
 # Init Database Trigger
 cd database/runtimes/node && npm install
 npm run build && func extensions install

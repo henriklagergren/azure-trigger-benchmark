@@ -93,9 +93,7 @@ deploy_storage_trigger() {
   
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
-  cd ..
-  cd ..
-  cd ..
+  cd ../../..
 
   # Deploy infrastructure
   cd infra/ && pulumi stack select infra -c && pulumi up -f -y
@@ -124,15 +122,23 @@ deploy_queue_trigger() {
   cd queue/ && pulumi stack select trigger -c && pulumi up -f -y
 
   # Get storage account name and queue name
+  QUEUE_CONNECTION_STRING=$(pulumi stack output queueConnectionString)
   STORAGE_ACCOUNT_NAME=$(pulumi stack output storageAccountName)
   QUEUE_NAME=$(pulumi stack output queueName)
-  FUNCTION_APP=$(pulumi stack output functionApp)
 
-  ##
-  # assign role "Storage Blob Data Contributor" to relevant asignees
-  ##
+  az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --settings QUEUE_CONNECTION_STRING=$QUEUE_CONNECTION_STRING
 
-  cd ..
+  az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --settings QUEUE_NAME=$QUEUE_NAME
+
+  cd runtimes/$RUNTIME
+
+  func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
+
+  cd ../../..
 
   # Deploy infrastructure
   cd infra/ && pulumi stack select infra -c && pulumi up -f -y
@@ -143,7 +149,7 @@ deploy_queue_trigger() {
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=queue&input=$QUEUE_NAME,$STORAGE_ACCOUNT_NAME\"" >>$FILE_NAME
   echo "Initilize Function App"
-  curl -s ${FUNCTION_APP} > /tmp/output.html
+  curl -s ${FUNCTION_APP_URL} > /tmp/output.html
   echo "Start queue trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=queue&input=$QUEUE_NAME,$STORAGE_ACCOUNT_NAME"
 }
@@ -168,9 +174,7 @@ deploy_database_trigger() {
   
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
-  cd ..
-  cd ..
-  cd ..
+  cd ../../..
 
   # Deploy infrastructure
   cd infra/ && pulumi stack select infra -c && pulumi up -f -y
