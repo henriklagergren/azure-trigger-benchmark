@@ -6,12 +6,8 @@
       "direction": "in",
       "queueName": "%QUEUE_NAME%",
       "connection": "QUEUE_CONNECTION_STRING",
-      "maxPollingInterval": 2000,
-      "batchSize": 32,
-      "newBatchThreshold": 16,
-      "visibilityTimeout": 0,
-      "maxDequeueCount": 5
+      "maxPollingInterval": "timespan(100ms)"
     }
   ],
-  "scriptFile": "../dist/QueueTrigger/index.js"
+  "scriptFile": "../dist/QueueTrigger-node/index.js"
 }

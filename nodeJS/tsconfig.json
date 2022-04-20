@@ -24,7 +24,7 @@
     "timer/index.ts",
     "eventHub/index.ts",
     "eventGrid/index.ts",
-    "http/runtimes/node/HttpTrigger/index.ts",
-    "database/runtimes/node/CosmosTrigger/index.ts"
+    "http/runtimes/node/HttpTrigger-node/index.ts",
+    "database/runtimes/node/CosmosTrigger-node/index.ts"
   ]
 }

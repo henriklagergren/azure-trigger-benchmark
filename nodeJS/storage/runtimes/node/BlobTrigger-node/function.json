@@ -8,5 +8,5 @@
       "connection": "BLOB_CONNECTION_STRING"
     }
   ],
-  "scriptFile": "../dist/BlobTrigger/index.js"
+  "scriptFile": "../dist/BlobTrigger-node/index.js"
 }
