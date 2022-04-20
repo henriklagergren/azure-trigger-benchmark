@@ -47,7 +47,7 @@ export default async function contextPropagatingQueueTrigger (
       dependencyTypeName: 'HTTP',
       resultCode: 200,
       success: true,
-      data: '',
+      data: invocationId,
       duration: Date.now() - startTime
     })
 
