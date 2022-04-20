@@ -1,42 +1,35 @@
 using System;
-using System.Collections.Generic;
-using Microsoft.Azure.Documents;
+using System.IO;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights;
-using Newtonsoft.Json.Linq;
 
 namespace dotnet
 {
-  public class CosmosTrigger
+  public class BlobTrigger
   {
     private readonly TelemetryClient telemetryClient;
 
     /// Using dependency injection will guarantee that you use the same configuration for telemetry collected automatically and manually.
-    public CosmosTrigger(TelemetryConfiguration telemetryConfiguration)
+    public BlobTrigger(TelemetryConfiguration telemetryConfiguration)
     {
       this.telemetryClient = new TelemetryClient(telemetryConfiguration);
     }
-    [FunctionName("CosmosTrigger-dotnet")]
-    public static void Run([CosmosDBTrigger(
-            databaseName: "%DATABASE_NAME%",
-            collectionName: "%CONTAINER_NAME%",
-            ConnectionStringSetting = "DATABASE_CONNECTION_STRING",
-            LeaseCollectionName = "leases",
-            CreateLeaseCollectionIfNotExists = true,
-            MaxItemsPerInvocation = 1,
-            CheckpointDocumentCount = 1)]IReadOnlyList<Document> input,
-        ILogger log)
+    [FunctionName("BlobTrigger")]
+    public void Run([BlobTrigger("STORAGE_CONTAINER_PATH", Connection = "BLOB_CONNECTION_STRING")] Stream myBlob, string name, ILogger log)
     {
+      log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes");
+
       var config = TelemetryConfiguration.CreateDefault();
       var telemetry = new TelemetryClient(config);
 
       telemetry.TrackDependency(
-        dependencyName: "Custom operationId database",
+        dependencyName: "Custom operationId storage",
         target: "http://",
         dependencyTypeName: "HTTP",
-        data: JObject.Parse(input[0].ToString())["newOperationId"].ToString(),
+        data: name,
         startTime: DateTime.Now,
         duration: TimeSpan.FromMilliseconds(10),
         resultCode: "200",

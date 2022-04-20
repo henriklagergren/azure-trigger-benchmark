@@ -8,7 +8,7 @@ while getopts 't:' flag; do
     esac
 done
 
-# Decide which trigger to deploy based on input flag
+# Decide which trigger to destroy based on input flag
     cd $TRIGGER_TYPE/ && pulumi destroy -f -y
     cd ..
     cd infra/ && pulumi destroy -f -y

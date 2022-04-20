@@ -5,6 +5,7 @@ FUNCTION_URL=''
 LOCATION=''
 FUNCTION_APP_URL=''
 FUNCTIONAPP_NAME=''
+RESOURCE_GROUP=''
 
 deploy_shared_resources() {
   echo "PULUMI_AZURE_LOCATION=\"$LOCATION\"" >>'./.env'
@@ -91,6 +92,7 @@ deploy_storage_trigger() {
 
   cd runtimes/$RUNTIME
   
+  dotnet build
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
   cd ../../..
@@ -157,9 +159,6 @@ deploy_queue_trigger() {
 deploy_database_trigger() {
   # Deploy shared resources
   deploy_shared_resources
-
-  # Get name of resource group
-  RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
 
   cd ..
 
@@ -233,9 +232,26 @@ deploy_serviceBus_trigger() {
   # Get storage account name and serviceBus name
   SERVICE_BUS_NAMESPACE=$(pulumi stack output serviceBusNamespace)
   TOPIC_NAME=$(pulumi stack output topicName)
-  FUNCTION_APP=$(pulumi stack output functionApp)
+  SERVICE_BUS_NAMESPACE_CONNECTION=$(pulumi stack output serviceBusNamespaceConnection)
+  TOPIC_SUBSCRIPTION_NAME=$(pulumi stack output topicSubscriptionName)
 
-  cd ..
+  az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --settings "TOPIC_NAME=$TOPIC_NAME" "TOPIC_SUBSCRIPTION_NAME=$TOPIC_SUBSCRIPTION_NAME" "SERVICE_BUS_NAMESPACE_CONNECTION=$SERVICE_BUS_NAMESPACE_CONNECTION"
+
+  #az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+  #--resource-group $RESOURCE_GROUP \
+  #--settings SERVICE_BUS_NAMESPACE_CONNECTION=$SERVICE_BUS_NAMESPACE_CONNECTION
+
+  #az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+  #--resource-group $RESOURCE_GROUP \
+  #--settings "TOPIC_SUBSCRIPTION_NAME=$TOPIC_SUBSCRIPTION_NAME" 
+
+  cd runtimes/$RUNTIME
+  
+  func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
+
+  cd ../../..
 
   # Deploy infrastructure
   cd infra/ && pulumi stack select infra -c && pulumi up -f -y
@@ -246,7 +262,7 @@ deploy_serviceBus_trigger() {
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=serviceBus&input=$SERVICE_BUS_NAMESPACE,$TOPIC_NAME\"" >>$FILE_NAME
   echo "Initilize Function App"
-  curl -s ${FUNCTION_APP} > /tmp/output.html
+  curl -s ${FUNCTION_APP_URL} > /tmp/output.html
   echo "Start serviceBus trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=serviceBus&input=$SERVICE_BUS_NAMESPACE,$TOPIC_NAME"
 }
@@ -263,9 +279,21 @@ deploy_eventHub_trigger() {
   # Get timer function app name and trigger name
   EVENT_HUB_NAME=$(pulumi stack output eventHubName)
   EVENT_HUB_NAMESPACE=$(pulumi stack output eventHubNamespace)
-  FUNCTION_APP=$(pulumi stack output functionApp)
+  EVENT_HUB_CONNTECTION_STRING=$(pulumi stack output eventHubConnectionString)
 
-  cd ..
+  az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --settings EVENT_HUB_CONNTECTION_STRING=$EVENT_HUB_CONNTECTION_STRING
+
+  az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --settings EVENT_HUB_NAME=$EVENT_HUB_NAME
+
+  cd runtimes/$RUNTIME
+
+  func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
+
+  cd ../../..
 
   # Deploy infrastructure
   cd infra/ && pulumi stack select infra -c && pulumi up -f -y
@@ -276,7 +304,7 @@ deploy_eventHub_trigger() {
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=eventHub&input=$EVENT_HUB_NAME,$EVENT_HUB_NAMESPACE\"" >>$FILE_NAME
   echo "Initilize Function App"
-  curl -s ${FUNCTION_APP} > /tmp/output.html
+  curl -s ${FUNCTION_APP_URL} > /tmp/output.html
   echo "Start event hub trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=eventHub&input=$EVENT_HUB_NAME,$EVENT_HUB_NAMESPACE"
 }
@@ -287,15 +315,19 @@ deploy_eventGrid_trigger() {
 
   cd ..
 
-  # Deploy database trigger
+  # Deploy eventGrid trigger
   cd eventGrid/ && pulumi stack select trigger -c && pulumi up -f -y
 
   # Get timer function app name and trigger name
   EVENT_GRID_STORAGE_NAME=$(pulumi stack output eventGridStorageAccountName)
   EVENT_GRID_CONTAINER_NAME=$(pulumi stack output eventGridStorageContainerName)
-  FUNCTION_APP=$(pulumi stack output functionApp)
 
-  cd ..
+  cd runtimes/$RUNTIME
+
+  npm run build
+  func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
+
+  cd ../../..
 
   # Deploy infrastructure
   cd infra/ && pulumi stack select infra -c && pulumi up -f -y
@@ -306,7 +338,7 @@ deploy_eventGrid_trigger() {
   echo "Write URL to .env"
   echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=eventGrid&input=$EVENT_GRID_STORAGE_NAME,$EVENT_GRID_CONTAINER_NAME\"" >>$FILE_NAME
   echo "Initilize Function App"
-  curl -s ${FUNCTION_APP} > /tmp/output.html
+  curl -s ${FUNCTION_APP_URL} > /tmp/output.html
   echo "Start event grid trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=eventGrid&input=$EVENT_GRID_STORAGE_NAME,$EVENT_GRID_CONTAINER_NAME"
 }

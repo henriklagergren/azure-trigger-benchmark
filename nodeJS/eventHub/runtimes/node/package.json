@@ -1,5 +1,5 @@
 {
-  "name": "HttpTrigger-node",
+  "name": "",
   "version": "",
   "scripts" : {
     "build": "tsc",
@@ -17,6 +17,6 @@
     "typescript": "^3.3.3"
   },
   "dependencies": {
-    "applicationinsights": "^2.3.1"
+    "applicationinsights": "^2.3.0"
   }
 }

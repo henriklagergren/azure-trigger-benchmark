@@ -149,6 +149,21 @@ function writeEnv () {
     fs.unlinkSync('../.env')
   }
 
+  endpoint.functionAppId.apply(id =>
+    fs.writeFile(
+      '../.env',
+      'FUNCTIONAPP_ID="' + id + '"\n',
+      { flag: 'a' },
+      (err: any) => {
+        if (err) {
+          console.log('ERROR: Function App Id not added')
+          throw err
+        }
+        console.log('Function App Id - Added')
+      }
+    )
+  )
+
   sqlAccount.name.apply(name =>
     fs.writeFile(
       '../.env',
@@ -261,10 +276,10 @@ function writeEnv () {
       { flag: 'a' },
       (err: any) => {
         if (err) {
-          console.log('ERROR: Cosmos DB primary key not added')
+          console.log('ERROR: CONTAINER_ID not added')
           throw err
         }
-        console.log('Cosmos DB primary key - Added')
+        console.log('CONTAINER_ID - Added')
       }
     )
   )
@@ -294,7 +309,7 @@ function writeEnv () {
           console.log('ERROR: Principal ID not added')
           throw err
         }
-        console.log('Tenant ID - Added')
+        console.log('Principal ID - Added')
       }
     )
   )

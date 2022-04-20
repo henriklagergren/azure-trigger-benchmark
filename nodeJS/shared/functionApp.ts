@@ -19,6 +19,7 @@ export interface FunctionAppOptions {
 export class FunctionApp extends pulumi.ComponentResource {
   public url: pulumi.Output<string>
   public functionAppName: pulumi.Output<string>
+  public functionAppId: pulumi.Output<string>
 
   constructor (name: string, options: FunctionAppOptions) {
     super('henriktao:azure:MyFunctionApp', `${name}`)
@@ -82,5 +83,6 @@ export class FunctionApp extends pulumi.ComponentResource {
 
     this.functionAppName = app.name.apply(appName => appName)
     this.url = app.defaultHostname.apply(h => `https://${h}/`)
+    this.functionAppId = app.id.apply(id => id)
   }
 }
