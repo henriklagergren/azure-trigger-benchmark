@@ -8,13 +8,11 @@ FUNCTIONAPP_NAME=''
 RESOURCE_GROUP=''
 
 deploy_shared_resources() {
-  echo "PULUMI_AZURE_LOCATION=\"$LOCATION\"" >>'./.env'
+  echo "PULUMI_AZURE_LOCATION=\"$LOCATION\"" >'./.env'
   echo "RUNTIME=\"$RUNTIME\"" >>'./.env'
+  echo "BENCHMARK_URL=" >> './.env'
   
   cd shared/ && pulumi stack select shared -c && pulumi up -f -y
-
-  echo "PULUMI_AZURE_LOCATION=\"$LOCATION\"" >>$FILE_NAME
-  echo "RUNTIME=\"$RUNTIME\"" >>$FILE_NAME
 
   # Get Resource group name
   RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
@@ -28,9 +26,7 @@ deploy_shared_resources() {
 }
 
 deploy_http_trigger() {
-  deploy_shared_resources
-
-  cd ..
+  checkIfSharedNeedDeploy
 
   # Deploy HTTP trigger
   cd http/ && pulumi stack select trigger -c && pulumi up -f -y
@@ -56,17 +52,14 @@ deploy_http_trigger() {
   BENCHMARK_URL=$(pulumi stack output url)
 
   echo "Write URL to .env"
-  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=http&input=$FUNCTION_URL\"" >>$FILE_NAME
+  sed -i "s|^BENCHMARK_URL=.*|BENCHMARK_URL=\"$BENCHMARK_URL\?trigger=http\&input=$FUNCTION_URL\"|" $FILE_NAME
   curl -s $FUNCTION_APP_URL > /tmp/output.html
   echo "Start HTTP trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=http&input=$FUNCTION_URL"
 }
 
 deploy_storage_trigger() {
-  # Deploy shared resources
-  deploy_shared_resources
-
-  cd ..
+  checkIfSharedNeedDeploy
 
   # Deploy storage trigger
   cd storage/ && pulumi stack select trigger -c && pulumi up -f -y
@@ -93,7 +86,11 @@ deploy_storage_trigger() {
   BENCHMARK_URL=$(pulumi stack output url)
 
   echo "Write URL to .env"
-  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=storage&input=$CONTAINER_NAME,$STORAGE_ACCOUNT_NAME\"" >>$FILE_NAME
+
+  sed -i "s|^BENCHMARK_URL=.*|BENCHMARK_URL=\"$BENCHMARK_URL\?trigger=storage\&input=$CONTAINER_NAME,$STORAGE_ACCOUNT_NAME\"|" $FILE_NAME
+
+  #echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=storage&input=$CONTAINER_NAME,$STORAGE_ACCOUNT_NAME\"" >>$FILE_NAME
+  
   echo "Initilize Function App"
   curl -s ${FUNCTION_APP_URL} > /tmp/output.html
   echo "Start storage trigger benchmark:"
@@ -101,10 +98,7 @@ deploy_storage_trigger() {
 }
 
 deploy_queue_trigger() {
-  # Deploy shared resources
-  deploy_shared_resources
-
-  cd ..
+  checkIfSharedNeedDeploy
 
   # Deploy queue trigger
   cd queue/ && pulumi stack select trigger -c && pulumi up -f -y
@@ -131,7 +125,10 @@ deploy_queue_trigger() {
   BENCHMARK_URL=$(pulumi stack output url)
 
   echo "Write URL to .env"
-  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=queue&input=$QUEUE_NAME,$STORAGE_ACCOUNT_NAME\"" >>$FILE_NAME
+
+  sed -i "s|^BENCHMARK_URL=.*|BENCHMARK_URL=\"$BENCHMARK_URL\?trigger=queue\&input=$QUEUE_NAME,$STORAGE_ACCOUNT_NAME\"|" $FILE_NAME
+
+  #echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=queue&input=$QUEUE_NAME,$STORAGE_ACCOUNT_NAME\"" >>$FILE_NAME
   echo "Initilize Function App"
   curl -s ${FUNCTION_APP_URL} > /tmp/output.html
   echo "Start queue trigger benchmark:"
@@ -139,10 +136,7 @@ deploy_queue_trigger() {
 }
 
 deploy_database_trigger() {
-  # Deploy shared resources
-  deploy_shared_resources
-
-  cd ..
+  checkIfSharedNeedDeploy
 
   # Deploy database trigger
   cd database/ && pulumi stack select trigger -c && pulumi up -f -y
@@ -164,7 +158,10 @@ deploy_database_trigger() {
   BENCHMARK_URL=$(pulumi stack output url)
 
   echo "Write URL to .env"
-  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=database&input=$DATABASE_NAME,$CONTAINER_NAME\"" >>$FILE_NAME
+  sed -i "s|^BENCHMARK_URL=.*|BENCHMARK_URL=\"$BENCHMARK_URL\?trigger=database\&input=$DATABASE_NAME,$CONTAINER_NAME\"|" $FILE_NAME
+  
+  #echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=database&input=$DATABASE_NAME,$CONTAINER_NAME\"" >>$FILE_NAME
+
   echo "Initilize Function App"
   curl -s ${FUNCTION_APP_URL} > /tmp/output.html
   echo "Start database trigger benchmark:"
@@ -172,10 +169,7 @@ deploy_database_trigger() {
 }
 
 deploy_timer_trigger() {
-  # Deploy shared resources
-  deploy_shared_resources
-
-  cd ..
+  checkIfSharedNeedDeploy
 
   # Deploy database trigger
   cd timer/ && pulumi stack select trigger -c && pulumi up -f -y
@@ -193,17 +187,17 @@ deploy_timer_trigger() {
   BENCHMARK_URL=$(pulumi stack output url)
 
   echo "Write URL to .env"
-  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=timer&input=https://$TIMER_FUNCTION_APP_NAME/admin/functions/$TIMER_TRIGGER_NAME\"" >>$FILE_NAME
+
+  sed -i "s|^BENCHMARK_URL=.*|BENCHMARK_URL=\"$BENCHMARK_URL\?trigger=timer\&input=https://$TIMER_FUNCTION_APP_NAME/admin/functions/$TIMER_TRIGGER_NAME\"|" $FILE_NAME
+
+  #echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=timer&input=https://$TIMER_FUNCTION_APP_NAME/admin/functions/$TIMER_TRIGGER_NAME\"" >>$FILE_NAME
 
   echo "Start timer trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=timer&input=https://$TIMER_FUNCTION_APP_NAME/admin/functions/$TIMER_TRIGGER_NAME"
 }
 
 deploy_serviceBus_trigger() {
-  # Deploy shared resources
-  deploy_shared_resources
-
-  cd ..
+  checkIfSharedNeedDeploy
 
   # Deploy serviceBus trigger
   cd serviceBus/ && pulumi stack select trigger -c && pulumi up -f -y
@@ -231,7 +225,10 @@ deploy_serviceBus_trigger() {
   BENCHMARK_URL=$(pulumi stack output url)
 
   echo "Write URL to .env"
-  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=serviceBus&input=$SERVICE_BUS_NAMESPACE,$TOPIC_NAME\"" >>$FILE_NAME
+
+  sed -i "s|^BENCHMARK_URL=.*|BENCHMARK_URL=\"$BENCHMARK_URL\?trigger=serviceBus\&input=$SERVICE_BUS_NAMESPACE,$TOPIC_NAME\"|" $FILE_NAME
+
+  #echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=serviceBus&input=$SERVICE_BUS_NAMESPACE,$TOPIC_NAME\"" >>$FILE_NAME
   echo "Initilize Function App"
   curl -s ${FUNCTION_APP_URL} > /tmp/output.html
   echo "Start serviceBus trigger benchmark:"
@@ -239,10 +236,7 @@ deploy_serviceBus_trigger() {
 }
 
 deploy_eventHub_trigger() {
-  # Deploy shared resources
-  deploy_shared_resources
-
-  cd ..
+  checkIfSharedNeedDeploy
 
   # Deploy database trigger
   cd eventHub/ && pulumi stack select trigger -c && pulumi up -f -y
@@ -269,7 +263,10 @@ deploy_eventHub_trigger() {
   BENCHMARK_URL=$(pulumi stack output url)
 
   echo "Write URL to .env"
-  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=eventHub&input=$EVENT_HUB_NAME,$EVENT_HUB_NAMESPACE\"" >>$FILE_NAME
+
+  sed -i "s|^BENCHMARK_URL=.*|BENCHMARK_URL=\"$BENCHMARK_URL\?trigger=eventHub\&input=$EVENT_HUB_NAME,$EVENT_HUB_NAMESPACE\"|" $FILE_NAME
+
+  #echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=eventHub&input=$EVENT_HUB_NAME,$EVENT_HUB_NAMESPACE\"" >>$FILE_NAME
   echo "Initilize Function App"
   curl -s ${FUNCTION_APP_URL} > /tmp/output.html
   echo "Start event hub trigger benchmark:"
@@ -277,15 +274,12 @@ deploy_eventHub_trigger() {
 }
 
 deploy_eventGrid_trigger() {
-  # Deploy shared resources
-  deploy_shared_resources
-  cd ..
+  checkIfSharedNeedDeploy
   
   # In the case of eventGrid, the trigger has to be published before a subscription resource associated to the trigger can be created.
 
   cd eventGrid/runtimes/$RUNTIME
 
-  npm run build
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
   cd ../../..
@@ -306,13 +300,43 @@ deploy_eventGrid_trigger() {
   BENCHMARK_URL=$(pulumi stack output url)
 
   echo "Write URL to .env"
-  echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=eventGrid&input=$EVENT_GRID_STORAGE_NAME,$EVENT_GRID_CONTAINER_NAME\"" >>$FILE_NAME
+
+  sed -i "s|^BENCHMARK_URL=.*|BENCHMARK_URL=\"$BENCHMARK_URL\?trigger=eventGrid\&input=$EVENT_GRID_STORAGE_NAME,$EVENT_GRID_CONTAINER_NAME\"|" $FILE_NAME
+
+  #echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=eventGrid&input=$EVENT_GRID_STORAGE_NAME,$EVENT_GRID_CONTAINER_NAME\"" >>$FILE_NAME
   echo "Initilize Function App"
   curl -s ${FUNCTION_APP_URL} > /tmp/output.html
   echo "Start event grid trigger benchmark:"
   echo "$BENCHMARK_URL?trigger=eventGrid&input=$EVENT_GRID_STORAGE_NAME,$EVENT_GRID_CONTAINER_NAME"
 }
 
+checkIfSharedNeedDeploy(){
+  TEMP_RUNTIME=''
+  TEMP_LOCATION=''
+  while read line; do    
+    if [[ $line == RUNTIME* ]]; then
+      TEMP_RUNTIME=$line
+    fi
+    if [[ $line == PULUMI_AZURE_LOCATION* ]]; then
+      TEMP_LOCATION=$line
+    fi
+done < "./.env" 
+
+if [ "$TEMP_RUNTIME" = "" ] || [ "$TEMP_RUNTIME" != "RUNTIME=\"$RUNTIME\"" ] || [ "$TEMP_LOCATION" = "" ] || [ "$TEMP_LOCATION" != "PULUMI_AZURE_LOCATION=\"$LOCATION\"" ]; then
+  echo Shared needs to be re-deployed because either the runtime or location has been changed.
+  deploy_shared_resources
+  cd ..
+else 
+  echo No change of runtime nor location. Skipping update of shared resources.
+  cd shared
+  # Get Resource group name
+  RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
+  # Get Function app name
+  FUNCTION_APP_URL=$(pulumi stack output functionAppUrl)
+  FUNCTIONAPP_NAME=$(pulumi stack output functionAppName)
+  cd ..
+fi
+}
 # Read input flags
 while getopts 't:r:l:' flag; do
   case "${flag}" in

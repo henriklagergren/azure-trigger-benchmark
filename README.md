@@ -27,6 +27,7 @@
        - If nothing specified: _node_
      - -l: _northeurope_, _eastus_
        - If nothing specified: _northeurope_
+   - NOTE: First time deploying the resources will take approx. 10 minutes.
 
 7. Run Experiment:
 
