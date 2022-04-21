@@ -74,7 +74,6 @@ deploy_storage_trigger() {
 
   cd runtimes/$RUNTIME
   
-  dotnet build
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
   cd ../../..
