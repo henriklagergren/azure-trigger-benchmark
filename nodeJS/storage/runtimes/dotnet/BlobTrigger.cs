@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
@@ -17,11 +18,9 @@ namespace dotnet
     {
       this.telemetryClient = new TelemetryClient(telemetryConfiguration);
     }
-    [FunctionName("BlobTrigger")]
-    public void Run([BlobTrigger("STORAGE_CONTAINER_PATH", Connection = "BLOB_CONNECTION_STRING")] Stream myBlob, string name, ILogger log)
+    [FunctionName("BlobTrigger-dotnet")]
+    public void Run([BlobTrigger("%STORAGE_CONTAINER_PATH%", Connection = "BLOB_CONNECTION_STRING")] Stream myBlob, string name, IDictionary<string, string> metaData, ILogger log)
     {
-      log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes");
-
       var config = TelemetryConfiguration.CreateDefault();
       var telemetry = new TelemetryClient(config);
 
@@ -29,12 +28,14 @@ namespace dotnet
         dependencyName: "Custom operationId storage",
         target: "http://",
         dependencyTypeName: "HTTP",
-        data: name,
+        data: metaData["operationId"].Replace("|", "")
+      .Split(".")[0],
         startTime: DateTime.Now,
         duration: TimeSpan.FromMilliseconds(10),
         resultCode: "200",
         success: true
       );
+
     }
   }
 }

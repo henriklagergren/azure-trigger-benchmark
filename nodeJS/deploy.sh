@@ -70,7 +70,7 @@ deploy_storage_trigger() {
 
   az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
   --resource-group $RESOURCE_GROUP \
-  --settings "BLOB_CONNECTION_STRING=$STORAGE_CONNECTION_STRING" "STORAGE_CONTAINER_PATH=$CONTAINER_NAME"
+  --settings "BLOB_CONNECTION_STRING=$STORAGE_CONNECTION_STRING" "STORAGE_CONTAINER_PATH=$CONTAINER_NAME/{name}"
 
   cd runtimes/$RUNTIME
   
