@@ -1,5 +1,8 @@
 import * as appInsights from 'applicationinsights'
 import { AzureFunction, Context } from '@azure/functions'
+import * as dotenv from 'dotenv'
+
+dotenv.config({ path: './../../../../.env' })
 
 appInsights
   .setup()
@@ -16,7 +19,7 @@ appInsights
 appInsights.defaultClient.setAutoPopulateAzureProperties(true)
 appInsights.start()
 
-const blobTrigger: AzureFunction = async function (
+const databaseTrigger: AzureFunction = async function (
   context: Context,
   documents: any[]
 ): Promise<void> {
@@ -28,31 +31,26 @@ const blobTrigger: AzureFunction = async function (
   }
 }
 
-export default async function contextPropagatingBlobTrigger (context, req) {
-  const correlationContext = appInsights.startOperation(
-    context,
-    'correlationContextStorage'
-  )
+export default async function contextPropagatingDatabaseTrigger (context, req) {
+  const correlationContext = appInsights.startOperation(context, req)
 
   return appInsights.wrapWithCorrelationContext(async () => {
-    const invocationId = context['bindingData']['metadata']['operationId']
-      .replace('|', '')
-      .split('.')[0]
+    const startTime = Date.now()
 
-    //console.log(JSON.stringify(context))
+    const invocationId = context['bindings']['documents'][0]['newOperationId']
+    console.log(context['bindings']['documents'][0]['newOperationId'])
 
     appInsights.defaultClient.trackDependency({
-      target: `http://`,
-      name: 'Custom operationId storage',
+      target: `http://${process.env.DATABASE_NAME}`,
+      name: 'Custom operationId database',
       dependencyTypeName: 'HTTP',
       resultCode: 200,
       success: true,
       data: invocationId,
-      duration: 10
+      duration: Date.now() - startTime
     })
 
     appInsights.defaultClient.flush()
-
-    return await blobTrigger(context, req)
+    return await databaseTrigger(context, req)
   }, correlationContext)()
 }

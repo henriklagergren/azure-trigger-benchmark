@@ -84,7 +84,7 @@ deploy_storage_trigger() {
 
   az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
   --resource-group $RESOURCE_GROUP \
-  --settings BLOB_CONNECTION_STRING=$STORAGE_CONNECTION_STRING
+  --settings STORAGE_CONNECTION_STRING=$STORAGE_CONNECTION_STRING
 
   az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
   --resource-group $RESOURCE_GROUP \

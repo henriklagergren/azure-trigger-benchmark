@@ -396,9 +396,12 @@ const handler = async (context: any, req: any) => {
     
     if(req.query.id != undefined){
     appInsights.defaultClient.trackTrace({
-      message: 'iterationId' + triggerType,
+      message: 'InvokerEndpoint details',
       properties: {
         iterationId: req.query.id,
+        triggerType: triggerType,
+        runtime: process.env.RUNTIME,
+        operationId: correlationContext.operation.id
       }
     })
   }
@@ -614,7 +617,7 @@ const getEndpoint = async () => {
   const insights = azure.appinsights.Insights.get('Insights', insightsId)
 
   // Infrastructure endpoint (HTTP trigger)
-  return new azure.appservice.HttpEventSubscription('InfraEndpoint', {
+  return new azure.appservice.HttpEventSubscription('InvokerEndpoint', {
     resourceGroup,
     location: process.env.PULUMI_AZURE_LOCATION,
     callback: handler,
@@ -625,7 +628,8 @@ const getEndpoint = async () => {
       AZURE_CLIENT_SECRET: process.env.AZURE_CLIENT_SECRET,
       ACCOUNTDB_ENDPOINT: process.env.ACCOUNTDB_ENDPOINT,
       ACCOUNTDB_PRIMARYKEY: process.env.ACCOUNTDB_PRIMARYKEY,
-      AZURE_TIMER_MASTERKEY: process.env.AZURE_TIMER_MASTERKEY
+      AZURE_TIMER_MASTERKEY: process.env.AZURE_TIMER_MASTERKEY,
+      RUNTIME: process.env.RUNTIME
     }
   })
 }

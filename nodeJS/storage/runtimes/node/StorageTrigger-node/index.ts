@@ -1,8 +1,5 @@
 import * as appInsights from 'applicationinsights'
 import { AzureFunction, Context } from '@azure/functions'
-import * as dotenv from 'dotenv'
-
-dotenv.config({ path: './../../../../.env' })
 
 appInsights
   .setup()
@@ -19,7 +16,7 @@ appInsights
 appInsights.defaultClient.setAutoPopulateAzureProperties(true)
 appInsights.start()
 
-const cosmosDBTrigger: AzureFunction = async function (
+const storageTrigger: AzureFunction = async function (
   context: Context,
   documents: any[]
 ): Promise<void> {
@@ -31,26 +28,31 @@ const cosmosDBTrigger: AzureFunction = async function (
   }
 }
 
-export default async function contextPropagatingCosmosTrigger (context, req) {
-  const correlationContext = appInsights.startOperation(context, req)
+export default async function contextPropagatingStorageTrigger (context, req) {
+  const correlationContext = appInsights.startOperation(
+    context,
+    'correlationContextStorage'
+  )
 
   return appInsights.wrapWithCorrelationContext(async () => {
-    const startTime = Date.now()
+    const invocationId = context['bindingData']['metadata']['operationId']
+      .replace('|', '')
+      .split('.')[0]
 
-    const invocationId = context['bindings']['documents'][0]['newOperationId']
-    console.log(context['bindings']['documents'][0]['newOperationId'])
+    //console.log(JSON.stringify(context))
 
     appInsights.defaultClient.trackDependency({
-      target: `http://${process.env.DATABASE_NAME}`,
-      name: 'Custom operationId database',
+      target: `http://`,
+      name: 'Custom operationId storage',
       dependencyTypeName: 'HTTP',
       resultCode: 200,
       success: true,
       data: invocationId,
-      duration: Date.now() - startTime
+      duration: 10
     })
 
     appInsights.defaultClient.flush()
-    return await cosmosDBTrigger(context, req)
+
+    return await storageTrigger(context, req)
   }, correlationContext)()
 }

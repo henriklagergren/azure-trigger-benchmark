@@ -99,7 +99,7 @@ var endpoint = new FunctionApp(`${runtime}`, {
     APPLICATIONINSIGHTS_CONNECTION_STRING: insights.connectionString,
     ACCOUNTDB_ENDPOINT: sqlAccount.endpoint,
     ACCOUNTDB_KEY: sqlAccount.primaryKey,
-    DATABASE_CONNECTION_STRING: connectionString
+    DATABASE_CONNECTION_STRING: connectionString,
   }
 })
 

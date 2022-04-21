@@ -14,5 +14,5 @@
       "feedPollDelay": 1
     }
   ],
-  "scriptFile": "../dist/CosmosTrigger/index.js"
+  "scriptFile": "../dist/DatabaseTrigger-Node/index.js"
 }

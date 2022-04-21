@@ -9,17 +9,17 @@ if(os.isfile('./../results/latency/http.csv')):
     result_list.append(pd.read_csv(
         './../results/latency/http.csv', delimiter=","))
 
-if(os.isfile('./../results/latency/blob.csv')):
+if(os.isfile('./../results/latency/storage.csv')):
     result_list.append(pd.read_csv(
-        './../results/latency/blob.csv', delimiter=","))
+        './../results/latency/storage.csv', delimiter=","))
 
 if(os.isfile('./../results/latency/queue.csv')):
     result_list.append(pd.read_csv(
         './../results/latency/queue.csv', delimiter=","))
 
-if(os.isfile('./../results/latency/cosmos.csv')):
+if(os.isfile('./../results/latency/database.csv')):
     result_list.append(pd.read_csv(
-        './../results/latency/cosmos.csv', delimiter=","))
+        './../results/latency/database.csv', delimiter=","))
 
 if(os.isfile('./../results/latency/timer.csv')):
     result_list.append(pd.read_csv(

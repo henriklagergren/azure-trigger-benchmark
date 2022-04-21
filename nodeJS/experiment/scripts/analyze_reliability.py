@@ -14,13 +14,13 @@ load_dotenv('./../../.env')
 
 print("Which trigger should be analyzed?")
 trigger_list = ["All triggers", "http", "storage", "queue",
-                "cosmos", "eventHub", "eventGrid", "serviceBus", "timer"]
+                "database", "eventHub", "eventGrid", "serviceBus", "timer"]
 terminal_menu = TerminalMenu(trigger_list)
 menu_entry_index = terminal_menu.show()
 
 if(menu_entry_index == 0):
     trigger_list = ["http", "storage", "queue",
-                    "cosmos", "eventHub", "eventGrid", "serviceBus", "timer"]
+                    "database", "eventHub", "eventGrid", "serviceBus", "timer"]
 else:
     trigger_list = [trigger_list[menu_entry_index]]
 
