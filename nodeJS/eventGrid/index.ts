@@ -18,8 +18,6 @@ const geteventGridResources = async () => {
     'ResourceGroup',
     resourceGroupId
   )
-  const insightsId = shared.requireOutput('insightsId')
-  const insights = azure.appinsights.Insights.get('Insights', insightsId)
 
   const storageAccount = new azure.storage.Account('eventgridsa', {
     resourceGroupName: resourceGroup.name,
@@ -29,11 +27,6 @@ const geteventGridResources = async () => {
     accountKind: 'StorageV2'
   })
 
-  const container = new azure.storage.Container('container', {
-    storageAccountName: storageAccount.name,
-    containerAccessType: 'private'
-  })
-
   const systemTopic = new azure.eventgrid.SystemTopic('EventGridTopic', {
     resourceGroupName: resourceGroup.name,
     location: resourceGroup.location,
@@ -41,20 +34,18 @@ const geteventGridResources = async () => {
     topicType: 'Microsoft.Storage.StorageAccounts'
   })
 
-  var functionId = ''
-  if (process.env.RUNTIME == 'node') {
-    functionId = `${process.env.FUNCTIONAPP_ID}/functions/EventGridTrigger`
-  } else if (process.env.RUNTIME == 'dotnet') {
-    functionId = `${process.env.FUNCTIONAPP_ID}/functions/EventGridTrigger-dotnet`
-  }
+  const container = new azure.storage.Container('container', {
+    storageAccountName: storageAccount.name,
+    containerAccessType: 'private'
+  })
 
   const subscription = new azure.eventgrid.SystemTopicEventSubscription(
     'eventGridSubscr',
     {
       resourceGroupName: resourceGroup.name,
-      systemTopic: systemTopic.name,
+      systemTopic: systemTopic.name.apply(name => name),
       azureFunctionEndpoint: {
-        functionId: functionId,
+        functionId: `${process.env.FUNCTIONAPP_ID}/functions/EventGridTrigger-${process.env.RUNTIME}`,
         maxEventsPerBatch: 1
       },
       name: 'eventGridSubscr',

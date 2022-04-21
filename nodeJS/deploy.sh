@@ -16,10 +16,6 @@ deploy_shared_resources() {
   echo "PULUMI_AZURE_LOCATION=\"$LOCATION\"" >>$FILE_NAME
   echo "RUNTIME=\"$RUNTIME\"" >>$FILE_NAME
 
-  # Get App Id
-  APP_ID=$(pulumi stack output insightsAppId)
-  # Get Insights name
-  INSIGHTS_NAME=$(pulumi stack output insightsName)
   # Get Resource group name
   RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
   # Get Function app name
@@ -70,9 +66,6 @@ deploy_storage_trigger() {
   # Deploy shared resources
   deploy_shared_resources
 
-  # Get name of resource group
-  RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
-
   cd ..
 
   # Deploy storage trigger
@@ -84,11 +77,7 @@ deploy_storage_trigger() {
 
   az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
   --resource-group $RESOURCE_GROUP \
-  --settings BLOB_CONNECTION_STRING=$STORAGE_CONNECTION_STRING
-
-  az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
-  --resource-group $RESOURCE_GROUP \
-  --settings STORAGE_CONTAINER_PATH=$CONTAINER_NAME
+  --settings "BLOB_CONNECTION_STRING=$STORAGE_CONNECTION_STRING" "STORAGE_CONTAINER_PATH=$CONTAINER_NAME"
 
   cd runtimes/$RUNTIME
   
@@ -115,9 +104,6 @@ deploy_queue_trigger() {
   # Deploy shared resources
   deploy_shared_resources
 
-  # Get name of resource group
-  RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
-
   cd ..
 
   # Deploy queue trigger
@@ -130,11 +116,7 @@ deploy_queue_trigger() {
 
   az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
   --resource-group $RESOURCE_GROUP \
-  --settings QUEUE_CONNECTION_STRING=$QUEUE_CONNECTION_STRING
-
-  az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
-  --resource-group $RESOURCE_GROUP \
-  --settings QUEUE_NAME=$QUEUE_NAME
+  --settings "QUEUE_CONNECTION_STRING=$QUEUE_CONNECTION_STRING" "QUEUE_NAME=$QUEUE_NAME"
 
   cd runtimes/$RUNTIME
 
@@ -221,9 +203,6 @@ deploy_serviceBus_trigger() {
   # Deploy shared resources
   deploy_shared_resources
 
-  # Get name of resource group
-  RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
-
   cd ..
 
   # Deploy serviceBus trigger
@@ -238,14 +217,6 @@ deploy_serviceBus_trigger() {
   az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
   --resource-group $RESOURCE_GROUP \
   --settings "TOPIC_NAME=$TOPIC_NAME" "TOPIC_SUBSCRIPTION_NAME=$TOPIC_SUBSCRIPTION_NAME" "SERVICE_BUS_NAMESPACE_CONNECTION=$SERVICE_BUS_NAMESPACE_CONNECTION"
-
-  #az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
-  #--resource-group $RESOURCE_GROUP \
-  #--settings SERVICE_BUS_NAMESPACE_CONNECTION=$SERVICE_BUS_NAMESPACE_CONNECTION
-
-  #az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
-  #--resource-group $RESOURCE_GROUP \
-  #--settings "TOPIC_SUBSCRIPTION_NAME=$TOPIC_SUBSCRIPTION_NAME" 
 
   cd runtimes/$RUNTIME
   
@@ -283,11 +254,7 @@ deploy_eventHub_trigger() {
 
   az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
   --resource-group $RESOURCE_GROUP \
-  --settings EVENT_HUB_CONNTECTION_STRING=$EVENT_HUB_CONNTECTION_STRING
-
-  az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
-  --resource-group $RESOURCE_GROUP \
-  --settings EVENT_HUB_NAME=$EVENT_HUB_NAME
+  --settings "EVENT_HUB_CONNTECTION_STRING=$EVENT_HUB_CONNTECTION_STRING" "EVENT_HUB_NAME=$EVENT_HUB_NAME"
 
   cd runtimes/$RUNTIME
 
@@ -312,8 +279,16 @@ deploy_eventHub_trigger() {
 deploy_eventGrid_trigger() {
   # Deploy shared resources
   deploy_shared_resources
-
   cd ..
+  
+  # In the case of eventGrid, the trigger has to be published before a subscription resource associated to the trigger can be created.
+
+  cd eventGrid/runtimes/$RUNTIME
+
+  npm run build
+  func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
+
+  cd ../../..
 
   # Deploy eventGrid trigger
   cd eventGrid/ && pulumi stack select trigger -c && pulumi up -f -y
@@ -322,12 +297,7 @@ deploy_eventGrid_trigger() {
   EVENT_GRID_STORAGE_NAME=$(pulumi stack output eventGridStorageAccountName)
   EVENT_GRID_CONTAINER_NAME=$(pulumi stack output eventGridStorageContainerName)
 
-  cd runtimes/$RUNTIME
-
-  npm run build
-  func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
-
-  cd ../../..
+  cd ..
 
   # Deploy infrastructure
   cd infra/ && pulumi stack select infra -c && pulumi up -f -y
