@@ -36,13 +36,16 @@ export default async function contextPropagatingQueueTrigger (
     'correlationContextQueue'
   )
 
+  console.log(JSON.stringify(queueItem))
+  console.log(JSON.stringify(context))
+
   return appInsights.wrapWithCorrelationContext(async () => {
     const startTime = Date.now()
 
     const invocationId = queueItem
 
     appInsights.defaultClient.trackDependency({
-      target: '',
+      target: 'http://',
       name: 'Custom operationId queue',
       dependencyTypeName: 'HTTP',
       resultCode: 200,

@@ -8,6 +8,15 @@
       }
     }
   },
+  "extensions": {
+    "queues": {
+      "maxPollingInterval": "00:00:00.100",
+      "batchSize": 32,
+      "newBatchThreshold": 16,
+      "visibilityTimeout": "0",
+      "maxDequeueCount": 5
+    }
+  },
   "extensionBundle": {
     "id": "Microsoft.Azure.Functions.ExtensionBundle",
     "version": "[2.*, 3.0.0)"
