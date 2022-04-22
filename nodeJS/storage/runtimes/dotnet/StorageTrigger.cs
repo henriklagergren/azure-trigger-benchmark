@@ -17,11 +17,9 @@ namespace dotnet
         {
             this.telemetryClient = new TelemetryClient(telemetryConfiguration);
         }
-        [FunctionName("StorageTrigger")]
-        public void Run([StorageTrigger("STORAGE_CONTAINER_PATH", Connection = "STORAGE_CONNECTION_STRING")] Stream myBlob, string name, ILogger log)
+        [FunctionName("StorageTrigger-dotnet")]
+        public void Run([StorageTrigger("STORAGE_CONTAINER_PATH", Connection = "STORAGE_CONNECTION_STRING")] Stream myBlob, string name, IDictionary<string, string> metaData, ILogger log)
         {
-            log.LogInformation($"C# Storage trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes");
-
             var config = TelemetryConfiguration.CreateDefault();
             var telemetry = new TelemetryClient(config);
 
@@ -29,7 +27,7 @@ namespace dotnet
               dependencyName: "Custom operationId storage",
               target: "http://",
               dependencyTypeName: "HTTP",
-              data: name,
+              data: metaData["operationId"].Replace("|", "").Split(".")[0],
               startTime: DateTime.Now,
               duration: TimeSpan.FromMilliseconds(10),
               resultCode: "200",

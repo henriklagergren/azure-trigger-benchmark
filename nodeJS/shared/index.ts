@@ -49,8 +49,7 @@ let sqlAccount = new cosmosdb.Account('databaseTrigger', {
   consistencyPolicy: {
     consistencyLevel: 'Session'
   },
-  geoLocations: [{ location: resourceGroup.location, failoverPriority: 0 }],
-  enableFreeTier: true
+  geoLocations: [{ location: resourceGroup.location, failoverPriority: 0 }]
 })
 
 const sqlDatabase = new cosmosdb.SqlDatabase('sqlDatabase', {
@@ -143,10 +142,6 @@ exports.functionAppName = endpoint.functionAppName
 exports.functionAppUrl = endpoint.url
 
 function writeEnv () {
-  if (fs.existsSync('../.env')) {
-    fs.unlinkSync('../.env')
-  }
-
   endpoint.functionAppId.apply(id =>
     fs.writeFile(
       '../.env',
