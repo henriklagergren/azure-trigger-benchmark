@@ -10,3 +10,4 @@ nodeJS/experiment/results/latency/*
 nodeJS/experiment/.sb/
 nodeJS/experiment/__pycache__/
 nodeJS/experiment/scripts/analyze_latency_tao.py
+nodeJS/experiment/data/*
