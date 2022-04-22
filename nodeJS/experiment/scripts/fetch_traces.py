@@ -16,7 +16,7 @@ import numpy as np
 
 load_dotenv('./../../.env')
 
-start_date = str(date.today() + timedelta(days=-1))
+start_date = str(date.today())
 start_time = "01:00:00"
 
 end_date = str(date.today() + timedelta(days=1))
@@ -58,7 +58,7 @@ all_entries = pd.DataFrame(
     columns=['type', 'name', 'timestamp', 'operation_id', 'runtime', 'trigger', 'duration', 'iteration_id'])
 
 trigger_pick = ["http", "storage", "queue",
-                "cosmos", "eventhub", "eventgrid", "servicebus", "timer"]
+                "database", "eventhub", "eventgrid", "servicebus", "timer"]
 
 switch_operation_ids = []
 

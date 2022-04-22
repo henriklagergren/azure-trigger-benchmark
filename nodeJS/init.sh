@@ -59,51 +59,47 @@ cd ../../..
 # Init Storage Trigger
 cd storage/runtimes/node && npm install
 npm run build && func extensions install
-
+cd ..
+cd dotnet
+dotnet build
 cd ../../..
 
 # Init Queue Trigger
 cd queue/runtimes/node && npm install
 npm run build && func extensions install
-
+cd ..
+cd dotnet
+dotnet build
 cd ../../..
 
 # Init Database Trigger
 cd database/runtimes/node && npm install
 npm run build && func extensions install
-
 cd ..
 cd dotnet
 dotnet build
-
 cd ../../..
 
 # Init Event Grid Trigger
 cd eventGrid/runtimes/node && npm install
 npm run build && func extensions install
-
 cd ..
 cd dotnet
 dotnet build
-
 cd ../../..
 
 # Init Event Hub Trigger
 cd eventHub/runtimes/node && npm install
 npm run build && func extensions install
-
 cd ..
 cd dotnet
 dotnet build
-
 cd ../../..
 
 # Init Service Bus Topic Trigger
 cd serviceBus/runtimes/node && npm install
 npm run build && func extensions install
-
 cd ..
 cd dotnet
 dotnet build
-
 cd ../../..
