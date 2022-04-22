@@ -12,5 +12,5 @@
       "consumerGroup": "$Default"
     }
   ],
-  "scriptFile": "../dist/EventHubTrigger/index.js"
+  "scriptFile": "../dist/EventHubTrigger-node/index.js"
 }

@@ -6,5 +6,5 @@
       "direction": "in"
     }
   ],
-  "scriptFile": "../dist/EventGridTrigger/index.js"
+  "scriptFile": "../dist/EventGridTrigger-node/index.js"
 }

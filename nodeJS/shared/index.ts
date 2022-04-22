@@ -139,8 +139,6 @@ writeEnv()
 exports.resourceGroupId = resourceGroup.id
 exports.resourceGroupName = resourceGroup.name
 exports.insightsId = insights.id
-exports.insightsName = insights.name
-exports.insightsAppId = insights.appId // Required by Azure Insights REST API
 exports.functionAppName = endpoint.functionAppName
 exports.functionAppUrl = endpoint.url
 
@@ -160,36 +158,6 @@ function writeEnv () {
           throw err
         }
         console.log('Function App Id - Added')
-      }
-    )
-  )
-
-  sqlAccount.name.apply(name =>
-    fs.writeFile(
-      '../.env',
-      'ACCOUNTDB_NAME="' + name + '"\n',
-      { flag: 'a' },
-      (err: any) => {
-        if (err) {
-          console.log('ERROR: Cosmos DB name not added')
-          throw err
-        }
-        console.log('Cosmos DB name - Added')
-      }
-    )
-  )
-
-  sqlAccount.id.apply(id =>
-    fs.writeFile(
-      '../.env',
-      'ACCOUNTDB_ID="' + id + '"\n',
-      { flag: 'a' },
-      (err: any) => {
-        if (err) {
-          console.log('ERROR: Cosmos DB ID not added')
-          throw err
-        }
-        console.log('Cosmos DB ID - Added')
       }
     )
   )
@@ -299,21 +267,6 @@ function writeEnv () {
     )
   )
 
-  servicePrincipal.objectId.apply(objectId =>
-    fs.writeFile(
-      '../.env',
-      'AZURE_PRINCIPAL_ID="' + objectId + '"\n',
-      { flag: 'a' },
-      (err: any) => {
-        if (err) {
-          console.log('ERROR: Principal ID not added')
-          throw err
-        }
-        console.log('Principal ID - Added')
-      }
-    )
-  )
-
   application.applicationId.apply(id =>
     fs.writeFile(
       '../.env',
@@ -344,21 +297,6 @@ function writeEnv () {
     )
   )
 
-  application.objectId.apply(objectId =>
-    fs.writeFile(
-      '../.env',
-      'AZURE_OBJECT_ID="' + objectId + '"\n',
-      { flag: 'a' },
-      (err: any) => {
-        if (err) {
-          console.log('ERROR: Object ID not added')
-          throw err
-        }
-        console.log('Object ID - Added')
-      }
-    )
-  )
-
   readTelemetry.apiKey.apply(key =>
     fs.writeFile(
       '../.env',
@@ -385,21 +323,6 @@ function writeEnv () {
           throw err
         }
         console.log('APP ID - Added')
-      }
-    )
-  )
-
-  insights.connectionString.apply(cs =>
-    fs.writeFile(
-      '../.env',
-      'INSIGHTS_CONNECTION_STRING="' + cs + '"\n',
-      { flag: 'a' },
-      (err: any) => {
-        if (err) {
-          console.log('ERROR: Insight connection string not added')
-          throw err
-        }
-        console.log('Insight connection string - Added')
       }
     )
   )

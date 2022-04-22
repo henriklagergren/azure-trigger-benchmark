@@ -9,5 +9,5 @@
       "connection": "SERVICE_BUS_NAMESPACE_CONNECTION"
     }
   ],
-  "scriptFile": "../dist/ServiceBusTopicTrigger/index.js"
+  "scriptFile": "../dist/ServiceBusTopicTrigger-node/index.js"
 }

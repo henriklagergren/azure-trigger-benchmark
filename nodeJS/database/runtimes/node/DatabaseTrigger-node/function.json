@@ -14,5 +14,5 @@
       "feedPollDelay": 1
     }
   ],
-  "scriptFile": "../dist/DatabaseTrigger-Node/index.js"
+  "scriptFile": "../dist/DatabaseTrigger-node/index.js"
 }

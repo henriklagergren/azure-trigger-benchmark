@@ -43,17 +43,6 @@ const getEventHubResources = async () => {
     messageRetention: 1
   })
 
-  //Event hub trigger
-  /*
-const eventHubEvent = eventHub.onEvent('eventHubTrigger',{
-  location: process.env.PULUMI_AZURE_LOCATION,
-  callback: handler,
-  appSettings: {
-    APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
-  }
-});
-*/
-
   return {
     eventHubName: eventHub.name,
     eventHubNamespace: eventHubNamespace.name,
