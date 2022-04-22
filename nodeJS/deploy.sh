@@ -68,9 +68,15 @@ deploy_storage_trigger() {
   STORAGE_ACCOUNT_NAME=$(pulumi stack output storageAccountName)
   CONTAINER_NAME=$(pulumi stack output containerName)
 
-  az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
-  --resource-group $RESOURCE_GROUP \
-  --settings "STORAGE_CONNECTION_STRING=$STORAGE_CONNECTION_STRING" "STORAGE_CONTAINER_PATH=$CONTAINER_NAME/{name}"
+  if [ "$RUNTIME" = "dotnet" ]; then
+    az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+    --resource-group $RESOURCE_GROUP \
+    --settings "STORAGE_CONNECTION_STRING=$STORAGE_CONNECTION_STRING" "STORAGE_CONTAINER_PATH=$CONTAINER_NAME/{name}"
+  elif [ "$RUNTIME" = "node" ]; then
+    az functionapp config appsettings set --name $FUNCTIONAPP_NAME \
+    --resource-group $RESOURCE_GROUP \
+    --settings "STORAGE_CONNECTION_STRING=$STORAGE_CONNECTION_STRING" "STORAGE_CONTAINER_PATH=$CONTAINER_NAME"
+  fi
 
   cd runtimes/$RUNTIME
   

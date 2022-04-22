@@ -25,6 +25,7 @@
     "eventHub/index.ts",
     "eventGrid/index.ts",
     "http/runtimes/node/HttpTrigger-node/index.ts",
-    "database/runtimes/node/DatabaseTrigger-node/index.ts"
+    "database/runtimes/node/DatabaseTrigger-node/index.ts",
+    "storage/runtimes/node/StorageTrigger-node/index.ts"
   ]
 }

@@ -2,7 +2,7 @@
   "bindings": [
     {
       "name": "myBlob",
-      "type": "storageTrigger",
+      "type": "blobTrigger",
       "direction": "in",
       "path": "%STORAGE_CONTAINER_PATH%",
       "connection": "STORAGE_CONNECTION_STRING"
