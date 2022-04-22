@@ -22,15 +22,11 @@ namespace dotnet
       this.telemetryClient = new TelemetryClient(telemetryConfiguration);
     }
     [FunctionName("EventGridTrigger-dotnet")]
-    public static void Run([EventGridTrigger] EventGridEvent eventGridEvent, ILogger log)
+    public void Run([EventGridTrigger] EventGridEvent eventGridEvent, ILogger log)
     {
-
-      var config = TelemetryConfiguration.CreateDefault();
-      var telemetry = new TelemetryClient(config);
-
       var innvocationId = JObject.Parse(eventGridEvent.Data.ToString())["url"].ToString().Split("/");
 
-      telemetry.TrackDependency(
+      this.telemetryClient.TrackDependency(
       target: "http://",
       dependencyName: "Custom operationId eventGrid",
       dependencyTypeName: "HTTP",

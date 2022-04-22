@@ -24,48 +24,36 @@ namespace dotnet
     public async Task Run([EventHubTrigger("%EVENT_HUB_NAME%", Connection = "EVENT_HUB_CONNTECTION_STRING")] EventData[] events, ILogger log)
     {
       var exceptions = new List<Exception>();
-      var config = TelemetryConfiguration.CreateDefault();
-      var telemetry = new TelemetryClient(config);
 
       foreach (EventData eventData in events)
       {
-        try
-        {
-          string messageBody = Encoding.UTF8.GetString(eventData.Body.Array, eventData.Body.Offset, eventData.Body.Count);
+        string messageBody = Encoding.UTF8.GetString(eventData.Body.Array, eventData.Body.Offset, eventData.Body.Count);
 
-          // Replace these two lines with your processing logic.
-          log.LogInformation($"C# Event Hub trigger function processed a message: {messageBody}");
+        // Replace these two lines with your processing logic.
+        log.LogInformation($"C# Event Hub trigger function processed a message: {messageBody}");
 
-          var innvocationId = messageBody.Replace("\"", "");
+        var innvocationId = messageBody.Replace("\"", "");
 
-          telemetry.TrackDependency(
-          target: "http://",
-          dependencyName: "Custom operationId eventHub",
-          dependencyTypeName: "HTTP",
-          resultCode: "200",
-          success: true,
-          startTime: DateTime.Now,
-          data: innvocationId,
-          duration: TimeSpan.FromMilliseconds(10)
-          );
-
-          await Task.Yield();
-        }
-        catch (Exception e)
-        {
-          // We need to keep processing the rest of the batch - capture this exception and continue.
-          // Also, consider capturing details of the message that failed processing so it can be processed again later.
-          exceptions.Add(e);
-        }
+        this.telemetryClient.TrackDependency(
+        target: "http://",
+        dependencyName: "Custom operationId eventHub",
+        dependencyTypeName: "HTTP",
+        resultCode: "200",
+        success: true,
+        startTime: DateTime.Now,
+        data: innvocationId,
+        duration: TimeSpan.FromMilliseconds(10)
+        );
       }
 
       // Once processing of the batch is complete, if any messages in the batch failed processing throw an exception so that there is a record of the failure.
+      /*
+            if (exceptions.Count > 1)
+              throw new AggregateException(exceptions);
 
-      if (exceptions.Count > 1)
-        throw new AggregateException(exceptions);
-
-      if (exceptions.Count == 1)
-        throw exceptions.Single();
+            if (exceptions.Count == 1)
+              throw exceptions.Single();
+              */
     }
   }
 }

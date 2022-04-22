@@ -25,11 +25,7 @@ namespace dotnet
     {
       _logger.LogInformation($"C# ServiceBus topic trigger function processed message: {mySbMsg}");
 
-      var config = TelemetryConfiguration.CreateDefault();
-      var telemetry = new TelemetryClient(config);
-
-
-      telemetry.TrackDependency(
+      this.telemetryClient.TrackDependency(
       target: "http://",
       dependencyName: "Custom operationId serviceBusTopic",
       dependencyTypeName: "HTTP",
