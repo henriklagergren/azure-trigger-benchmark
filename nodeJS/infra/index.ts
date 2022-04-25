@@ -1,10 +1,10 @@
+import * as appInsights from 'applicationinsights'
 import * as Storage from '@azure/storage-blob'
 import * as StorageQueue from '@azure/storage-queue'
 import * as Identity from '@azure/identity'
 import * as EventHub from '@azure/event-hubs'
 import * as azure from '@pulumi/azure'
 import * as pulumi from '@pulumi/pulumi'
-import * as appInsights from 'applicationinsights'
 import * as automation from '@pulumi/pulumi/automation'
 import axios from 'axios'
 import * as dotenv from 'dotenv'
@@ -19,16 +19,16 @@ type Response = {
   body: string
 }
 
-const getHttpFunction = (url: string,operationId: any) =>
+const getHttpFunction = (url: string, operationId: any) =>
   new Promise<Response>(resolve => {
     axios
-      .get(url + "?operationId=" + operationId)
+      .get(url + '?operationId=' + operationId)
       .then(() =>
         resolve({
           status: 200,
           headers: {
             'content-type': 'text/plain',
-            'operationId' : operationId
+            operationId: operationId
           },
           body: 'AZURE - HTTP trigger successfully started'
         })
@@ -199,9 +199,12 @@ const getTimerFunction = (url: string, operationId: any) =>
       )
   })
 
-const getServiceBusResources = (serviceBusName: string, topicName: string, operationId: string) =>
+const getServiceBusResources = (
+  serviceBusName: string,
+  topicName: string,
+  operationId: string
+) =>
   new Promise<Response>(async resolve => {
-
     let credential = new Identity.EnvironmentCredential()
 
     const client = new serviceBus.ServiceBusClient(
@@ -393,8 +396,7 @@ const handler = async (context: any, req: any) => {
 
   if (validTrigger && triggerInput) {
     const correlationContext: any = appInsights.startOperation(context, req)
-    
-    if(req.query.id != undefined){
+
     appInsights.defaultClient.trackTrace({
       message: 'InvokerEndpoint details',
       properties: {
@@ -404,13 +406,14 @@ const handler = async (context: any, req: any) => {
         operationId: correlationContext.operation.id
       }
     })
-  }
 
     if (triggerType === 'http') {
       // HTTP trigger
       return appInsights.wrapWithCorrelationContext(async () => {
-
-        const response = await getHttpFunction(triggerInput,correlationContext.operation.id)
+        const response = await getHttpFunction(
+          triggerInput,
+          correlationContext.operation.id
+        )
 
         return response
       }, correlationContext)()
@@ -559,7 +562,7 @@ const handler = async (context: any, req: any) => {
           duration: Date.now() - startTime,
           id: correlationContext.operation.parentId,
           data: ''
-        });
+        })
 
         appInsights.defaultClient.flush()
         return response
@@ -622,7 +625,8 @@ const getEndpoint = async () => {
     location: process.env.PULUMI_AZURE_LOCATION,
     callback: handler,
     appSettings: {
-      APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
+      //APPINSIGHTS_INSTRUMENTATIONKEY: insights.instrumentationKey,
+      APPLICATIONINSIGHTS_CONNECTION_STRING: insights.connectionString,
       AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
       AZURE_TENANT_ID: process.env.AZURE_TENANT_ID,
       AZURE_CLIENT_SECRET: process.env.AZURE_CLIENT_SECRET,
