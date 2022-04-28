@@ -1,0 +1,98 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Azure App Configuration Key.
+ *
+ * > **Note:** App Configuration Keys are provisioned using a Data Plane API which requires the role `App Configuration Data Owner` on either the App Configuration or a parent scope (such as the Resource Group/Subscription). [More information can be found in the Azure Documentation for App Configuration](https://docs.microsoft.com/azure/azure-app-configuration/concept-enable-rbac#azure-built-in-roles-for-azure-app-configuration).
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const test = azure.appconfiguration.getConfigurationKey({
+ *     configurationStoreId: azurerm_app_configuration.appconf.id,
+ *     key: "appConfKey1",
+ *     label: "somelabel",
+ * });
+ * export const value = test.then(test => test.value);
+ * ```
+ */
+export declare function getConfigurationKey(args: GetConfigurationKeyArgs, opts?: pulumi.InvokeOptions): Promise<GetConfigurationKeyResult>;
+/**
+ * A collection of arguments for invoking getConfigurationKey.
+ */
+export interface GetConfigurationKeyArgs {
+    /**
+     * Specifies the id of the App Configuration.
+     */
+    configurationStoreId: string;
+    /**
+     * The name of the App Configuration Key.
+     */
+    key: string;
+    /**
+     * The label of the App Configuration Key.
+     */
+    label?: string;
+}
+/**
+ * A collection of values returned by getConfigurationKey.
+ */
+export interface GetConfigurationKeyResult {
+    readonly configurationStoreId: string;
+    /**
+     * The content type of the App Configuration Key.
+     */
+    readonly contentType: string;
+    /**
+     * The ETag of the key.
+     */
+    readonly etag: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    readonly key: string;
+    readonly label?: string;
+    /**
+     * Is this App Configuration Key be Locked to prevent changes.
+     */
+    readonly locked: boolean;
+    /**
+     * A mapping of tags assigned to the resource.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+    /**
+     * The type of the App Configuration Key. It can either be `kv` (simple [key/value](https://docs.microsoft.com/en-us/azure/azure-app-configuration/concept-key-value)) or `vault` (where the value is a reference to a [Key Vault Secret](https://azure.microsoft.com/en-gb/services/key-vault/).
+     */
+    readonly type: string;
+    /**
+     * The value of the App Configuration Key.
+     */
+    readonly value: string;
+    /**
+     * The ID of the vault secret this App Configuration Key refers to, when `type` is `vault`.
+     */
+    readonly vaultKeyReference: string;
+}
+export declare function getConfigurationKeyOutput(args: GetConfigurationKeyOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetConfigurationKeyResult>;
+/**
+ * A collection of arguments for invoking getConfigurationKey.
+ */
+export interface GetConfigurationKeyOutputArgs {
+    /**
+     * Specifies the id of the App Configuration.
+     */
+    configurationStoreId: pulumi.Input<string>;
+    /**
+     * The name of the App Configuration Key.
+     */
+    key: pulumi.Input<string>;
+    /**
+     * The label of the App Configuration Key.
+     */
+    label?: pulumi.Input<string>;
+}

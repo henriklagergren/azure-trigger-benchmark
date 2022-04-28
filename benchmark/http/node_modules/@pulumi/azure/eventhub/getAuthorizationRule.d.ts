@@ -1,0 +1,120 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * ##
+ *
+ * ***
+ * subcategory: "Messaging"
+ * layout: "azurerm"
+ * page_title: "Azure Resource Manager: azure.eventhub.AuthorizationRule"
+ * description: |-
+ *   Gets information about an Event Hubs Authorization Rule within an Event Hub.
+ * ---
+ *
+ * # azure.eventhub.AuthorizationRule
+ *
+ * Use this data source to access information about an existing Event Hubs Authorization Rule within an Event Hub.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const test = azure.eventhub.getAuthorizationRule({
+ *     name: "test",
+ *     namespaceName: azurerm_eventhub_namespace.test.name,
+ *     eventhubName: azurerm_eventhub.test.name,
+ *     resourceGroupName: azurerm_resource_group.test.name,
+ * });
+ * ```
+ */
+export declare function getAuthorizationRule(args: GetAuthorizationRuleArgs, opts?: pulumi.InvokeOptions): Promise<GetAuthorizationRuleResult>;
+/**
+ * A collection of arguments for invoking getAuthorizationRule.
+ */
+export interface GetAuthorizationRuleArgs {
+    /**
+     * Specifies the name of the EventHub.
+     */
+    eventhubName: string;
+    listen?: boolean;
+    manage?: boolean;
+    /**
+     * Specifies the name of the EventHub Authorization Rule resource. be created.
+     */
+    name: string;
+    /**
+     * Specifies the name of the grandparent EventHub Namespace.
+     */
+    namespaceName: string;
+    /**
+     * The name of the resource group in which the EventHub Authorization Rule's grandparent Namespace exists.
+     */
+    resourceGroupName: string;
+    send?: boolean;
+}
+/**
+ * A collection of values returned by getAuthorizationRule.
+ */
+export interface GetAuthorizationRuleResult {
+    readonly eventhubName: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    readonly listen?: boolean;
+    readonly manage?: boolean;
+    readonly name: string;
+    readonly namespaceName: string;
+    /**
+     * The Primary Connection String for the Event Hubs Authorization Rule.
+     */
+    readonly primaryConnectionString: string;
+    /**
+     * The alias of the Primary Connection String for the Event Hubs Authorization Rule.
+     */
+    readonly primaryConnectionStringAlias: string;
+    /**
+     * The Primary Key for the Event Hubs Authorization Rule.
+     */
+    readonly primaryKey: string;
+    readonly resourceGroupName: string;
+    /**
+     * The Secondary Connection String for the Event Hubs Authorization Rule.
+     */
+    readonly secondaryConnectionString: string;
+    /**
+     * The alias of the Secondary Connection String for the Event Hubs Authorization Rule.
+     */
+    readonly secondaryConnectionStringAlias: string;
+    /**
+     * The Secondary Key for the Event Hubs Authorization Rule.
+     */
+    readonly secondaryKey: string;
+    readonly send?: boolean;
+}
+export declare function getAuthorizationRuleOutput(args: GetAuthorizationRuleOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetAuthorizationRuleResult>;
+/**
+ * A collection of arguments for invoking getAuthorizationRule.
+ */
+export interface GetAuthorizationRuleOutputArgs {
+    /**
+     * Specifies the name of the EventHub.
+     */
+    eventhubName: pulumi.Input<string>;
+    listen?: pulumi.Input<boolean>;
+    manage?: pulumi.Input<boolean>;
+    /**
+     * Specifies the name of the EventHub Authorization Rule resource. be created.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * Specifies the name of the grandparent EventHub Namespace.
+     */
+    namespaceName: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which the EventHub Authorization Rule's grandparent Namespace exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    send?: pulumi.Input<boolean>;
+}

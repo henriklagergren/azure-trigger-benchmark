@@ -1,0 +1,94 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an App Service Certificate.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.appservice.getCertificate({
+ *     name: "example-app-service-certificate",
+ *     resourceGroupName: "example-rg",
+ * });
+ * export const appServiceCertificateId = example.then(example => example.id);
+ * ```
+ */
+export declare function getCertificate(args: GetCertificateArgs, opts?: pulumi.InvokeOptions): Promise<GetCertificateResult>;
+/**
+ * A collection of arguments for invoking getCertificate.
+ */
+export interface GetCertificateArgs {
+    /**
+     * Specifies the name of the certificate.
+     */
+    name: string;
+    /**
+     * The name of the resource group in which to create the certificate.
+     */
+    resourceGroupName: string;
+    tags?: {
+        [key: string]: string;
+    };
+}
+/**
+ * A collection of values returned by getCertificate.
+ */
+export interface GetCertificateResult {
+    /**
+     * The expiration date for the certificate.
+     */
+    readonly expirationDate: string;
+    /**
+     * The friendly name of the certificate.
+     */
+    readonly friendlyName: string;
+    /**
+     * List of host names the certificate applies to.
+     */
+    readonly hostNames: string[];
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * The issue date for the certificate.
+     */
+    readonly issueDate: string;
+    /**
+     * The name of the certificate issuer.
+     */
+    readonly issuer: string;
+    readonly location: string;
+    readonly name: string;
+    readonly resourceGroupName: string;
+    /**
+     * The subject name of the certificate.
+     */
+    readonly subjectName: string;
+    readonly tags?: {
+        [key: string]: string;
+    };
+    /**
+     * The thumbprint for the certificate.
+     */
+    readonly thumbprint: string;
+}
+export declare function getCertificateOutput(args: GetCertificateOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetCertificateResult>;
+/**
+ * A collection of arguments for invoking getCertificate.
+ */
+export interface GetCertificateOutputArgs {
+    /**
+     * Specifies the name of the certificate.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which to create the certificate.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+}

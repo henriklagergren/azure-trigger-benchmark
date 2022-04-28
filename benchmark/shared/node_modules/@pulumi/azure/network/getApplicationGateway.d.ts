@@ -1,0 +1,71 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing Application Gateway.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.network.getApplicationGateway({
+ *     name: "existing-app-gateway",
+ *     resourceGroupName: "existing-resources",
+ * });
+ * export const id = example.then(example => example.id);
+ * ```
+ */
+export declare function getApplicationGateway(args: GetApplicationGatewayArgs, opts?: pulumi.InvokeOptions): Promise<GetApplicationGatewayResult>;
+/**
+ * A collection of arguments for invoking getApplicationGateway.
+ */
+export interface GetApplicationGatewayArgs {
+    /**
+     * The name of this Application Gateway.
+     */
+    name: string;
+    /**
+     * The name of the Resource Group where the Application Gateway exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getApplicationGateway.
+ */
+export interface GetApplicationGatewayResult {
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * A `identity` block as defined below.
+     */
+    readonly identities: outputs.network.GetApplicationGatewayIdentity[];
+    /**
+     * The Azure Region where the Application Gateway exists.
+     */
+    readonly location: string;
+    readonly name: string;
+    readonly resourceGroupName: string;
+    /**
+     * A mapping of tags assigned to the Application Gateway.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+}
+export declare function getApplicationGatewayOutput(args: GetApplicationGatewayOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetApplicationGatewayResult>;
+/**
+ * A collection of arguments for invoking getApplicationGateway.
+ */
+export interface GetApplicationGatewayOutputArgs {
+    /**
+     * The name of this Application Gateway.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group where the Application Gateway exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

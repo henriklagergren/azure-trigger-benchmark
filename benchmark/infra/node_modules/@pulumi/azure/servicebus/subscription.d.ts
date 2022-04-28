@@ -1,0 +1,264 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Manages a ServiceBus Subscription.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleNamespace = new azure.servicebus.Namespace("exampleNamespace", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     sku: "Standard",
+ *     tags: {
+ *         source: "example",
+ *     },
+ * });
+ * const exampleTopic = new azure.servicebus.Topic("exampleTopic", {
+ *     namespaceId: exampleNamespace.id,
+ *     enablePartitioning: true,
+ * });
+ * const exampleSubscription = new azure.servicebus.Subscription("exampleSubscription", {
+ *     topicId: exampleTopic.id,
+ *     maxDeliveryCount: 1,
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Service Bus Subscriptions can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:servicebus/subscription:Subscription example /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mygroup1/providers/microsoft.servicebus/namespaces/sbns1/topics/sntopic1/subscriptions/sbsub1
+ * ```
+ */
+export declare class Subscription extends pulumi.CustomResource {
+    /**
+     * Get an existing Subscription resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: SubscriptionState, opts?: pulumi.CustomResourceOptions): Subscription;
+    /**
+     * Returns true if the given object is an instance of Subscription.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is Subscription;
+    /**
+     * The idle interval after which the topic is automatically deleted as an [ISO 8601 duration](https://en.wikipedia.org/wiki/ISO_8601#Durations). The minimum duration is `5` minutes or `PT5M`.
+     */
+    readonly autoDeleteOnIdle: pulumi.Output<string>;
+    /**
+     * Boolean flag which controls whether the Subscription has dead letter support on filter evaluation exceptions. Defaults to `true`.
+     */
+    readonly deadLetteringOnFilterEvaluationError: pulumi.Output<boolean | undefined>;
+    /**
+     * Boolean flag which controls whether the Subscription has dead letter support when a message expires. Defaults to `false`.
+     */
+    readonly deadLetteringOnMessageExpiration: pulumi.Output<boolean | undefined>;
+    /**
+     * The Default message timespan to live as an [ISO 8601 duration](https://en.wikipedia.org/wiki/ISO_8601#Durations). This is the duration after which the message expires, starting from when the message is sent to Service Bus. This is the default value used when TimeToLive is not set on a message itself.
+     */
+    readonly defaultMessageTtl: pulumi.Output<string>;
+    /**
+     * Boolean flag which controls whether the Subscription supports batched operations. Defaults to `false`.
+     */
+    readonly enableBatchedOperations: pulumi.Output<boolean | undefined>;
+    /**
+     * The name of a Queue or Topic to automatically forward Dead Letter messages to.
+     */
+    readonly forwardDeadLetteredMessagesTo: pulumi.Output<string | undefined>;
+    /**
+     * The name of a Queue or Topic to automatically forward messages to.
+     */
+    readonly forwardTo: pulumi.Output<string | undefined>;
+    /**
+     * The lock duration for the subscription as an [ISO 8601 duration](https://en.wikipedia.org/wiki/ISO_8601#Durations). The default value is `1` minute or  `P0DT0H1M0S` . The maximum value is `5` minutes or `P0DT0H5M0S` .
+     */
+    readonly lockDuration: pulumi.Output<string>;
+    /**
+     * The maximum number of deliveries.
+     */
+    readonly maxDeliveryCount: pulumi.Output<number>;
+    /**
+     * Specifies the name of the ServiceBus Subscription resource. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * @deprecated Deprecated in favor of "topic_id"
+     */
+    readonly namespaceName: pulumi.Output<string>;
+    /**
+     * Boolean flag which controls whether this Subscription supports the concept of a session. Defaults to `false`. Changing this forces a new resource to be created.
+     */
+    readonly requiresSession: pulumi.Output<boolean | undefined>;
+    /**
+     * @deprecated Deprecated in favor of "topic_id"
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * The status of the Subscription. Possible values are `Active`,`ReceiveDisabled`, or `Disabled`. Defaults to `Active`.
+     */
+    readonly status: pulumi.Output<string | undefined>;
+    /**
+     * The ID of the ServiceBus Topic to create this Subscription in. Changing this forces a new resource to be created.
+     */
+    readonly topicId: pulumi.Output<string>;
+    /**
+     * @deprecated Deprecated in favor of "topic_id"
+     */
+    readonly topicName: pulumi.Output<string>;
+    /**
+     * Create a Subscription resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: SubscriptionArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering Subscription resources.
+ */
+export interface SubscriptionState {
+    /**
+     * The idle interval after which the topic is automatically deleted as an [ISO 8601 duration](https://en.wikipedia.org/wiki/ISO_8601#Durations). The minimum duration is `5` minutes or `PT5M`.
+     */
+    autoDeleteOnIdle?: pulumi.Input<string>;
+    /**
+     * Boolean flag which controls whether the Subscription has dead letter support on filter evaluation exceptions. Defaults to `true`.
+     */
+    deadLetteringOnFilterEvaluationError?: pulumi.Input<boolean>;
+    /**
+     * Boolean flag which controls whether the Subscription has dead letter support when a message expires. Defaults to `false`.
+     */
+    deadLetteringOnMessageExpiration?: pulumi.Input<boolean>;
+    /**
+     * The Default message timespan to live as an [ISO 8601 duration](https://en.wikipedia.org/wiki/ISO_8601#Durations). This is the duration after which the message expires, starting from when the message is sent to Service Bus. This is the default value used when TimeToLive is not set on a message itself.
+     */
+    defaultMessageTtl?: pulumi.Input<string>;
+    /**
+     * Boolean flag which controls whether the Subscription supports batched operations. Defaults to `false`.
+     */
+    enableBatchedOperations?: pulumi.Input<boolean>;
+    /**
+     * The name of a Queue or Topic to automatically forward Dead Letter messages to.
+     */
+    forwardDeadLetteredMessagesTo?: pulumi.Input<string>;
+    /**
+     * The name of a Queue or Topic to automatically forward messages to.
+     */
+    forwardTo?: pulumi.Input<string>;
+    /**
+     * The lock duration for the subscription as an [ISO 8601 duration](https://en.wikipedia.org/wiki/ISO_8601#Durations). The default value is `1` minute or  `P0DT0H1M0S` . The maximum value is `5` minutes or `P0DT0H5M0S` .
+     */
+    lockDuration?: pulumi.Input<string>;
+    /**
+     * The maximum number of deliveries.
+     */
+    maxDeliveryCount?: pulumi.Input<number>;
+    /**
+     * Specifies the name of the ServiceBus Subscription resource. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * @deprecated Deprecated in favor of "topic_id"
+     */
+    namespaceName?: pulumi.Input<string>;
+    /**
+     * Boolean flag which controls whether this Subscription supports the concept of a session. Defaults to `false`. Changing this forces a new resource to be created.
+     */
+    requiresSession?: pulumi.Input<boolean>;
+    /**
+     * @deprecated Deprecated in favor of "topic_id"
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * The status of the Subscription. Possible values are `Active`,`ReceiveDisabled`, or `Disabled`. Defaults to `Active`.
+     */
+    status?: pulumi.Input<string>;
+    /**
+     * The ID of the ServiceBus Topic to create this Subscription in. Changing this forces a new resource to be created.
+     */
+    topicId?: pulumi.Input<string>;
+    /**
+     * @deprecated Deprecated in favor of "topic_id"
+     */
+    topicName?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a Subscription resource.
+ */
+export interface SubscriptionArgs {
+    /**
+     * The idle interval after which the topic is automatically deleted as an [ISO 8601 duration](https://en.wikipedia.org/wiki/ISO_8601#Durations). The minimum duration is `5` minutes or `PT5M`.
+     */
+    autoDeleteOnIdle?: pulumi.Input<string>;
+    /**
+     * Boolean flag which controls whether the Subscription has dead letter support on filter evaluation exceptions. Defaults to `true`.
+     */
+    deadLetteringOnFilterEvaluationError?: pulumi.Input<boolean>;
+    /**
+     * Boolean flag which controls whether the Subscription has dead letter support when a message expires. Defaults to `false`.
+     */
+    deadLetteringOnMessageExpiration?: pulumi.Input<boolean>;
+    /**
+     * The Default message timespan to live as an [ISO 8601 duration](https://en.wikipedia.org/wiki/ISO_8601#Durations). This is the duration after which the message expires, starting from when the message is sent to Service Bus. This is the default value used when TimeToLive is not set on a message itself.
+     */
+    defaultMessageTtl?: pulumi.Input<string>;
+    /**
+     * Boolean flag which controls whether the Subscription supports batched operations. Defaults to `false`.
+     */
+    enableBatchedOperations?: pulumi.Input<boolean>;
+    /**
+     * The name of a Queue or Topic to automatically forward Dead Letter messages to.
+     */
+    forwardDeadLetteredMessagesTo?: pulumi.Input<string>;
+    /**
+     * The name of a Queue or Topic to automatically forward messages to.
+     */
+    forwardTo?: pulumi.Input<string>;
+    /**
+     * The lock duration for the subscription as an [ISO 8601 duration](https://en.wikipedia.org/wiki/ISO_8601#Durations). The default value is `1` minute or  `P0DT0H1M0S` . The maximum value is `5` minutes or `P0DT0H5M0S` .
+     */
+    lockDuration?: pulumi.Input<string>;
+    /**
+     * The maximum number of deliveries.
+     */
+    maxDeliveryCount: pulumi.Input<number>;
+    /**
+     * Specifies the name of the ServiceBus Subscription resource. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * @deprecated Deprecated in favor of "topic_id"
+     */
+    namespaceName?: pulumi.Input<string>;
+    /**
+     * Boolean flag which controls whether this Subscription supports the concept of a session. Defaults to `false`. Changing this forces a new resource to be created.
+     */
+    requiresSession?: pulumi.Input<boolean>;
+    /**
+     * @deprecated Deprecated in favor of "topic_id"
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * The status of the Subscription. Possible values are `Active`,`ReceiveDisabled`, or `Disabled`. Defaults to `Active`.
+     */
+    status?: pulumi.Input<string>;
+    /**
+     * The ID of the ServiceBus Topic to create this Subscription in. Changing this forces a new resource to be created.
+     */
+    topicId?: pulumi.Input<string>;
+    /**
+     * @deprecated Deprecated in favor of "topic_id"
+     */
+    topicName?: pulumi.Input<string>;
+}

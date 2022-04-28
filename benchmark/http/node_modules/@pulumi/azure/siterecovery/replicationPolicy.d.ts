@@ -1,0 +1,127 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Manages a Azure Site Recovery replication policy within a recovery vault. Replication policies define the frequency at which recovery points are created and how long they are stored.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const secondary = new azure.core.ResourceGroup("secondary", {location: "East US"});
+ * const vault = new azure.recoveryservices.Vault("vault", {
+ *     location: secondary.location,
+ *     resourceGroupName: secondary.name,
+ *     sku: "Standard",
+ * });
+ * const policy = new azure.siterecovery.ReplicationPolicy("policy", {
+ *     resourceGroupName: secondary.name,
+ *     recoveryVaultName: vault.name,
+ *     recoveryPointRetentionInMinutes: 24 * 60,
+ *     applicationConsistentSnapshotFrequencyInMinutes: 4 * 60,
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Site Recovery Replication Policies can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:siterecovery/replicationPolicy:ReplicationPolicy mypolicy /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resource-group-name/providers/Microsoft.RecoveryServices/vaults/recovery-vault-name/replicationPolicies/policy-name
+ * ```
+ */
+export declare class ReplicationPolicy extends pulumi.CustomResource {
+    /**
+     * Get an existing ReplicationPolicy resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: ReplicationPolicyState, opts?: pulumi.CustomResourceOptions): ReplicationPolicy;
+    /**
+     * Returns true if the given object is an instance of ReplicationPolicy.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is ReplicationPolicy;
+    /**
+     * Specifies the frequency(in minutes) at which to create application consistent recovery points.
+     */
+    readonly applicationConsistentSnapshotFrequencyInMinutes: pulumi.Output<number>;
+    /**
+     * The name of the replication policy.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * The duration in minutes for which the recovery points need to be stored.
+     */
+    readonly recoveryPointRetentionInMinutes: pulumi.Output<number>;
+    /**
+     * The name of the vault that should be updated.
+     */
+    readonly recoveryVaultName: pulumi.Output<string>;
+    /**
+     * Name of the resource group where the vault that should be updated is located.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * Create a ReplicationPolicy resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: ReplicationPolicyArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering ReplicationPolicy resources.
+ */
+export interface ReplicationPolicyState {
+    /**
+     * Specifies the frequency(in minutes) at which to create application consistent recovery points.
+     */
+    applicationConsistentSnapshotFrequencyInMinutes?: pulumi.Input<number>;
+    /**
+     * The name of the replication policy.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The duration in minutes for which the recovery points need to be stored.
+     */
+    recoveryPointRetentionInMinutes?: pulumi.Input<number>;
+    /**
+     * The name of the vault that should be updated.
+     */
+    recoveryVaultName?: pulumi.Input<string>;
+    /**
+     * Name of the resource group where the vault that should be updated is located.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a ReplicationPolicy resource.
+ */
+export interface ReplicationPolicyArgs {
+    /**
+     * Specifies the frequency(in minutes) at which to create application consistent recovery points.
+     */
+    applicationConsistentSnapshotFrequencyInMinutes: pulumi.Input<number>;
+    /**
+     * The name of the replication policy.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The duration in minutes for which the recovery points need to be stored.
+     */
+    recoveryPointRetentionInMinutes: pulumi.Input<number>;
+    /**
+     * The name of the vault that should be updated.
+     */
+    recoveryVaultName: pulumi.Input<string>;
+    /**
+     * Name of the resource group where the vault that should be updated is located.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

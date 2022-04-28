@@ -1,0 +1,206 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Manages an Azure Spring Cloud Certificate.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ * import * as azuread from "@pulumi/azuread";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const current = azure.core.getClientConfig({});
+ * const exampleServicePrincipal = azuread.getServicePrincipal({
+ *     displayName: "Azure Spring Cloud Domain-Management",
+ * });
+ * const exampleKeyVault = new azure.keyvault.KeyVault("exampleKeyVault", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     tenantId: current.then(current => current.tenantId),
+ *     skuName: "standard",
+ *     accessPolicies: [
+ *         {
+ *             tenantId: current.then(current => current.tenantId),
+ *             objectId: current.then(current => current.objectId),
+ *             secretPermissions: ["set"],
+ *             certificatePermissions: [
+ *                 "create",
+ *                 "delete",
+ *                 "get",
+ *                 "update",
+ *             ],
+ *         },
+ *         {
+ *             tenantId: current.then(current => current.tenantId),
+ *             objectId: exampleServicePrincipal.then(exampleServicePrincipal => exampleServicePrincipal.objectId),
+ *             secretPermissions: [
+ *                 "get",
+ *                 "list",
+ *             ],
+ *             certificatePermissions: [
+ *                 "get",
+ *                 "list",
+ *             ],
+ *         },
+ *     ],
+ * });
+ * const exampleCertificate = new azure.keyvault.Certificate("exampleCertificate", {
+ *     keyVaultId: exampleKeyVault.id,
+ *     certificatePolicy: {
+ *         issuerParameters: {
+ *             name: "Self",
+ *         },
+ *         keyProperties: {
+ *             exportable: true,
+ *             keySize: 2048,
+ *             keyType: "RSA",
+ *             reuseKey: true,
+ *         },
+ *         lifetimeActions: [{
+ *             action: {
+ *                 actionType: "AutoRenew",
+ *             },
+ *             trigger: {
+ *                 daysBeforeExpiry: 30,
+ *             },
+ *         }],
+ *         secretProperties: {
+ *             contentType: "application/x-pkcs12",
+ *         },
+ *         x509CertificateProperties: {
+ *             keyUsages: [
+ *                 "cRLSign",
+ *                 "dataEncipherment",
+ *                 "digitalSignature",
+ *                 "keyAgreement",
+ *                 "keyCertSign",
+ *                 "keyEncipherment",
+ *             ],
+ *             subject: "CN=contoso.com",
+ *             validityInMonths: 12,
+ *         },
+ *     },
+ * });
+ * const exampleSpringCloudService = new azure.appplatform.SpringCloudService("exampleSpringCloudService", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: exampleResourceGroup.location,
+ * });
+ * const exampleSpringCloudCertificate = new azure.appplatform.SpringCloudCertificate("exampleSpringCloudCertificate", {
+ *     resourceGroupName: exampleSpringCloudService.resourceGroupName,
+ *     serviceName: exampleSpringCloudService.name,
+ *     keyVaultCertificateId: exampleCertificate.id,
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Spring Cloud Certificate can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:appplatform/springCloudCertificate:SpringCloudCertificate example /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resourcegroup1/providers/Microsoft.AppPlatform/Spring/spring1/certificates/cert1
+ * ```
+ */
+export declare class SpringCloudCertificate extends pulumi.CustomResource {
+    /**
+     * Get an existing SpringCloudCertificate resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: SpringCloudCertificateState, opts?: pulumi.CustomResourceOptions): SpringCloudCertificate;
+    /**
+     * Returns true if the given object is an instance of SpringCloudCertificate.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is SpringCloudCertificate;
+    /**
+     * The content of uploaded certificate. Changing this forces a new resource to be created.
+     */
+    readonly certificateContent: pulumi.Output<string | undefined>;
+    /**
+     * Specifies the ID of the Key Vault Certificate resource. Changing this forces a new resource to be created.
+     */
+    readonly keyVaultCertificateId: pulumi.Output<string | undefined>;
+    /**
+     * Specifies the name of the Spring Cloud Certificate. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * Specifies the name of the resource group in which to create the Spring Cloud Certificate. Changing this forces a new resource to be created.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * Specifies the name of the Spring Cloud Service resource. Changing this forces a new resource to be created.
+     */
+    readonly serviceName: pulumi.Output<string>;
+    /**
+     * The thumbprint of the Spring Cloud certificate.
+     */
+    readonly thumbprint: pulumi.Output<string>;
+    /**
+     * Create a SpringCloudCertificate resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: SpringCloudCertificateArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering SpringCloudCertificate resources.
+ */
+export interface SpringCloudCertificateState {
+    /**
+     * The content of uploaded certificate. Changing this forces a new resource to be created.
+     */
+    certificateContent?: pulumi.Input<string>;
+    /**
+     * Specifies the ID of the Key Vault Certificate resource. Changing this forces a new resource to be created.
+     */
+    keyVaultCertificateId?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Spring Cloud Certificate. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the resource group in which to create the Spring Cloud Certificate. Changing this forces a new resource to be created.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Spring Cloud Service resource. Changing this forces a new resource to be created.
+     */
+    serviceName?: pulumi.Input<string>;
+    /**
+     * The thumbprint of the Spring Cloud certificate.
+     */
+    thumbprint?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a SpringCloudCertificate resource.
+ */
+export interface SpringCloudCertificateArgs {
+    /**
+     * The content of uploaded certificate. Changing this forces a new resource to be created.
+     */
+    certificateContent?: pulumi.Input<string>;
+    /**
+     * Specifies the ID of the Key Vault Certificate resource. Changing this forces a new resource to be created.
+     */
+    keyVaultCertificateId?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Spring Cloud Certificate. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the resource group in which to create the Spring Cloud Certificate. Changing this forces a new resource to be created.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Spring Cloud Service resource. Changing this forces a new resource to be created.
+     */
+    serviceName: pulumi.Input<string>;
+}

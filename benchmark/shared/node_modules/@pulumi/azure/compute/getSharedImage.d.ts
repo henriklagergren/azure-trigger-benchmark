@@ -1,0 +1,108 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing Shared Image within a Shared Image Gallery.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = pulumi.output(azure.compute.getSharedImage({
+ *     galleryName: "my-image-gallery",
+ *     name: "my-image",
+ *     resourceGroupName: "example-resources",
+ * }));
+ * ```
+ */
+export declare function getSharedImage(args: GetSharedImageArgs, opts?: pulumi.InvokeOptions): Promise<GetSharedImageResult>;
+/**
+ * A collection of arguments for invoking getSharedImage.
+ */
+export interface GetSharedImageArgs {
+    /**
+     * The name of the Shared Image Gallery in which the Shared Image exists.
+     */
+    galleryName: string;
+    /**
+     * The name of the Shared Image.
+     */
+    name: string;
+    /**
+     * The name of the Resource Group in which the Shared Image Gallery exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getSharedImage.
+ */
+export interface GetSharedImageResult {
+    /**
+     * The description of this Shared Image.
+     */
+    readonly description: string;
+    /**
+     * The End User Licence Agreement for the Shared Image.
+     */
+    readonly eula: string;
+    readonly galleryName: string;
+    /**
+     * The generation of HyperV that the Virtual Machine used to create the Shared Image is based on.
+     */
+    readonly hyperVGeneration: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * An `identifier` block as defined below.
+     */
+    readonly identifiers: outputs.compute.GetSharedImageIdentifier[];
+    /**
+     * The supported Azure location where the Shared Image Gallery exists.
+     */
+    readonly location: string;
+    readonly name: string;
+    /**
+     * The type of Operating System present in this Shared Image.
+     */
+    readonly osType: string;
+    /**
+     * The URI containing the Privacy Statement for this Shared Image.
+     */
+    readonly privacyStatementUri: string;
+    /**
+     * The URI containing the Release Notes for this Shared Image.
+     */
+    readonly releaseNoteUri: string;
+    readonly resourceGroupName: string;
+    /**
+     * Specifies that the Operating System used inside this Image has not been Generalized (for example, `sysprep` on Windows has not been run).
+     */
+    readonly specialized: boolean;
+    /**
+     * A mapping of tags assigned to the Shared Image.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+}
+export declare function getSharedImageOutput(args: GetSharedImageOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetSharedImageResult>;
+/**
+ * A collection of arguments for invoking getSharedImage.
+ */
+export interface GetSharedImageOutputArgs {
+    /**
+     * The name of the Shared Image Gallery in which the Shared Image exists.
+     */
+    galleryName: pulumi.Input<string>;
+    /**
+     * The name of the Shared Image.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group in which the Shared Image Gallery exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

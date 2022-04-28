@@ -1,0 +1,174 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Manages a Blob Target within a HPC Cache.
+ *
+ * > **NOTE:**: By request of the service team the provider no longer automatically registering the `Microsoft.StorageCache` Resource Provider for this resource. To register it you can run `az provider register --namespace 'Microsoft.StorageCache'`.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ * import * as azuread from "@pulumi/azuread";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleVirtualNetwork = new azure.network.VirtualNetwork("exampleVirtualNetwork", {
+ *     addressSpaces: ["10.0.0.0/16"],
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ * });
+ * const exampleSubnet = new azure.network.Subnet("exampleSubnet", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     virtualNetworkName: exampleVirtualNetwork.name,
+ *     addressPrefixes: ["10.0.1.0/24"],
+ * });
+ * const exampleCache = new azure.hpc.Cache("exampleCache", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: exampleResourceGroup.location,
+ *     cacheSizeInGb: 3072,
+ *     subnetId: exampleSubnet.id,
+ *     skuName: "Standard_2G",
+ * });
+ * const exampleAccount = new azure.storage.Account("exampleAccount", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: exampleResourceGroup.location,
+ *     accountTier: "Standard",
+ *     accountReplicationType: "LRS",
+ * });
+ * const exampleContainer = new azure.storage.Container("exampleContainer", {storageAccountName: exampleAccount.name});
+ * const exampleServicePrincipal = azuread.getServicePrincipal({
+ *     displayName: "HPC Cache Resource Provider",
+ * });
+ * const exampleStorageAccountContrib = new azure.authorization.Assignment("exampleStorageAccountContrib", {
+ *     scope: exampleAccount.id,
+ *     roleDefinitionName: "Storage Account Contributor",
+ *     principalId: exampleServicePrincipal.then(exampleServicePrincipal => exampleServicePrincipal.objectId),
+ * });
+ * const exampleStorageBlobDataContrib = new azure.authorization.Assignment("exampleStorageBlobDataContrib", {
+ *     scope: exampleAccount.id,
+ *     roleDefinitionName: "Storage Blob Data Contributor",
+ *     principalId: exampleServicePrincipal.then(exampleServicePrincipal => exampleServicePrincipal.objectId),
+ * });
+ * const exampleCacheBlobTarget = new azure.hpc.CacheBlobTarget("exampleCacheBlobTarget", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     cacheName: exampleCache.name,
+ *     storageContainerId: exampleContainer.resourceManagerId,
+ *     namespacePath: "/blob_storage",
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Blob Targets within an HPC Cache can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:hpc/cacheBlobTarget:CacheBlobTarget example /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/group1/providers/Microsoft.StorageCache/caches/cache1/storageTargets/target1
+ * ```
+ */
+export declare class CacheBlobTarget extends pulumi.CustomResource {
+    /**
+     * Get an existing CacheBlobTarget resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: CacheBlobTargetState, opts?: pulumi.CustomResourceOptions): CacheBlobTarget;
+    /**
+     * Returns true if the given object is an instance of CacheBlobTarget.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is CacheBlobTarget;
+    /**
+     * The name of the access policy applied to this target. Defaults to `default`.
+     */
+    readonly accessPolicyName: pulumi.Output<string | undefined>;
+    /**
+     * The name HPC Cache, which the HPC Cache Blob Target will be added to. Changing this forces a new resource to be created.
+     */
+    readonly cacheName: pulumi.Output<string>;
+    /**
+     * The name of the HPC Cache Blob Target. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * The client-facing file path of the HPC Cache Blob Target.
+     */
+    readonly namespacePath: pulumi.Output<string>;
+    /**
+     * The name of the Resource Group in which to create the HPC Cache Blob Target. Changing this forces a new resource to be created.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * The Resource Manager ID of the Storage Container used as the HPC Cache Blob Target. Changing this forces a new resource to be created.
+     */
+    readonly storageContainerId: pulumi.Output<string>;
+    /**
+     * Create a CacheBlobTarget resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: CacheBlobTargetArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering CacheBlobTarget resources.
+ */
+export interface CacheBlobTargetState {
+    /**
+     * The name of the access policy applied to this target. Defaults to `default`.
+     */
+    accessPolicyName?: pulumi.Input<string>;
+    /**
+     * The name HPC Cache, which the HPC Cache Blob Target will be added to. Changing this forces a new resource to be created.
+     */
+    cacheName?: pulumi.Input<string>;
+    /**
+     * The name of the HPC Cache Blob Target. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The client-facing file path of the HPC Cache Blob Target.
+     */
+    namespacePath?: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group in which to create the HPC Cache Blob Target. Changing this forces a new resource to be created.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * The Resource Manager ID of the Storage Container used as the HPC Cache Blob Target. Changing this forces a new resource to be created.
+     */
+    storageContainerId?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a CacheBlobTarget resource.
+ */
+export interface CacheBlobTargetArgs {
+    /**
+     * The name of the access policy applied to this target. Defaults to `default`.
+     */
+    accessPolicyName?: pulumi.Input<string>;
+    /**
+     * The name HPC Cache, which the HPC Cache Blob Target will be added to. Changing this forces a new resource to be created.
+     */
+    cacheName: pulumi.Input<string>;
+    /**
+     * The name of the HPC Cache Blob Target. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The client-facing file path of the HPC Cache Blob Target.
+     */
+    namespacePath: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group in which to create the HPC Cache Blob Target. Changing this forces a new resource to be created.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * The Resource Manager ID of the Storage Container used as the HPC Cache Blob Target. Changing this forces a new resource to be created.
+     */
+    storageContainerId: pulumi.Input<string>;
+}

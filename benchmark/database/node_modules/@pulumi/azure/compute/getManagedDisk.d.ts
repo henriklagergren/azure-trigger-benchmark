@@ -1,0 +1,107 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Managed Disk.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const existing = azure.compute.getManagedDisk({
+ *     name: "example-datadisk",
+ *     resourceGroupName: "example-resources",
+ * });
+ * export const id = existing.then(existing => existing.id);
+ * ```
+ */
+export declare function getManagedDisk(args: GetManagedDiskArgs, opts?: pulumi.InvokeOptions): Promise<GetManagedDiskResult>;
+/**
+ * A collection of arguments for invoking getManagedDisk.
+ */
+export interface GetManagedDiskArgs {
+    /**
+     * Specifies the name of the Managed Disk.
+     */
+    name: string;
+    /**
+     * Specifies the name of the Resource Group where this Managed Disk exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getManagedDisk.
+ */
+export interface GetManagedDiskResult {
+    readonly createOption: string;
+    /**
+     * The ID of the Disk Encryption Set used to encrypt this Managed Disk.
+     */
+    readonly diskEncryptionSetId: string;
+    /**
+     * The number of IOPS allowed for this disk, where one operation can transfer between 4k and 256k bytes.
+     */
+    readonly diskIopsReadWrite: number;
+    /**
+     * The bandwidth allowed for this disk.
+     */
+    readonly diskMbpsReadWrite: number;
+    /**
+     * The size of the Managed Disk in gigabytes.
+     */
+    readonly diskSizeGb: number;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * The ID of the source image used for creating this Managed Disk.
+     */
+    readonly imageReferenceId: string;
+    readonly name: string;
+    /**
+     * The operating system used for this Managed Disk.
+     */
+    readonly osType: string;
+    readonly resourceGroupName: string;
+    /**
+     * The ID of an existing Managed Disk which this Disk was created from.
+     */
+    readonly sourceResourceId: string;
+    /**
+     * The Source URI for this Managed Disk.
+     */
+    readonly sourceUri: string;
+    /**
+     * The ID of the Storage Account where the `sourceUri` is located.
+     */
+    readonly storageAccountId: string;
+    /**
+     * The storage account type for the Managed Disk.
+     */
+    readonly storageAccountType: string;
+    /**
+     * A mapping of tags assigned to the resource.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+    /**
+     * A list of Availability Zones where the Managed Disk exists.
+     */
+    readonly zones: string[];
+}
+export declare function getManagedDiskOutput(args: GetManagedDiskOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetManagedDiskResult>;
+/**
+ * A collection of arguments for invoking getManagedDisk.
+ */
+export interface GetManagedDiskOutputArgs {
+    /**
+     * Specifies the name of the Managed Disk.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Resource Group where this Managed Disk exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

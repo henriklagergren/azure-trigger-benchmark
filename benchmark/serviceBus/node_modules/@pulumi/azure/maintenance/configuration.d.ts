@@ -1,0 +1,173 @@
+import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
+/**
+ * Manages a maintenance configuration.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleConfiguration = new azure.maintenance.Configuration("exampleConfiguration", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: exampleResourceGroup.location,
+ *     scope: "All",
+ *     tags: {
+ *         Env: "prod",
+ *     },
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Maintenance Configuration can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:maintenance/configuration:Configuration example /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mygroup1/providers/microsoft.maintenance/maintenanceconfigurations/example-mc
+ * ```
+ */
+export declare class Configuration extends pulumi.CustomResource {
+    /**
+     * Get an existing Configuration resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: ConfigurationState, opts?: pulumi.CustomResourceOptions): Configuration;
+    /**
+     * Returns true if the given object is an instance of Configuration.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is Configuration;
+    /**
+     * Specified the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    readonly location: pulumi.Output<string>;
+    /**
+     * Specifies the name of the Maintenance Configuration. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * A mapping of properties to assign to the resource.
+     */
+    readonly properties: pulumi.Output<{
+        [key: string]: string;
+    } | undefined>;
+    /**
+     * The name of the Resource Group where the Maintenance Configuration should exist. Changing this forces a new resource to be created.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * The scope of the Maintenance Configuration. Possible values are `All`, `Extension`, `Host`, `InGuestPatch`, `OSImage`, `SQLDB` or `SQLManagedInstance`. Defaults to `All`.
+     */
+    readonly scope: pulumi.Output<string | undefined>;
+    /**
+     * A mapping of tags to assign to the resource. The key could not contain upper case letter.
+     */
+    readonly tags: pulumi.Output<{
+        [key: string]: string;
+    } | undefined>;
+    /**
+     * The visibility of the Maintenance Configuration. The only allowable value is `Custom`.
+     */
+    readonly visibility: pulumi.Output<string | undefined>;
+    /**
+     * A `window` block as defined below.
+     */
+    readonly window: pulumi.Output<outputs.maintenance.ConfigurationWindow | undefined>;
+    /**
+     * Create a Configuration resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: ConfigurationArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering Configuration resources.
+ */
+export interface ConfigurationState {
+    /**
+     * Specified the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Maintenance Configuration. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * A mapping of properties to assign to the resource.
+     */
+    properties?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * The name of the Resource Group where the Maintenance Configuration should exist. Changing this forces a new resource to be created.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * The scope of the Maintenance Configuration. Possible values are `All`, `Extension`, `Host`, `InGuestPatch`, `OSImage`, `SQLDB` or `SQLManagedInstance`. Defaults to `All`.
+     */
+    scope?: pulumi.Input<string>;
+    /**
+     * A mapping of tags to assign to the resource. The key could not contain upper case letter.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * The visibility of the Maintenance Configuration. The only allowable value is `Custom`.
+     */
+    visibility?: pulumi.Input<string>;
+    /**
+     * A `window` block as defined below.
+     */
+    window?: pulumi.Input<inputs.maintenance.ConfigurationWindow>;
+}
+/**
+ * The set of arguments for constructing a Configuration resource.
+ */
+export interface ConfigurationArgs {
+    /**
+     * Specified the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Maintenance Configuration. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * A mapping of properties to assign to the resource.
+     */
+    properties?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * The name of the Resource Group where the Maintenance Configuration should exist. Changing this forces a new resource to be created.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * The scope of the Maintenance Configuration. Possible values are `All`, `Extension`, `Host`, `InGuestPatch`, `OSImage`, `SQLDB` or `SQLManagedInstance`. Defaults to `All`.
+     */
+    scope?: pulumi.Input<string>;
+    /**
+     * A mapping of tags to assign to the resource. The key could not contain upper case letter.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * The visibility of the Maintenance Configuration. The only allowable value is `Custom`.
+     */
+    visibility?: pulumi.Input<string>;
+    /**
+     * A `window` block as defined below.
+     */
+    window?: pulumi.Input<inputs.maintenance.ConfigurationWindow>;
+}

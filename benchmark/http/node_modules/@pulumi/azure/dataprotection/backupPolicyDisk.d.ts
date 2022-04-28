@@ -1,0 +1,146 @@
+import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
+/**
+ * Manages a Backup Policy Disk.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const rg = new azure.core.ResourceGroup("rg", {location: "West Europe"});
+ * const exampleBackupVault = new azure.dataprotection.BackupVault("exampleBackupVault", {
+ *     resourceGroupName: rg.name,
+ *     location: rg.location,
+ *     datastoreType: "VaultStore",
+ *     redundancy: "LocallyRedundant",
+ * });
+ * const exampleBackupPolicyDisk = new azure.dataprotection.BackupPolicyDisk("exampleBackupPolicyDisk", {
+ *     vaultId: exampleBackupVault.id,
+ *     backupRepeatingTimeIntervals: ["R/2021-05-19T06:33:16+00:00/PT4H"],
+ *     defaultRetentionDuration: "P7D",
+ *     retentionRules: [
+ *         {
+ *             name: "Daily",
+ *             duration: "P7D",
+ *             priority: 25,
+ *             criteria: {
+ *                 absoluteCriteria: "FirstOfDay",
+ *             },
+ *         },
+ *         {
+ *             name: "Weekly",
+ *             duration: "P7D",
+ *             priority: 20,
+ *             criteria: {
+ *                 absoluteCriteria: "FirstOfWeek",
+ *             },
+ *         },
+ *     ],
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Backup Policy Disks can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:dataprotection/backupPolicyDisk:BackupPolicyDisk example /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/group1/providers/Microsoft.DataProtection/backupVaults/vault1/backupPolicies/backupPolicy1
+ * ```
+ */
+export declare class BackupPolicyDisk extends pulumi.CustomResource {
+    /**
+     * Get an existing BackupPolicyDisk resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: BackupPolicyDiskState, opts?: pulumi.CustomResourceOptions): BackupPolicyDisk;
+    /**
+     * Returns true if the given object is an instance of BackupPolicyDisk.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is BackupPolicyDisk;
+    /**
+     * Specifies a list of repeating time interval. It should follow `ISO 8601` repeating time interval . Changing this forces a new Backup Policy Disk to be created.
+     */
+    readonly backupRepeatingTimeIntervals: pulumi.Output<string[]>;
+    /**
+     * The duration of default retention rule. It should follow `ISO 8601` duration format. Changing this forces a new Backup Policy Disk to be created.
+     */
+    readonly defaultRetentionDuration: pulumi.Output<string>;
+    /**
+     * The name which should be used for this Backup Policy Disk. Changing this forces a new Backup Policy Disk to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * One or more `retentionRule` blocks as defined below. Changing this forces a new Backup Policy Disk to be created.
+     */
+    readonly retentionRules: pulumi.Output<outputs.dataprotection.BackupPolicyDiskRetentionRule[] | undefined>;
+    /**
+     * The ID of the Backup Vault within which the Backup Policy Disk should exist. Changing this forces a new Backup Policy Disk to be created.
+     */
+    readonly vaultId: pulumi.Output<string>;
+    /**
+     * Create a BackupPolicyDisk resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: BackupPolicyDiskArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering BackupPolicyDisk resources.
+ */
+export interface BackupPolicyDiskState {
+    /**
+     * Specifies a list of repeating time interval. It should follow `ISO 8601` repeating time interval . Changing this forces a new Backup Policy Disk to be created.
+     */
+    backupRepeatingTimeIntervals?: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * The duration of default retention rule. It should follow `ISO 8601` duration format. Changing this forces a new Backup Policy Disk to be created.
+     */
+    defaultRetentionDuration?: pulumi.Input<string>;
+    /**
+     * The name which should be used for this Backup Policy Disk. Changing this forces a new Backup Policy Disk to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * One or more `retentionRule` blocks as defined below. Changing this forces a new Backup Policy Disk to be created.
+     */
+    retentionRules?: pulumi.Input<pulumi.Input<inputs.dataprotection.BackupPolicyDiskRetentionRule>[]>;
+    /**
+     * The ID of the Backup Vault within which the Backup Policy Disk should exist. Changing this forces a new Backup Policy Disk to be created.
+     */
+    vaultId?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a BackupPolicyDisk resource.
+ */
+export interface BackupPolicyDiskArgs {
+    /**
+     * Specifies a list of repeating time interval. It should follow `ISO 8601` repeating time interval . Changing this forces a new Backup Policy Disk to be created.
+     */
+    backupRepeatingTimeIntervals: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * The duration of default retention rule. It should follow `ISO 8601` duration format. Changing this forces a new Backup Policy Disk to be created.
+     */
+    defaultRetentionDuration: pulumi.Input<string>;
+    /**
+     * The name which should be used for this Backup Policy Disk. Changing this forces a new Backup Policy Disk to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * One or more `retentionRule` blocks as defined below. Changing this forces a new Backup Policy Disk to be created.
+     */
+    retentionRules?: pulumi.Input<pulumi.Input<inputs.dataprotection.BackupPolicyDiskRetentionRule>[]>;
+    /**
+     * The ID of the Backup Vault within which the Backup Policy Disk should exist. Changing this forces a new Backup Policy Disk to be created.
+     */
+    vaultId: pulumi.Input<string>;
+}

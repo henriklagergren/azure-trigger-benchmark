@@ -1,0 +1,176 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Manages the association between a Network Interface and a Application Gateway's Backend Address Pool.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleVirtualNetwork = new azure.network.VirtualNetwork("exampleVirtualNetwork", {
+ *     addressSpaces: ["10.0.0.0/16"],
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ * });
+ * const frontend = new azure.network.Subnet("frontend", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     virtualNetworkName: exampleVirtualNetwork.name,
+ *     addressPrefixes: ["10.0.1.0/24"],
+ * });
+ * const backend = new azure.network.Subnet("backend", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     virtualNetworkName: exampleVirtualNetwork.name,
+ *     addressPrefixes: ["10.0.2.0/24"],
+ * });
+ * const examplePublicIp = new azure.network.PublicIp("examplePublicIp", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     allocationMethod: "Dynamic",
+ * });
+ * const backendAddressPoolName = pulumi.interpolate`${exampleVirtualNetwork.name}-beap`;
+ * const frontendPortName = pulumi.interpolate`${exampleVirtualNetwork.name}-feport`;
+ * const frontendIpConfigurationName = pulumi.interpolate`${exampleVirtualNetwork.name}-feip`;
+ * const httpSettingName = pulumi.interpolate`${exampleVirtualNetwork.name}-be-htst`;
+ * const listenerName = pulumi.interpolate`${exampleVirtualNetwork.name}-httplstn`;
+ * const requestRoutingRuleName = pulumi.interpolate`${exampleVirtualNetwork.name}-rqrt`;
+ * const network = new azure.network.ApplicationGateway("network", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: exampleResourceGroup.location,
+ *     sku: {
+ *         name: "Standard_Small",
+ *         tier: "Standard",
+ *         capacity: 2,
+ *     },
+ *     gatewayIpConfigurations: [{
+ *         name: "my-gateway-ip-configuration",
+ *         subnetId: frontend.id,
+ *     }],
+ *     frontendPorts: [{
+ *         name: frontendPortName,
+ *         port: 80,
+ *     }],
+ *     frontendIpConfigurations: [{
+ *         name: frontendIpConfigurationName,
+ *         publicIpAddressId: examplePublicIp.id,
+ *     }],
+ *     backendAddressPools: [{
+ *         name: backendAddressPoolName,
+ *     }],
+ *     backendHttpSettings: [{
+ *         name: httpSettingName,
+ *         cookieBasedAffinity: "Disabled",
+ *         port: 80,
+ *         protocol: "Http",
+ *         requestTimeout: 1,
+ *     }],
+ *     httpListeners: [{
+ *         name: listenerName,
+ *         frontendIpConfigurationName: frontendIpConfigurationName,
+ *         frontendPortName: frontendPortName,
+ *         protocol: "Http",
+ *     }],
+ *     requestRoutingRules: [{
+ *         name: requestRoutingRuleName,
+ *         ruleType: "Basic",
+ *         httpListenerName: listenerName,
+ *         backendAddressPoolName: backendAddressPoolName,
+ *         backendHttpSettingsName: httpSettingName,
+ *     }],
+ * });
+ * const exampleNetworkInterface = new azure.network.NetworkInterface("exampleNetworkInterface", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     ipConfigurations: [{
+ *         name: "testconfiguration1",
+ *         subnetId: frontend.id,
+ *         privateIpAddressAllocation: "Dynamic",
+ *     }],
+ * });
+ * const exampleNetworkInterfaceApplicationGatewayBackendAddressPoolAssociation = new azure.network.NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation("exampleNetworkInterfaceApplicationGatewayBackendAddressPoolAssociation", {
+ *     networkInterfaceId: exampleNetworkInterface.id,
+ *     ipConfigurationName: "testconfiguration1",
+ *     backendAddressPoolId: network.backendAddressPools.apply(backendAddressPools => backendAddressPools[0].id),
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Associations between Network Interfaces and Application Gateway Backend Address Pools can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:network/networkInterfaceApplicationGatewayBackendAddressPoolAssociation:NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation association1 /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mygroup1/providers/microsoft.network/networkInterfaces/nic1/ipConfigurations/example|/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/group1/providers/Microsoft.Network/applicationGateways/gateway1/backendAddressPools/pool1
+ * ```
+ */
+export declare class NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation extends pulumi.CustomResource {
+    /**
+     * Get an existing NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationState, opts?: pulumi.CustomResourceOptions): NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation;
+    /**
+     * Returns true if the given object is an instance of NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation;
+    /**
+     * The ID of the Application Gateway's Backend Address Pool which this Network Interface which should be connected to. Changing this forces a new resource to be created.
+     */
+    readonly backendAddressPoolId: pulumi.Output<string>;
+    /**
+     * The Name of the IP Configuration within the Network Interface which should be connected to the Backend Address Pool. Changing this forces a new resource to be created.
+     */
+    readonly ipConfigurationName: pulumi.Output<string>;
+    /**
+     * The ID of the Network Interface. Changing this forces a new resource to be created.
+     */
+    readonly networkInterfaceId: pulumi.Output<string>;
+    /**
+     * Create a NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation resources.
+ */
+export interface NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationState {
+    /**
+     * The ID of the Application Gateway's Backend Address Pool which this Network Interface which should be connected to. Changing this forces a new resource to be created.
+     */
+    backendAddressPoolId?: pulumi.Input<string>;
+    /**
+     * The Name of the IP Configuration within the Network Interface which should be connected to the Backend Address Pool. Changing this forces a new resource to be created.
+     */
+    ipConfigurationName?: pulumi.Input<string>;
+    /**
+     * The ID of the Network Interface. Changing this forces a new resource to be created.
+     */
+    networkInterfaceId?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a NetworkInterfaceApplicationGatewayBackendAddressPoolAssociation resource.
+ */
+export interface NetworkInterfaceApplicationGatewayBackendAddressPoolAssociationArgs {
+    /**
+     * The ID of the Application Gateway's Backend Address Pool which this Network Interface which should be connected to. Changing this forces a new resource to be created.
+     */
+    backendAddressPoolId: pulumi.Input<string>;
+    /**
+     * The Name of the IP Configuration within the Network Interface which should be connected to the Backend Address Pool. Changing this forces a new resource to be created.
+     */
+    ipConfigurationName: pulumi.Input<string>;
+    /**
+     * The ID of the Network Interface. Changing this forces a new resource to be created.
+     */
+    networkInterfaceId: pulumi.Input<string>;
+}

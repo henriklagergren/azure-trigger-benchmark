@@ -1,0 +1,269 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Assigns a given Principal (User or Group) to a given Role.
+ *
+ * ## Example Usage
+ * ### Using A Built-In Role)
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const primary = azure.core.getSubscription({});
+ * const exampleClientConfig = azure.core.getClientConfig({});
+ * const exampleAssignment = new azure.authorization.Assignment("exampleAssignment", {
+ *     scope: primary.then(primary => primary.id),
+ *     roleDefinitionName: "Reader",
+ *     principalId: exampleClientConfig.then(exampleClientConfig => exampleClientConfig.objectId),
+ * });
+ * ```
+ * ### Custom Role & Service Principal)
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const primary = azure.core.getSubscription({});
+ * const exampleClientConfig = azure.core.getClientConfig({});
+ * const exampleRoleDefinition = new azure.authorization.RoleDefinition("exampleRoleDefinition", {
+ *     roleDefinitionId: "00000000-0000-0000-0000-000000000000",
+ *     scope: primary.then(primary => primary.id),
+ *     permissions: [{
+ *         actions: ["Microsoft.Resources/subscriptions/resourceGroups/read"],
+ *         notActions: [],
+ *     }],
+ *     assignableScopes: [primary.then(primary => primary.id)],
+ * });
+ * const exampleAssignment = new azure.authorization.Assignment("exampleAssignment", {
+ *     name: "00000000-0000-0000-0000-000000000000",
+ *     scope: primary.then(primary => primary.id),
+ *     roleDefinitionId: exampleRoleDefinition.roleDefinitionResourceId,
+ *     principalId: exampleClientConfig.then(exampleClientConfig => exampleClientConfig.objectId),
+ * });
+ * ```
+ * ### Custom Role & User)
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const primary = azure.core.getSubscription({});
+ * const exampleClientConfig = azure.core.getClientConfig({});
+ * const exampleRoleDefinition = new azure.authorization.RoleDefinition("exampleRoleDefinition", {
+ *     roleDefinitionId: "00000000-0000-0000-0000-000000000000",
+ *     scope: primary.then(primary => primary.id),
+ *     permissions: [{
+ *         actions: ["Microsoft.Resources/subscriptions/resourceGroups/read"],
+ *         notActions: [],
+ *     }],
+ *     assignableScopes: [primary.then(primary => primary.id)],
+ * });
+ * const exampleAssignment = new azure.authorization.Assignment("exampleAssignment", {
+ *     name: "00000000-0000-0000-0000-000000000000",
+ *     scope: primary.then(primary => primary.id),
+ *     roleDefinitionId: exampleRoleDefinition.roleDefinitionResourceId,
+ *     principalId: exampleClientConfig.then(exampleClientConfig => exampleClientConfig.objectId),
+ * });
+ * ```
+ * ### Custom Role & Management Group)
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const primary = azure.core.getSubscription({});
+ * const exampleClientConfig = azure.core.getClientConfig({});
+ * const exampleGroup = azure.management.getGroup({});
+ * const exampleRoleDefinition = new azure.authorization.RoleDefinition("exampleRoleDefinition", {
+ *     roleDefinitionId: "00000000-0000-0000-0000-000000000000",
+ *     scope: primary.then(primary => primary.id),
+ *     permissions: [{
+ *         actions: ["Microsoft.Resources/subscriptions/resourceGroups/read"],
+ *         notActions: [],
+ *     }],
+ *     assignableScopes: [primary.then(primary => primary.id)],
+ * });
+ * const exampleAssignment = new azure.authorization.Assignment("exampleAssignment", {
+ *     name: "00000000-0000-0000-0000-000000000000",
+ *     scope: data.azurerm_management_group.primary.id,
+ *     roleDefinitionId: exampleRoleDefinition.roleDefinitionResourceId,
+ *     principalId: exampleClientConfig.then(exampleClientConfig => exampleClientConfig.objectId),
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Role Assignments can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:role/assignment:Assignment example /subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleAssignments/00000000-0000-0000-0000-000000000000
+ * ```
+ *
+ *  - for scope `Subscription`, the id format is `/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleAssignments/00000000-0000-0000-0000-000000000000` - for scope `Resource Group`, the id format is `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/group1/providers/Microsoft.Authorization/roleAssignments/00000000-0000-0000-0000-000000000000` /subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleAssignments/00000000-0000-0000-0000-000000000000|00000000-0000-0000-0000-000000000000
+ *
+ * @deprecated azure.role.Assignment has been deprecated in favor of azure.authorization.Assignment
+ */
+export declare class Assignment extends pulumi.CustomResource {
+    /**
+     * Get an existing Assignment resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: AssignmentState, opts?: pulumi.CustomResourceOptions): Assignment;
+    /**
+     * Returns true if the given object is an instance of Assignment.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is Assignment;
+    /**
+     * The condition that limits the resources that the role can be assigned to. Changing this forces a new resource to be created.
+     */
+    readonly condition: pulumi.Output<string | undefined>;
+    /**
+     * The version of the condition. Possible values are `1.0` or `2.0`. Changing this forces a new resource to be created.
+     */
+    readonly conditionVersion: pulumi.Output<string | undefined>;
+    /**
+     * The delegated Azure Resource Id which contains a Managed Identity. Changing this forces a new resource to be created.
+     */
+    readonly delegatedManagedIdentityResourceId: pulumi.Output<string | undefined>;
+    /**
+     * The description for this Role Assignment. Changing this forces a new resource to be created.
+     */
+    readonly description: pulumi.Output<string | undefined>;
+    /**
+     * A unique UUID/GUID for this Role Assignment - one will be generated if not specified. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * The ID of the Principal (User, Group or Service Principal) to assign the Role Definition to. Changing this forces a new resource to be created.
+     */
+    readonly principalId: pulumi.Output<string>;
+    /**
+     * The type of the `principalId`, e.g. User, Group, Service Principal, Application, etc.
+     */
+    readonly principalType: pulumi.Output<string>;
+    /**
+     * The Scoped-ID of the Role Definition. Changing this forces a new resource to be created. Conflicts with `roleDefinitionName`.
+     */
+    readonly roleDefinitionId: pulumi.Output<string>;
+    /**
+     * The name of a built-in Role. Changing this forces a new resource to be created. Conflicts with `roleDefinitionId`.
+     */
+    readonly roleDefinitionName: pulumi.Output<string>;
+    /**
+     * The scope at which the Role Assignment applies to, such as `/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333`, `/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup`, or `/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup/providers/Microsoft.Compute/virtualMachines/myVM`, or `/providers/Microsoft.Management/managementGroups/myMG`. Changing this forces a new resource to be created.
+     */
+    readonly scope: pulumi.Output<string>;
+    /**
+     * If the `principalId` is a newly provisioned `Service Principal` set this value to `true` to skip the `Azure Active Directory` check which may fail due to replication lag. This argument is only valid if the `principalId` is a `Service Principal` identity. If it is not a `Service Principal` identity it will cause the role assignment to fail. Defaults to `false`.
+     */
+    readonly skipServicePrincipalAadCheck: pulumi.Output<boolean>;
+    /**
+     * Create a Assignment resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    /** @deprecated azure.role.Assignment has been deprecated in favor of azure.authorization.Assignment */
+    constructor(name: string, args: AssignmentArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering Assignment resources.
+ */
+export interface AssignmentState {
+    /**
+     * The condition that limits the resources that the role can be assigned to. Changing this forces a new resource to be created.
+     */
+    condition?: pulumi.Input<string>;
+    /**
+     * The version of the condition. Possible values are `1.0` or `2.0`. Changing this forces a new resource to be created.
+     */
+    conditionVersion?: pulumi.Input<string>;
+    /**
+     * The delegated Azure Resource Id which contains a Managed Identity. Changing this forces a new resource to be created.
+     */
+    delegatedManagedIdentityResourceId?: pulumi.Input<string>;
+    /**
+     * The description for this Role Assignment. Changing this forces a new resource to be created.
+     */
+    description?: pulumi.Input<string>;
+    /**
+     * A unique UUID/GUID for this Role Assignment - one will be generated if not specified. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The ID of the Principal (User, Group or Service Principal) to assign the Role Definition to. Changing this forces a new resource to be created.
+     */
+    principalId?: pulumi.Input<string>;
+    /**
+     * The type of the `principalId`, e.g. User, Group, Service Principal, Application, etc.
+     */
+    principalType?: pulumi.Input<string>;
+    /**
+     * The Scoped-ID of the Role Definition. Changing this forces a new resource to be created. Conflicts with `roleDefinitionName`.
+     */
+    roleDefinitionId?: pulumi.Input<string>;
+    /**
+     * The name of a built-in Role. Changing this forces a new resource to be created. Conflicts with `roleDefinitionId`.
+     */
+    roleDefinitionName?: pulumi.Input<string>;
+    /**
+     * The scope at which the Role Assignment applies to, such as `/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333`, `/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup`, or `/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup/providers/Microsoft.Compute/virtualMachines/myVM`, or `/providers/Microsoft.Management/managementGroups/myMG`. Changing this forces a new resource to be created.
+     */
+    scope?: pulumi.Input<string>;
+    /**
+     * If the `principalId` is a newly provisioned `Service Principal` set this value to `true` to skip the `Azure Active Directory` check which may fail due to replication lag. This argument is only valid if the `principalId` is a `Service Principal` identity. If it is not a `Service Principal` identity it will cause the role assignment to fail. Defaults to `false`.
+     */
+    skipServicePrincipalAadCheck?: pulumi.Input<boolean>;
+}
+/**
+ * The set of arguments for constructing a Assignment resource.
+ */
+export interface AssignmentArgs {
+    /**
+     * The condition that limits the resources that the role can be assigned to. Changing this forces a new resource to be created.
+     */
+    condition?: pulumi.Input<string>;
+    /**
+     * The version of the condition. Possible values are `1.0` or `2.0`. Changing this forces a new resource to be created.
+     */
+    conditionVersion?: pulumi.Input<string>;
+    /**
+     * The delegated Azure Resource Id which contains a Managed Identity. Changing this forces a new resource to be created.
+     */
+    delegatedManagedIdentityResourceId?: pulumi.Input<string>;
+    /**
+     * The description for this Role Assignment. Changing this forces a new resource to be created.
+     */
+    description?: pulumi.Input<string>;
+    /**
+     * A unique UUID/GUID for this Role Assignment - one will be generated if not specified. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The ID of the Principal (User, Group or Service Principal) to assign the Role Definition to. Changing this forces a new resource to be created.
+     */
+    principalId: pulumi.Input<string>;
+    /**
+     * The Scoped-ID of the Role Definition. Changing this forces a new resource to be created. Conflicts with `roleDefinitionName`.
+     */
+    roleDefinitionId?: pulumi.Input<string>;
+    /**
+     * The name of a built-in Role. Changing this forces a new resource to be created. Conflicts with `roleDefinitionId`.
+     */
+    roleDefinitionName?: pulumi.Input<string>;
+    /**
+     * The scope at which the Role Assignment applies to, such as `/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333`, `/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup`, or `/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333/resourceGroups/myGroup/providers/Microsoft.Compute/virtualMachines/myVM`, or `/providers/Microsoft.Management/managementGroups/myMG`. Changing this forces a new resource to be created.
+     */
+    scope: pulumi.Input<string>;
+    /**
+     * If the `principalId` is a newly provisioned `Service Principal` set this value to `true` to skip the `Azure Active Directory` check which may fail due to replication lag. This argument is only valid if the `principalId` is a `Service Principal` identity. If it is not a `Service Principal` identity it will cause the role assignment to fail. Defaults to `false`.
+     */
+    skipServicePrincipalAadCheck?: pulumi.Input<boolean>;
+}

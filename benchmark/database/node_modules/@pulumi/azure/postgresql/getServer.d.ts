@@ -1,0 +1,87 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing PostgreSQL Azure Database Server.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.postgresql.getServer({
+ *     name: "postgresql-server-1",
+ *     resourceGroupName: "api-rg-pro",
+ * });
+ * export const postgresqlServerId = example.then(example => example.id);
+ * ```
+ */
+export declare function getServer(args: GetServerArgs, opts?: pulumi.InvokeOptions): Promise<GetServerResult>;
+/**
+ * A collection of arguments for invoking getServer.
+ */
+export interface GetServerArgs {
+    /**
+     * The name of the PostgreSQL Server.
+     */
+    name: string;
+    /**
+     * Specifies the name of the Resource Group where the PostgreSQL Server exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getServer.
+ */
+export interface GetServerResult {
+    /**
+     * The administrator username of the PostgreSQL Server.
+     */
+    readonly administratorLogin: string;
+    /**
+     * The fully qualified domain name of the PostgreSQL Server.
+     */
+    readonly fqdn: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * An `identity` block as defined below.
+     */
+    readonly identities: outputs.postgresql.GetServerIdentity[];
+    /**
+     * The location of the Resource Group in which the PostgreSQL Server exists.
+     */
+    readonly location: string;
+    readonly name: string;
+    readonly resourceGroupName: string;
+    /**
+     * The SKU name of the PostgreSQL Server.
+     */
+    readonly skuName: string;
+    /**
+     * A mapping of tags assigned to the resource.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+    /**
+     * The version of the PostgreSQL Server.
+     */
+    readonly version: string;
+}
+export declare function getServerOutput(args: GetServerOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetServerResult>;
+/**
+ * A collection of arguments for invoking getServer.
+ */
+export interface GetServerOutputArgs {
+    /**
+     * The name of the PostgreSQL Server.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Resource Group where the PostgreSQL Server exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

@@ -1,0 +1,70 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Logic App Integration Account.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.logicapps.getIntegrationAccount({
+ *     name: "example-account",
+ *     resourceGroupName: "example-resource-group",
+ * });
+ * export const id = example.then(example => example.id);
+ * ```
+ */
+export declare function getIntegrationAccount(args: GetIntegrationAccountArgs, opts?: pulumi.InvokeOptions): Promise<GetIntegrationAccountResult>;
+/**
+ * A collection of arguments for invoking getIntegrationAccount.
+ */
+export interface GetIntegrationAccountArgs {
+    /**
+     * The name of this Logic App Integration Account.
+     */
+    name: string;
+    /**
+     * The name of the Resource Group where the Logic App Integration Account exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getIntegrationAccount.
+ */
+export interface GetIntegrationAccountResult {
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * The Azure Region where the Logic App Integration Account exists.
+     */
+    readonly location: string;
+    readonly name: string;
+    readonly resourceGroupName: string;
+    /**
+     * The sku name of the Logic App Integration Account.
+     */
+    readonly skuName: string;
+    /**
+     * A mapping of tags assigned to the Logic App Integration Account.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+}
+export declare function getIntegrationAccountOutput(args: GetIntegrationAccountOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetIntegrationAccountResult>;
+/**
+ * A collection of arguments for invoking getIntegrationAccount.
+ */
+export interface GetIntegrationAccountOutputArgs {
+    /**
+     * The name of this Logic App Integration Account.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group where the Logic App Integration Account exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

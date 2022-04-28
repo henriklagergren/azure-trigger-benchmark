@@ -1,0 +1,97 @@
+import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing Batch Account.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.batch.getAccount({
+ *     name: "testbatchaccount",
+ *     resourceGroupName: "test",
+ * });
+ * export const poolAllocationMode = example.then(example => example.poolAllocationMode);
+ * ```
+ */
+export declare function getAccount(args: GetAccountArgs, opts?: pulumi.InvokeOptions): Promise<GetAccountResult>;
+/**
+ * A collection of arguments for invoking getAccount.
+ */
+export interface GetAccountArgs {
+    encryption?: inputs.batch.GetAccountEncryption;
+    /**
+     * The name of the Batch account.
+     */
+    name: string;
+    /**
+     * The Name of the Resource Group where this Batch account exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getAccount.
+ */
+export interface GetAccountResult {
+    /**
+     * The account endpoint used to interact with the Batch service.
+     */
+    readonly accountEndpoint: string;
+    readonly encryption?: outputs.batch.GetAccountEncryption;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * The `keyVaultReference` block that describes the Azure KeyVault reference to use when deploying the Azure Batch account using the `UserSubscription` pool allocation mode.
+     */
+    readonly keyVaultReferences: outputs.batch.GetAccountKeyVaultReference[];
+    /**
+     * The Azure Region in which this Batch account exists.
+     */
+    readonly location: string;
+    /**
+     * The Batch account name.
+     */
+    readonly name: string;
+    /**
+     * The pool allocation mode configured for this Batch account.
+     */
+    readonly poolAllocationMode: string;
+    /**
+     * The Batch account primary access key.
+     */
+    readonly primaryAccessKey: string;
+    readonly resourceGroupName: string;
+    /**
+     * The Batch account secondary access key.
+     */
+    readonly secondaryAccessKey: string;
+    /**
+     * The ID of the Storage Account used for this Batch account.
+     */
+    readonly storageAccountId: string;
+    /**
+     * A map of tags assigned to the Batch account.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+}
+export declare function getAccountOutput(args: GetAccountOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetAccountResult>;
+/**
+ * A collection of arguments for invoking getAccount.
+ */
+export interface GetAccountOutputArgs {
+    encryption?: pulumi.Input<inputs.batch.GetAccountEncryptionArgs>;
+    /**
+     * The name of the Batch account.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The Name of the Resource Group where this Batch account exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

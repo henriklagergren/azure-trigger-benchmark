@@ -1,0 +1,127 @@
+import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing EventGrid Domain
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.eventgrid.getDomain({
+ *     name: "my-eventgrid-domain",
+ *     resourceGroupName: "example-resources",
+ * });
+ * export const eventgridDomainMappingTopic = example.then(example => example.inputMappingFields?[0]?.topic);
+ * ```
+ */
+export declare function getDomain(args: GetDomainArgs, opts?: pulumi.InvokeOptions): Promise<GetDomainResult>;
+/**
+ * A collection of arguments for invoking getDomain.
+ */
+export interface GetDomainArgs {
+    /**
+     * One or more `inboundIpRule` blocks as defined below.
+     */
+    inboundIpRules?: inputs.eventgrid.GetDomainInboundIpRule[];
+    /**
+     * The name of the EventGrid Domain resource.
+     */
+    name: string;
+    /**
+     * Whether or not public network access is allowed for this server.
+     */
+    publicNetworkAccessEnabled?: boolean;
+    /**
+     * The name of the resource group in which the EventGrid Domain exists.
+     */
+    resourceGroupName: string;
+    /**
+     * A mapping of tags assigned to the EventGrid Domain.
+     */
+    tags?: {
+        [key: string]: string;
+    };
+}
+/**
+ * A collection of values returned by getDomain.
+ */
+export interface GetDomainResult {
+    /**
+     * The Endpoint associated with the EventGrid Domain.
+     */
+    readonly endpoint: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * One or more `inboundIpRule` blocks as defined below.
+     */
+    readonly inboundIpRules?: outputs.eventgrid.GetDomainInboundIpRule[];
+    /**
+     * A `inputMappingDefaultValues` block as defined below.
+     */
+    readonly inputMappingDefaultValues: outputs.eventgrid.GetDomainInputMappingDefaultValue[];
+    /**
+     * A `inputMappingFields` block as defined below.
+     */
+    readonly inputMappingFields: outputs.eventgrid.GetDomainInputMappingField[];
+    /**
+     * The schema in which incoming events will be published to this domain. Possible values are `CloudEventSchemaV1_0`, `CustomEventSchema`, or `EventGridSchema`.
+     */
+    readonly inputSchema: string;
+    /**
+     * The Azure Region in which this EventGrid Domain exists.
+     */
+    readonly location: string;
+    readonly name: string;
+    /**
+     * The primary access key associated with the EventGrid Domain.
+     */
+    readonly primaryAccessKey: string;
+    /**
+     * Whether or not public network access is allowed for this server.
+     */
+    readonly publicNetworkAccessEnabled?: boolean;
+    readonly resourceGroupName: string;
+    /**
+     * The secondary access key associated with the EventGrid Domain.
+     */
+    readonly secondaryAccessKey: string;
+    /**
+     * A mapping of tags assigned to the EventGrid Domain.
+     */
+    readonly tags?: {
+        [key: string]: string;
+    };
+}
+export declare function getDomainOutput(args: GetDomainOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetDomainResult>;
+/**
+ * A collection of arguments for invoking getDomain.
+ */
+export interface GetDomainOutputArgs {
+    /**
+     * One or more `inboundIpRule` blocks as defined below.
+     */
+    inboundIpRules?: pulumi.Input<pulumi.Input<inputs.eventgrid.GetDomainInboundIpRuleArgs>[]>;
+    /**
+     * The name of the EventGrid Domain resource.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * Whether or not public network access is allowed for this server.
+     */
+    publicNetworkAccessEnabled?: pulumi.Input<boolean>;
+    /**
+     * The name of the resource group in which the EventGrid Domain exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * A mapping of tags assigned to the EventGrid Domain.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+}

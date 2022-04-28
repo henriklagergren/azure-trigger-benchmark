@@ -1,0 +1,109 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Associates a Network Security Group with a Subnet within a Virtual Network.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleVirtualNetwork = new azure.network.VirtualNetwork("exampleVirtualNetwork", {
+ *     addressSpaces: ["10.0.0.0/16"],
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ * });
+ * const exampleSubnet = new azure.network.Subnet("exampleSubnet", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     virtualNetworkName: exampleVirtualNetwork.name,
+ *     addressPrefixes: ["10.0.2.0/24"],
+ * });
+ * const exampleNetworkSecurityGroup = new azure.network.NetworkSecurityGroup("exampleNetworkSecurityGroup", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     securityRules: [{
+ *         name: "test123",
+ *         priority: 100,
+ *         direction: "Inbound",
+ *         access: "Allow",
+ *         protocol: "Tcp",
+ *         sourcePortRange: "*",
+ *         destinationPortRange: "*",
+ *         sourceAddressPrefix: "*",
+ *         destinationAddressPrefix: "*",
+ *     }],
+ * });
+ * const exampleSubnetNetworkSecurityGroupAssociation = new azure.network.SubnetNetworkSecurityGroupAssociation("exampleSubnetNetworkSecurityGroupAssociation", {
+ *     subnetId: exampleSubnet.id,
+ *     networkSecurityGroupId: exampleNetworkSecurityGroup.id,
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Subnet `<->` Network Security Group Associations can be imported using the `resource id` of the Subnet, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:network/subnetNetworkSecurityGroupAssociation:SubnetNetworkSecurityGroupAssociation association1 /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mygroup1/providers/Microsoft.Network/virtualNetworks/myvnet1/subnets/mysubnet1
+ * ```
+ */
+export declare class SubnetNetworkSecurityGroupAssociation extends pulumi.CustomResource {
+    /**
+     * Get an existing SubnetNetworkSecurityGroupAssociation resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: SubnetNetworkSecurityGroupAssociationState, opts?: pulumi.CustomResourceOptions): SubnetNetworkSecurityGroupAssociation;
+    /**
+     * Returns true if the given object is an instance of SubnetNetworkSecurityGroupAssociation.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is SubnetNetworkSecurityGroupAssociation;
+    /**
+     * The ID of the Network Security Group which should be associated with the Subnet. Changing this forces a new resource to be created.
+     */
+    readonly networkSecurityGroupId: pulumi.Output<string>;
+    /**
+     * The ID of the Subnet. Changing this forces a new resource to be created.
+     */
+    readonly subnetId: pulumi.Output<string>;
+    /**
+     * Create a SubnetNetworkSecurityGroupAssociation resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: SubnetNetworkSecurityGroupAssociationArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering SubnetNetworkSecurityGroupAssociation resources.
+ */
+export interface SubnetNetworkSecurityGroupAssociationState {
+    /**
+     * The ID of the Network Security Group which should be associated with the Subnet. Changing this forces a new resource to be created.
+     */
+    networkSecurityGroupId?: pulumi.Input<string>;
+    /**
+     * The ID of the Subnet. Changing this forces a new resource to be created.
+     */
+    subnetId?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a SubnetNetworkSecurityGroupAssociation resource.
+ */
+export interface SubnetNetworkSecurityGroupAssociationArgs {
+    /**
+     * The ID of the Network Security Group which should be associated with the Subnet. Changing this forces a new resource to be created.
+     */
+    networkSecurityGroupId: pulumi.Input<string>;
+    /**
+     * The ID of the Subnet. Changing this forces a new resource to be created.
+     */
+    subnetId: pulumi.Input<string>;
+}

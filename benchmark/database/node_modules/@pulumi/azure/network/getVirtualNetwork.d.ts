@@ -1,0 +1,88 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Virtual Network.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.network.getVirtualNetwork({
+ *     name: "production",
+ *     resourceGroupName: "networking",
+ * });
+ * export const virtualNetworkId = example.then(example => example.id);
+ * ```
+ */
+export declare function getVirtualNetwork(args: GetVirtualNetworkArgs, opts?: pulumi.InvokeOptions): Promise<GetVirtualNetworkResult>;
+/**
+ * A collection of arguments for invoking getVirtualNetwork.
+ */
+export interface GetVirtualNetworkArgs {
+    /**
+     * Specifies the name of the Virtual Network.
+     */
+    name: string;
+    /**
+     * Specifies the name of the resource group the Virtual Network is located in.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getVirtualNetwork.
+ */
+export interface GetVirtualNetworkResult {
+    /**
+     * The list of address spaces used by the virtual network.
+     */
+    readonly addressSpaces: string[];
+    /**
+     * The list of DNS servers used by the virtual network.
+     */
+    readonly dnsServers: string[];
+    /**
+     * The GUID of the virtual network.
+     */
+    readonly guid: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * Location of the virtual network.
+     */
+    readonly location: string;
+    readonly name: string;
+    readonly resourceGroupName: string;
+    /**
+     * The list of name of the subnets that are attached to this virtual network.
+     */
+    readonly subnets: string[];
+    /**
+     * A mapping of tags to assigned to the resource.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+    /**
+     * A mapping of name - virtual network id of the virtual network peerings.
+     */
+    readonly vnetPeerings: {
+        [key: string]: string;
+    };
+}
+export declare function getVirtualNetworkOutput(args: GetVirtualNetworkOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetVirtualNetworkResult>;
+/**
+ * A collection of arguments for invoking getVirtualNetwork.
+ */
+export interface GetVirtualNetworkOutputArgs {
+    /**
+     * Specifies the name of the Virtual Network.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * Specifies the name of the resource group the Virtual Network is located in.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

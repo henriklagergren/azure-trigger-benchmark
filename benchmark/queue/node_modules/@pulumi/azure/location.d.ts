@@ -1,0 +1,37 @@
+export declare module Locations {
+    const EastAsia: Location;
+    const SouthEastAsia: Location;
+    const CentralUS: Location;
+    const EastUS: Location;
+    const EastUS2: Location;
+    const WestUS: Location;
+    const WestUS2: Location;
+    const NorthCentralUS: Location;
+    const SouthCentralUS: Location;
+    const NorthEurope: Location;
+    const WestEurope: Location;
+    const JapanWest: Location;
+    const JapanEast: Location;
+    const BrazilSouth: Location;
+    const AustraliaEast: Location;
+    const AustraliaSouthEast: Location;
+    const AustraliaCentral: Location;
+    const AustraliaCentral2: Location;
+    const SouthIndia: Location;
+    const CentralIndia: Location;
+    const WestIndia: Location;
+    const CanadaCentral: Location;
+    const CanadaEast: Location;
+    const UKSouth: Location;
+    const UKWest: Location;
+    const WestCentralUS: Location;
+    const KoreaCentral: Location;
+    const KoreaSouth: Location;
+    const FranceCentral: Location;
+    const FranceSouth: Location;
+    const SouthAfricaNorth: Location;
+    const SouthAfricaWest: Location;
+    const UAENorth: Location;
+    const UAECentral: Location;
+}
+export declare type Location = "eastasia" | "southeastasia" | "centralus" | "eastus" | "eastus2" | "westus" | "westus2" | "northcentralus" | "southcentralus" | "northeurope" | "westeurope" | "japanwest" | "japaneast" | "brazilsouth" | "australiaeast" | "australiasoutheast" | "australiacentral" | "australiacentral2" | "southindia" | "centralindia" | "westindia" | "canadacentral" | "canadaeast" | "uksouth" | "ukwest" | "westcentralus" | "koreacentral" | "koreasouth" | "francecentral" | "francesouth" | "southafricanorth" | "southafricawest" | "uaecentral" | "uaenorth";

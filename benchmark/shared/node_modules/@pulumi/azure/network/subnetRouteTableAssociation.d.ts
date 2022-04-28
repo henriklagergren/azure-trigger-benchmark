@@ -1,0 +1,104 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Associates a Route Table with a Subnet within a Virtual Network.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleVirtualNetwork = new azure.network.VirtualNetwork("exampleVirtualNetwork", {
+ *     addressSpaces: ["10.0.0.0/16"],
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ * });
+ * const exampleSubnet = new azure.network.Subnet("exampleSubnet", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     virtualNetworkName: exampleVirtualNetwork.name,
+ *     addressPrefixes: ["10.0.2.0/24"],
+ * });
+ * const exampleRouteTable = new azure.network.RouteTable("exampleRouteTable", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     routes: [{
+ *         name: "example",
+ *         addressPrefix: "10.100.0.0/14",
+ *         nextHopType: "VirtualAppliance",
+ *         nextHopInIpAddress: "10.10.1.1",
+ *     }],
+ * });
+ * const exampleSubnetRouteTableAssociation = new azure.network.SubnetRouteTableAssociation("exampleSubnetRouteTableAssociation", {
+ *     subnetId: exampleSubnet.id,
+ *     routeTableId: exampleRouteTable.id,
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Subnet Route Table Associations can be imported using the `resource id` of the Subnet, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:network/subnetRouteTableAssociation:SubnetRouteTableAssociation association1 /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mygroup1/providers/Microsoft.Network/virtualNetworks/myvnet1/subnets/mysubnet1
+ * ```
+ */
+export declare class SubnetRouteTableAssociation extends pulumi.CustomResource {
+    /**
+     * Get an existing SubnetRouteTableAssociation resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: SubnetRouteTableAssociationState, opts?: pulumi.CustomResourceOptions): SubnetRouteTableAssociation;
+    /**
+     * Returns true if the given object is an instance of SubnetRouteTableAssociation.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is SubnetRouteTableAssociation;
+    /**
+     * The ID of the Route Table which should be associated with the Subnet. Changing this forces a new resource to be created.
+     */
+    readonly routeTableId: pulumi.Output<string>;
+    /**
+     * The ID of the Subnet. Changing this forces a new resource to be created.
+     */
+    readonly subnetId: pulumi.Output<string>;
+    /**
+     * Create a SubnetRouteTableAssociation resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: SubnetRouteTableAssociationArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering SubnetRouteTableAssociation resources.
+ */
+export interface SubnetRouteTableAssociationState {
+    /**
+     * The ID of the Route Table which should be associated with the Subnet. Changing this forces a new resource to be created.
+     */
+    routeTableId?: pulumi.Input<string>;
+    /**
+     * The ID of the Subnet. Changing this forces a new resource to be created.
+     */
+    subnetId?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a SubnetRouteTableAssociation resource.
+ */
+export interface SubnetRouteTableAssociationArgs {
+    /**
+     * The ID of the Route Table which should be associated with the Subnet. Changing this forces a new resource to be created.
+     */
+    routeTableId: pulumi.Input<string>;
+    /**
+     * The ID of the Subnet. Changing this forces a new resource to be created.
+     */
+    subnetId: pulumi.Input<string>;
+}

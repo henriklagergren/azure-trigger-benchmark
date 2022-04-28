@@ -1,0 +1,79 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing Virtual Machine.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.compute.getVirtualMachine({
+ *     name: "production",
+ *     resourceGroupName: "networking",
+ * });
+ * export const virtualMachineId = example.then(example => example.id);
+ * ```
+ */
+export declare function getVirtualMachine(args: GetVirtualMachineArgs, opts?: pulumi.InvokeOptions): Promise<GetVirtualMachineResult>;
+/**
+ * A collection of arguments for invoking getVirtualMachine.
+ */
+export interface GetVirtualMachineArgs {
+    /**
+     * Specifies the name of the Virtual Machine.
+     */
+    name: string;
+    /**
+     * Specifies the name of the resource group the Virtual Machine is located in.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getVirtualMachine.
+ */
+export interface GetVirtualMachineResult {
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * A `identity` block as defined below.
+     * *
+     */
+    readonly identities: outputs.compute.GetVirtualMachineIdentity[];
+    readonly location: string;
+    readonly name: string;
+    /**
+     * The Primary Private IP Address assigned to this Virtual Machine.
+     */
+    readonly privateIpAddress: string;
+    /**
+     * A list of Private IP Addresses assigned to this Virtual Machine.
+     */
+    readonly privateIpAddresses: string[];
+    /**
+     * The Primary Public IP Address assigned to this Virtual Machine.
+     */
+    readonly publicIpAddress: string;
+    /**
+     * A list of the Public IP Addresses assigned to this Virtual Machine.
+     */
+    readonly publicIpAddresses: string[];
+    readonly resourceGroupName: string;
+}
+export declare function getVirtualMachineOutput(args: GetVirtualMachineOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetVirtualMachineResult>;
+/**
+ * A collection of arguments for invoking getVirtualMachine.
+ */
+export interface GetVirtualMachineOutputArgs {
+    /**
+     * Specifies the name of the Virtual Machine.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * Specifies the name of the resource group the Virtual Machine is located in.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

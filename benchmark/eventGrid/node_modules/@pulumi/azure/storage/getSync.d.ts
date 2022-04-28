@@ -1,0 +1,70 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Storage Sync.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.storage.getSync({
+ *     name: "existingStorageSyncName",
+ *     resourceGroupName: "existingResGroup",
+ * });
+ * export const id = example.then(example => example.id);
+ * ```
+ */
+export declare function getSync(args: GetSyncArgs, opts?: pulumi.InvokeOptions): Promise<GetSyncResult>;
+/**
+ * A collection of arguments for invoking getSync.
+ */
+export interface GetSyncArgs {
+    /**
+     * The name of this Storage Sync.
+     */
+    name: string;
+    /**
+     * The name of the Resource Group where the Storage Sync exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getSync.
+ */
+export interface GetSyncResult {
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * Incoming traffic policy.
+     */
+    readonly incomingTrafficPolicy: string;
+    /**
+     * The Azure Region where the Storage Sync exists.
+     */
+    readonly location: string;
+    readonly name: string;
+    readonly resourceGroupName: string;
+    /**
+     * A mapping of tags assigned to the Storage Sync.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+}
+export declare function getSyncOutput(args: GetSyncOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetSyncResult>;
+/**
+ * A collection of arguments for invoking getSync.
+ */
+export interface GetSyncOutputArgs {
+    /**
+     * The name of this Storage Sync.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group where the Storage Sync exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

@@ -1,0 +1,174 @@
+import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
+/**
+ * Manages a Cost Management Export for a Resource Group.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleAccount = new azure.storage.Account("exampleAccount", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: exampleResourceGroup.location,
+ *     accountTier: "Standard",
+ *     accountReplicationType: "LRS",
+ * });
+ * const exampleContainer = new azure.storage.Container("exampleContainer", {storageAccountName: azurerm_storage_account.test.name});
+ * const exampleResourceGroupCostManagementExport = new azure.core.ResourceGroupCostManagementExport("exampleResourceGroupCostManagementExport", {
+ *     resourceGroupId: exampleResourceGroup.id,
+ *     recurrenceType: "Monthly",
+ *     recurrencePeriodStartDate: "2020-08-18T00:00:00Z",
+ *     recurrencePeriodEndDate: "2020-09-18T00:00:00Z",
+ *     exportDataStorageLocation: {
+ *         containerId: azurerm_storage_container.test.resource_manager_id,
+ *         rootFolderPath: "/root/updated",
+ *     },
+ *     exportDataOptions: {
+ *         type: "Usage",
+ *         timeFrame: "WeekToDate",
+ *     },
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Cost Management Export for a Resource Group can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:core/resourceGroupCostManagementExport:ResourceGroupCostManagementExport example /subscriptions/12345678-1234-9876-4563-123456789012/resourceGroups/resGroup1/providers/Microsoft.CostManagement/exports/export1
+ * ```
+ */
+export declare class ResourceGroupCostManagementExport extends pulumi.CustomResource {
+    /**
+     * Get an existing ResourceGroupCostManagementExport resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: ResourceGroupCostManagementExportState, opts?: pulumi.CustomResourceOptions): ResourceGroupCostManagementExport;
+    /**
+     * Returns true if the given object is an instance of ResourceGroupCostManagementExport.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is ResourceGroupCostManagementExport;
+    /**
+     * Is the cost management export active? Default is `true`.
+     */
+    readonly active: pulumi.Output<boolean | undefined>;
+    /**
+     * A `exportDataOptions` block as defined below.
+     */
+    readonly exportDataOptions: pulumi.Output<outputs.core.ResourceGroupCostManagementExportExportDataOptions>;
+    /**
+     * A `exportDataStorageLocation` block as defined below.
+     */
+    readonly exportDataStorageLocation: pulumi.Output<outputs.core.ResourceGroupCostManagementExportExportDataStorageLocation>;
+    /**
+     * Specifies the name of the Cost Management Export. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * The date the export will stop capturing information.
+     */
+    readonly recurrencePeriodEndDate: pulumi.Output<string>;
+    /**
+     * The date the export will start capturing information.
+     */
+    readonly recurrencePeriodStartDate: pulumi.Output<string>;
+    /**
+     * How often the requested information will be exported. Valid values include `Annually`, `Daily`, `Monthly`, `Weekly`.
+     */
+    readonly recurrenceType: pulumi.Output<string>;
+    /**
+     * The id of the resource group on which to create an export.
+     */
+    readonly resourceGroupId: pulumi.Output<string>;
+    /**
+     * Create a ResourceGroupCostManagementExport resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: ResourceGroupCostManagementExportArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering ResourceGroupCostManagementExport resources.
+ */
+export interface ResourceGroupCostManagementExportState {
+    /**
+     * Is the cost management export active? Default is `true`.
+     */
+    active?: pulumi.Input<boolean>;
+    /**
+     * A `exportDataOptions` block as defined below.
+     */
+    exportDataOptions?: pulumi.Input<inputs.core.ResourceGroupCostManagementExportExportDataOptions>;
+    /**
+     * A `exportDataStorageLocation` block as defined below.
+     */
+    exportDataStorageLocation?: pulumi.Input<inputs.core.ResourceGroupCostManagementExportExportDataStorageLocation>;
+    /**
+     * Specifies the name of the Cost Management Export. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The date the export will stop capturing information.
+     */
+    recurrencePeriodEndDate?: pulumi.Input<string>;
+    /**
+     * The date the export will start capturing information.
+     */
+    recurrencePeriodStartDate?: pulumi.Input<string>;
+    /**
+     * How often the requested information will be exported. Valid values include `Annually`, `Daily`, `Monthly`, `Weekly`.
+     */
+    recurrenceType?: pulumi.Input<string>;
+    /**
+     * The id of the resource group on which to create an export.
+     */
+    resourceGroupId?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a ResourceGroupCostManagementExport resource.
+ */
+export interface ResourceGroupCostManagementExportArgs {
+    /**
+     * Is the cost management export active? Default is `true`.
+     */
+    active?: pulumi.Input<boolean>;
+    /**
+     * A `exportDataOptions` block as defined below.
+     */
+    exportDataOptions: pulumi.Input<inputs.core.ResourceGroupCostManagementExportExportDataOptions>;
+    /**
+     * A `exportDataStorageLocation` block as defined below.
+     */
+    exportDataStorageLocation: pulumi.Input<inputs.core.ResourceGroupCostManagementExportExportDataStorageLocation>;
+    /**
+     * Specifies the name of the Cost Management Export. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The date the export will stop capturing information.
+     */
+    recurrencePeriodEndDate: pulumi.Input<string>;
+    /**
+     * The date the export will start capturing information.
+     */
+    recurrencePeriodStartDate: pulumi.Input<string>;
+    /**
+     * How often the requested information will be exported. Valid values include `Annually`, `Daily`, `Monthly`, `Weekly`.
+     */
+    recurrenceType: pulumi.Input<string>;
+    /**
+     * The id of the resource group on which to create an export.
+     */
+    resourceGroupId: pulumi.Input<string>;
+}

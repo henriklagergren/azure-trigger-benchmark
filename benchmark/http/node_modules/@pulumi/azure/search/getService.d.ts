@@ -1,0 +1,88 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Manages a Search Service.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleService = azure.search.getServiceOutput({
+ *     name: "example-search-service",
+ *     resourceGroupName: exampleResourceGroup.name,
+ * });
+ * ```
+ */
+export declare function getService(args: GetServiceArgs, opts?: pulumi.InvokeOptions): Promise<GetServiceResult>;
+/**
+ * A collection of arguments for invoking getService.
+ */
+export interface GetServiceArgs {
+    /**
+     * The Name of the Search Service.
+     */
+    name: string;
+    /**
+     * The name of the Resource Group where the Search Service exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getService.
+ */
+export interface GetServiceResult {
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * An `identity` block as defined below.
+     */
+    readonly identities: outputs.search.GetServiceIdentity[];
+    /**
+     * The name of this Query Key.
+     */
+    readonly name: string;
+    /**
+     * The number of partitions which have been created.
+     */
+    readonly partitionCount: number;
+    /**
+     * The Primary Key used for Search Service Administration.
+     */
+    readonly primaryKey: string;
+    /**
+     * Whether or not public network access is enabled for this resource.
+     */
+    readonly publicNetworkAccessEnabled: boolean;
+    /**
+     * A `queryKeys` block as defined below.
+     */
+    readonly queryKeys: outputs.search.GetServiceQueryKey[];
+    /**
+     * The number of replica's which have been created.
+     */
+    readonly replicaCount: number;
+    readonly resourceGroupName: string;
+    /**
+     * The Secondary Key used for Search Service Administration.
+     */
+    readonly secondaryKey: string;
+}
+export declare function getServiceOutput(args: GetServiceOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetServiceResult>;
+/**
+ * A collection of arguments for invoking getService.
+ */
+export interface GetServiceOutputArgs {
+    /**
+     * The Name of the Search Service.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group where the Search Service exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

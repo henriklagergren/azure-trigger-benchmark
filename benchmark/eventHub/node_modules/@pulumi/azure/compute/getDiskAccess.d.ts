@@ -1,0 +1,71 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Disk Access.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.compute.getDiskAccess({
+ *     name: "existing",
+ *     resourceGroupName: "existing",
+ * });
+ * export const id = example.then(example => example.id);
+ * ```
+ */
+export declare function getDiskAccess(args: GetDiskAccessArgs, opts?: pulumi.InvokeOptions): Promise<GetDiskAccessResult>;
+/**
+ * A collection of arguments for invoking getDiskAccess.
+ */
+export interface GetDiskAccessArgs {
+    /**
+     * The name of this Disk Access.
+     */
+    name: string;
+    /**
+     * The name of the Resource Group where the Disk Access exists.
+     */
+    resourceGroupName: string;
+    /**
+     * A mapping of tags which should be assigned to the Disk Access.
+     */
+    tags?: {
+        [key: string]: string;
+    };
+}
+/**
+ * A collection of values returned by getDiskAccess.
+ */
+export interface GetDiskAccessResult {
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    readonly name: string;
+    readonly resourceGroupName: string;
+    readonly tags?: {
+        [key: string]: string;
+    };
+}
+export declare function getDiskAccessOutput(args: GetDiskAccessOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetDiskAccessResult>;
+/**
+ * A collection of arguments for invoking getDiskAccess.
+ */
+export interface GetDiskAccessOutputArgs {
+    /**
+     * The name of this Disk Access.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group where the Disk Access exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * A mapping of tags which should be assigned to the Disk Access.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+}

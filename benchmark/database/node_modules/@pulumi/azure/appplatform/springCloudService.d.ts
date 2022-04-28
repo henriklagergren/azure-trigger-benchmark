@@ -1,0 +1,200 @@
+import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
+/**
+ * Manages an Azure Spring Cloud Service.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleInsights = new azure.appinsights.Insights("exampleInsights", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     applicationType: "web",
+ * });
+ * const exampleSpringCloudService = new azure.appplatform.SpringCloudService("exampleSpringCloudService", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: exampleResourceGroup.location,
+ *     skuName: "S0",
+ *     configServerGitSetting: {
+ *         uri: "https://github.com/Azure-Samples/piggymetrics",
+ *         label: "config",
+ *         searchPaths: [
+ *             "dir1",
+ *             "dir2",
+ *         ],
+ *     },
+ *     trace: {
+ *         connectionString: exampleInsights.connectionString,
+ *         sampleRate: 10,
+ *     },
+ *     tags: {
+ *         Env: "staging",
+ *     },
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Spring Cloud services can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:appplatform/springCloudService:SpringCloudService example /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/group1/providers/Microsoft.AppPlatform/Spring/spring1
+ * ```
+ */
+export declare class SpringCloudService extends pulumi.CustomResource {
+    /**
+     * Get an existing SpringCloudService resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: SpringCloudServiceState, opts?: pulumi.CustomResourceOptions): SpringCloudService;
+    /**
+     * Returns true if the given object is an instance of SpringCloudService.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is SpringCloudService;
+    /**
+     * A `configServerGitSetting` block as defined below.
+     */
+    readonly configServerGitSetting: pulumi.Output<outputs.appplatform.SpringCloudServiceConfigServerGitSetting | undefined>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    readonly location: pulumi.Output<string>;
+    /**
+     * Specifies the name of the Spring Cloud Service resource. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * A `network` block as defined below. Changing this forces a new resource to be created.
+     */
+    readonly network: pulumi.Output<outputs.appplatform.SpringCloudServiceNetwork | undefined>;
+    /**
+     * A list of the outbound Public IP Addresses used by this Spring Cloud Service.
+     */
+    readonly outboundPublicIpAddresses: pulumi.Output<string[]>;
+    /**
+     * A list of `requiredNetworkTrafficRules` blocks as defined below.
+     */
+    readonly requiredNetworkTrafficRules: pulumi.Output<outputs.appplatform.SpringCloudServiceRequiredNetworkTrafficRule[]>;
+    /**
+     * Specifies The name of the resource group in which to create the Spring Cloud Service. Changing this forces a new resource to be created.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * Specifies the SKU Name for this Spring Cloud Service. Possible values are `B0` and `S0`. Defaults to `S0`.
+     */
+    readonly skuName: pulumi.Output<string | undefined>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    readonly tags: pulumi.Output<{
+        [key: string]: string;
+    } | undefined>;
+    /**
+     * A `trace` block as defined below.
+     */
+    readonly trace: pulumi.Output<outputs.appplatform.SpringCloudServiceTrace | undefined>;
+    /**
+     * Create a SpringCloudService resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: SpringCloudServiceArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering SpringCloudService resources.
+ */
+export interface SpringCloudServiceState {
+    /**
+     * A `configServerGitSetting` block as defined below.
+     */
+    configServerGitSetting?: pulumi.Input<inputs.appplatform.SpringCloudServiceConfigServerGitSetting>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Spring Cloud Service resource. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * A `network` block as defined below. Changing this forces a new resource to be created.
+     */
+    network?: pulumi.Input<inputs.appplatform.SpringCloudServiceNetwork>;
+    /**
+     * A list of the outbound Public IP Addresses used by this Spring Cloud Service.
+     */
+    outboundPublicIpAddresses?: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * A list of `requiredNetworkTrafficRules` blocks as defined below.
+     */
+    requiredNetworkTrafficRules?: pulumi.Input<pulumi.Input<inputs.appplatform.SpringCloudServiceRequiredNetworkTrafficRule>[]>;
+    /**
+     * Specifies The name of the resource group in which to create the Spring Cloud Service. Changing this forces a new resource to be created.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * Specifies the SKU Name for this Spring Cloud Service. Possible values are `B0` and `S0`. Defaults to `S0`.
+     */
+    skuName?: pulumi.Input<string>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * A `trace` block as defined below.
+     */
+    trace?: pulumi.Input<inputs.appplatform.SpringCloudServiceTrace>;
+}
+/**
+ * The set of arguments for constructing a SpringCloudService resource.
+ */
+export interface SpringCloudServiceArgs {
+    /**
+     * A `configServerGitSetting` block as defined below.
+     */
+    configServerGitSetting?: pulumi.Input<inputs.appplatform.SpringCloudServiceConfigServerGitSetting>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Spring Cloud Service resource. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * A `network` block as defined below. Changing this forces a new resource to be created.
+     */
+    network?: pulumi.Input<inputs.appplatform.SpringCloudServiceNetwork>;
+    /**
+     * Specifies The name of the resource group in which to create the Spring Cloud Service. Changing this forces a new resource to be created.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * Specifies the SKU Name for this Spring Cloud Service. Possible values are `B0` and `S0`. Defaults to `S0`.
+     */
+    skuName?: pulumi.Input<string>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * A `trace` block as defined below.
+     */
+    trace?: pulumi.Input<inputs.appplatform.SpringCloudServiceTrace>;
+}

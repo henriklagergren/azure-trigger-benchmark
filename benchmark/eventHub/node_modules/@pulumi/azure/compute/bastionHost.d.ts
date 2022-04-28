@@ -1,0 +1,242 @@
+import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
+/**
+ * Manages a Bastion Host.
+ *
+ * ## Example Usage
+ *
+ * This example deploys an Azure Bastion Host Instance to a target virtual network.
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleVirtualNetwork = new azure.network.VirtualNetwork("exampleVirtualNetwork", {
+ *     addressSpaces: ["192.168.1.0/24"],
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ * });
+ * const exampleSubnet = new azure.network.Subnet("exampleSubnet", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     virtualNetworkName: exampleVirtualNetwork.name,
+ *     addressPrefixes: ["192.168.1.224/27"],
+ * });
+ * const examplePublicIp = new azure.network.PublicIp("examplePublicIp", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     allocationMethod: "Static",
+ *     sku: "Standard",
+ * });
+ * const exampleBastionHost = new azure.compute.BastionHost("exampleBastionHost", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     ipConfiguration: {
+ *         name: "configuration",
+ *         subnetId: exampleSubnet.id,
+ *         publicIpAddressId: examplePublicIp.id,
+ *     },
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Bastion Hosts can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:compute/bastionHost:BastionHost example /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mygroup1/providers/Microsoft.Network/bastionHosts/instance1
+ * ```
+ */
+export declare class BastionHost extends pulumi.CustomResource {
+    /**
+     * Get an existing BastionHost resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: BastionHostState, opts?: pulumi.CustomResourceOptions): BastionHost;
+    /**
+     * Returns true if the given object is an instance of BastionHost.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is BastionHost;
+    /**
+     * Is Copy/Paste feature enabled for the Bastion Host. Defaults to `true`.
+     */
+    readonly copyPasteEnabled: pulumi.Output<boolean | undefined>;
+    /**
+     * The FQDN for the Bastion Host.
+     */
+    readonly dnsName: pulumi.Output<string>;
+    /**
+     * Is File Copy feature enabled for the Bastion Host. Defaults to `false`.
+     */
+    readonly fileCopyEnabled: pulumi.Output<boolean | undefined>;
+    /**
+     * A `ipConfiguration` block as defined below.
+     */
+    readonly ipConfiguration: pulumi.Output<outputs.compute.BastionHostIpConfiguration | undefined>;
+    /**
+     * Is IP Connect feature enabled for the Bastion Host. Defaults to `false`.
+     */
+    readonly ipConnectEnabled: pulumi.Output<boolean | undefined>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.  Review [Azure Bastion Host FAQ](https://docs.microsoft.com/en-us/azure/bastion/bastion-faq) for supported locations.
+     */
+    readonly location: pulumi.Output<string>;
+    /**
+     * Specifies the name of the Bastion Host. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * The name of the resource group in which to create the Bastion Host.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * The number of scale units with which to provision the Bastion Host. Possible values are between `2` and `50`. Defaults to `2`.
+     */
+    readonly scaleUnits: pulumi.Output<number | undefined>;
+    /**
+     * Is Shareable Link feature enabled for the Bastion Host. Defaults to `false`.
+     */
+    readonly shareableLinkEnabled: pulumi.Output<boolean | undefined>;
+    /**
+     * The SKU of the Bastion Host. Accepted values are `Basic` and `Standard`. Defaults to `Basic`.
+     */
+    readonly sku: pulumi.Output<string | undefined>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    readonly tags: pulumi.Output<{
+        [key: string]: string;
+    } | undefined>;
+    /**
+     * Is Tunneling feature enabled for the Bastion Host. Defaults to `false`.
+     */
+    readonly tunnelingEnabled: pulumi.Output<boolean | undefined>;
+    /**
+     * Create a BastionHost resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: BastionHostArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering BastionHost resources.
+ */
+export interface BastionHostState {
+    /**
+     * Is Copy/Paste feature enabled for the Bastion Host. Defaults to `true`.
+     */
+    copyPasteEnabled?: pulumi.Input<boolean>;
+    /**
+     * The FQDN for the Bastion Host.
+     */
+    dnsName?: pulumi.Input<string>;
+    /**
+     * Is File Copy feature enabled for the Bastion Host. Defaults to `false`.
+     */
+    fileCopyEnabled?: pulumi.Input<boolean>;
+    /**
+     * A `ipConfiguration` block as defined below.
+     */
+    ipConfiguration?: pulumi.Input<inputs.compute.BastionHostIpConfiguration>;
+    /**
+     * Is IP Connect feature enabled for the Bastion Host. Defaults to `false`.
+     */
+    ipConnectEnabled?: pulumi.Input<boolean>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.  Review [Azure Bastion Host FAQ](https://docs.microsoft.com/en-us/azure/bastion/bastion-faq) for supported locations.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Bastion Host. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which to create the Bastion Host.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * The number of scale units with which to provision the Bastion Host. Possible values are between `2` and `50`. Defaults to `2`.
+     */
+    scaleUnits?: pulumi.Input<number>;
+    /**
+     * Is Shareable Link feature enabled for the Bastion Host. Defaults to `false`.
+     */
+    shareableLinkEnabled?: pulumi.Input<boolean>;
+    /**
+     * The SKU of the Bastion Host. Accepted values are `Basic` and `Standard`. Defaults to `Basic`.
+     */
+    sku?: pulumi.Input<string>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * Is Tunneling feature enabled for the Bastion Host. Defaults to `false`.
+     */
+    tunnelingEnabled?: pulumi.Input<boolean>;
+}
+/**
+ * The set of arguments for constructing a BastionHost resource.
+ */
+export interface BastionHostArgs {
+    /**
+     * Is Copy/Paste feature enabled for the Bastion Host. Defaults to `true`.
+     */
+    copyPasteEnabled?: pulumi.Input<boolean>;
+    /**
+     * Is File Copy feature enabled for the Bastion Host. Defaults to `false`.
+     */
+    fileCopyEnabled?: pulumi.Input<boolean>;
+    /**
+     * A `ipConfiguration` block as defined below.
+     */
+    ipConfiguration?: pulumi.Input<inputs.compute.BastionHostIpConfiguration>;
+    /**
+     * Is IP Connect feature enabled for the Bastion Host. Defaults to `false`.
+     */
+    ipConnectEnabled?: pulumi.Input<boolean>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.  Review [Azure Bastion Host FAQ](https://docs.microsoft.com/en-us/azure/bastion/bastion-faq) for supported locations.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Bastion Host. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which to create the Bastion Host.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * The number of scale units with which to provision the Bastion Host. Possible values are between `2` and `50`. Defaults to `2`.
+     */
+    scaleUnits?: pulumi.Input<number>;
+    /**
+     * Is Shareable Link feature enabled for the Bastion Host. Defaults to `false`.
+     */
+    shareableLinkEnabled?: pulumi.Input<boolean>;
+    /**
+     * The SKU of the Bastion Host. Accepted values are `Basic` and `Standard`. Defaults to `Basic`.
+     */
+    sku?: pulumi.Input<string>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * Is Tunneling feature enabled for the Bastion Host. Defaults to `false`.
+     */
+    tunnelingEnabled?: pulumi.Input<boolean>;
+}

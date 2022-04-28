@@ -1,0 +1,76 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Dedicated Host.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.compute.getDedicatedHost({
+ *     name: "example-host",
+ *     dedicatedHostGroupName: "example-host-group",
+ *     resourceGroupName: "example-resources",
+ * });
+ * export const dedicatedHostId = example.then(example => example.id);
+ * ```
+ */
+export declare function getDedicatedHost(args: GetDedicatedHostArgs, opts?: pulumi.InvokeOptions): Promise<GetDedicatedHostResult>;
+/**
+ * A collection of arguments for invoking getDedicatedHost.
+ */
+export interface GetDedicatedHostArgs {
+    /**
+     * Specifies the name of the Dedicated Host Group the Dedicated Host is located in.
+     */
+    dedicatedHostGroupName: string;
+    /**
+     * Specifies the name of the Dedicated Host.
+     */
+    name: string;
+    /**
+     * Specifies the name of the resource group the Dedicated Host is located in.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getDedicatedHost.
+ */
+export interface GetDedicatedHostResult {
+    readonly dedicatedHostGroupName: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * The location where the Dedicated Host exists.
+     */
+    readonly location: string;
+    readonly name: string;
+    readonly resourceGroupName: string;
+    /**
+     * A mapping of tags assigned to the Dedicated Host.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+}
+export declare function getDedicatedHostOutput(args: GetDedicatedHostOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetDedicatedHostResult>;
+/**
+ * A collection of arguments for invoking getDedicatedHost.
+ */
+export interface GetDedicatedHostOutputArgs {
+    /**
+     * Specifies the name of the Dedicated Host Group the Dedicated Host is located in.
+     */
+    dedicatedHostGroupName: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Dedicated Host.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * Specifies the name of the resource group the Dedicated Host is located in.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

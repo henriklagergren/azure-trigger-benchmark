@@ -1,0 +1,81 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Storage Table Entity.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = pulumi.output(azure.storage.getTableEntity({
+ *     partitionKey: "example-partition-key",
+ *     rowKey: "example-row-key",
+ *     storageAccountName: "example-storage-account-name",
+ *     tableName: "example-table-name",
+ * }));
+ * ```
+ */
+export declare function getTableEntity(args: GetTableEntityArgs, opts?: pulumi.InvokeOptions): Promise<GetTableEntityResult>;
+/**
+ * A collection of arguments for invoking getTableEntity.
+ */
+export interface GetTableEntityArgs {
+    /**
+     * The key for the partition where the entity will be retrieved.
+     */
+    partitionKey: string;
+    /**
+     * The key for the row where the entity will be retrieved.
+     */
+    rowKey: string;
+    /**
+     * The name of the Storage Account where the Table exists.
+     */
+    storageAccountName: string;
+    /**
+     * The name of the Table.
+     */
+    tableName: string;
+}
+/**
+ * A collection of values returned by getTableEntity.
+ */
+export interface GetTableEntityResult {
+    /**
+     * A map of key/value pairs that describe the entity to be stored in the storage table.
+     */
+    readonly entity: {
+        [key: string]: string;
+    };
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    readonly partitionKey: string;
+    readonly rowKey: string;
+    readonly storageAccountName: string;
+    readonly tableName: string;
+}
+export declare function getTableEntityOutput(args: GetTableEntityOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetTableEntityResult>;
+/**
+ * A collection of arguments for invoking getTableEntity.
+ */
+export interface GetTableEntityOutputArgs {
+    /**
+     * The key for the partition where the entity will be retrieved.
+     */
+    partitionKey: pulumi.Input<string>;
+    /**
+     * The key for the row where the entity will be retrieved.
+     */
+    rowKey: pulumi.Input<string>;
+    /**
+     * The name of the Storage Account where the Table exists.
+     */
+    storageAccountName: pulumi.Input<string>;
+    /**
+     * The name of the Table.
+     */
+    tableName: pulumi.Input<string>;
+}

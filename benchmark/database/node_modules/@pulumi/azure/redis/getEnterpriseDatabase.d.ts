@@ -1,0 +1,88 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Redis Enterprise Database
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.redis.getEnterpriseDatabase({
+ *     name: "default",
+ *     resourceGroupName: azurerm_resource_group.example.name,
+ *     clusterId: azurerm_redis_enterprise_cluster.example.id,
+ * });
+ * export const redisEnterpriseDatabasePrimaryKey = example.then(example => example.primaryAccessKey);
+ * export const redisEnterpriseDatabaseSecondaryKey = example.then(example => example.secondaryAccessKey);
+ * ```
+ */
+export declare function getEnterpriseDatabase(args: GetEnterpriseDatabaseArgs, opts?: pulumi.InvokeOptions): Promise<GetEnterpriseDatabaseResult>;
+/**
+ * A collection of arguments for invoking getEnterpriseDatabase.
+ */
+export interface GetEnterpriseDatabaseArgs {
+    /**
+     * The resource ID of Redis Enterprise Cluster which hosts the Redis Enterprise Database instance.
+     */
+    clusterId: string;
+    /**
+     * The name of the Redis Enterprise Database.
+     */
+    name: string;
+    /**
+     * The name of the resource group the Redis Enterprise Database instance is located in.
+     *
+     * @deprecated This field is no longer used and will be removed in the next major version of the Azure Provider
+     */
+    resourceGroupName?: string;
+}
+/**
+ * A collection of values returned by getEnterpriseDatabase.
+ */
+export interface GetEnterpriseDatabaseResult {
+    /**
+     * The Redis Enterprise Cluster ID that is hosting the Redis Enterprise Database.
+     */
+    readonly clusterId: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * The Redis Enterprise Database name.
+     */
+    readonly name: string;
+    /**
+     * The Primary Access Key for the Redis Enterprise Database instance.
+     */
+    readonly primaryAccessKey: string;
+    /**
+     * @deprecated This field is no longer used and will be removed in the next major version of the Azure Provider
+     */
+    readonly resourceGroupName: string;
+    /**
+     * The Secondary Access Key for the Redis Enterprise Database instance.
+     */
+    readonly secondaryAccessKey: string;
+}
+export declare function getEnterpriseDatabaseOutput(args: GetEnterpriseDatabaseOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetEnterpriseDatabaseResult>;
+/**
+ * A collection of arguments for invoking getEnterpriseDatabase.
+ */
+export interface GetEnterpriseDatabaseOutputArgs {
+    /**
+     * The resource ID of Redis Enterprise Cluster which hosts the Redis Enterprise Database instance.
+     */
+    clusterId: pulumi.Input<string>;
+    /**
+     * The name of the Redis Enterprise Database.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the resource group the Redis Enterprise Database instance is located in.
+     *
+     * @deprecated This field is no longer used and will be removed in the next major version of the Azure Provider
+     */
+    resourceGroupName?: pulumi.Input<string>;
+}

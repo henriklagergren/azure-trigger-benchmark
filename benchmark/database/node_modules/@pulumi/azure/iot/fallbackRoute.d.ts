@@ -1,0 +1,172 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Manages an IotHub Fallback Route
+ *
+ * ## Disclaimers
+ *
+ * > **Note:** Fallback route can be defined either directly on the `azure.iot.IoTHub` resource, or using the `azure.iot.FallbackRoute` resource - but the two cannot be used together. If both are used against the same IoTHub, spurious changes will occur.
+ *
+ * > **Note:** Since this resource is provisioned by default, the Azure Provider will not check for the presence of an existing resource prior to attempting to create it.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleAccount = new azure.storage.Account("exampleAccount", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: exampleResourceGroup.location,
+ *     accountTier: "Standard",
+ *     accountReplicationType: "LRS",
+ * });
+ * const exampleContainer = new azure.storage.Container("exampleContainer", {
+ *     storageAccountName: exampleAccount.name,
+ *     containerAccessType: "private",
+ * });
+ * const exampleIoTHub = new azure.iot.IoTHub("exampleIoTHub", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: exampleResourceGroup.location,
+ *     sku: {
+ *         name: "S1",
+ *         capacity: "1",
+ *     },
+ *     tags: {
+ *         purpose: "testing",
+ *     },
+ * });
+ * const exampleEndpointStorageContainer = new azure.iot.EndpointStorageContainer("exampleEndpointStorageContainer", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     iothubId: exampleIoTHub.id,
+ *     connectionString: exampleAccount.primaryBlobConnectionString,
+ *     batchFrequencyInSeconds: 60,
+ *     maxChunkSizeInBytes: 10485760,
+ *     containerName: exampleContainer.name,
+ *     encoding: "Avro",
+ *     fileNameFormat: "{iothub}/{partition}_{YYYY}_{MM}_{DD}_{HH}_{mm}",
+ * });
+ * const exampleFallbackRoute = new azure.iot.FallbackRoute("exampleFallbackRoute", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     iothubName: exampleIoTHub.name,
+ *     condition: "true",
+ *     endpointNames: [exampleEndpointStorageContainer.name],
+ *     enabled: true,
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * IoTHub Fallback Route can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:iot/fallbackRoute:FallbackRoute route1 /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mygroup1/providers/Microsoft.Devices/IotHubs/hub1/FallbackRoute/default
+ * ```
+ */
+export declare class FallbackRoute extends pulumi.CustomResource {
+    /**
+     * Get an existing FallbackRoute resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: FallbackRouteState, opts?: pulumi.CustomResourceOptions): FallbackRoute;
+    /**
+     * Returns true if the given object is an instance of FallbackRoute.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is FallbackRoute;
+    /**
+     * The condition that is evaluated to apply the routing rule. If no condition is provided, it evaluates to `true` by default. For grammar, see: https://docs.microsoft.com/azure/iot-hub/iot-hub-devguide-query-language.
+     */
+    readonly condition: pulumi.Output<string | undefined>;
+    /**
+     * Used to specify whether the fallback route is enabled.
+     */
+    readonly enabled: pulumi.Output<boolean>;
+    /**
+     * The endpoints to which messages that satisfy the condition are routed. Currently only 1 endpoint is allowed.
+     */
+    readonly endpointNames: pulumi.Output<string>;
+    /**
+     * The name of the IoTHub to which this Fallback Route belongs. Changing this forces a new resource to be created.
+     */
+    readonly iothubName: pulumi.Output<string>;
+    /**
+     * The name of the resource group under which the IotHub Storage Container Endpoint resource has to be created. Changing this forces a new resource to be created.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * The source that the routing rule is to be applied to. Possible values include: `DeviceConnectionStateEvents`, `DeviceJobLifecycleEvents`, `DeviceLifecycleEvents`, `DeviceMessages`, `Invalid`, `TwinChangeEvents`.
+     */
+    readonly source: pulumi.Output<string | undefined>;
+    /**
+     * Create a FallbackRoute resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: FallbackRouteArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering FallbackRoute resources.
+ */
+export interface FallbackRouteState {
+    /**
+     * The condition that is evaluated to apply the routing rule. If no condition is provided, it evaluates to `true` by default. For grammar, see: https://docs.microsoft.com/azure/iot-hub/iot-hub-devguide-query-language.
+     */
+    condition?: pulumi.Input<string>;
+    /**
+     * Used to specify whether the fallback route is enabled.
+     */
+    enabled?: pulumi.Input<boolean>;
+    /**
+     * The endpoints to which messages that satisfy the condition are routed. Currently only 1 endpoint is allowed.
+     */
+    endpointNames?: pulumi.Input<string>;
+    /**
+     * The name of the IoTHub to which this Fallback Route belongs. Changing this forces a new resource to be created.
+     */
+    iothubName?: pulumi.Input<string>;
+    /**
+     * The name of the resource group under which the IotHub Storage Container Endpoint resource has to be created. Changing this forces a new resource to be created.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * The source that the routing rule is to be applied to. Possible values include: `DeviceConnectionStateEvents`, `DeviceJobLifecycleEvents`, `DeviceLifecycleEvents`, `DeviceMessages`, `Invalid`, `TwinChangeEvents`.
+     */
+    source?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a FallbackRoute resource.
+ */
+export interface FallbackRouteArgs {
+    /**
+     * The condition that is evaluated to apply the routing rule. If no condition is provided, it evaluates to `true` by default. For grammar, see: https://docs.microsoft.com/azure/iot-hub/iot-hub-devguide-query-language.
+     */
+    condition?: pulumi.Input<string>;
+    /**
+     * Used to specify whether the fallback route is enabled.
+     */
+    enabled: pulumi.Input<boolean>;
+    /**
+     * The endpoints to which messages that satisfy the condition are routed. Currently only 1 endpoint is allowed.
+     */
+    endpointNames: pulumi.Input<string>;
+    /**
+     * The name of the IoTHub to which this Fallback Route belongs. Changing this forces a new resource to be created.
+     */
+    iothubName: pulumi.Input<string>;
+    /**
+     * The name of the resource group under which the IotHub Storage Container Endpoint resource has to be created. Changing this forces a new resource to be created.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * The source that the routing rule is to be applied to. Possible values include: `DeviceConnectionStateEvents`, `DeviceJobLifecycleEvents`, `DeviceLifecycleEvents`, `DeviceMessages`, `Invalid`, `TwinChangeEvents`.
+     */
+    source?: pulumi.Input<string>;
+}

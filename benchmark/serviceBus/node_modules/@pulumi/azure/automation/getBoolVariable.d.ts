@@ -1,0 +1,78 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Automation Bool Variable.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.automation.getBoolVariable({
+ *     name: "tfex-example-var",
+ *     resourceGroupName: "tfex-example-rg",
+ *     automationAccountName: "tfex-example-account",
+ * });
+ * export const variableId = example.then(example => example.id);
+ * ```
+ */
+export declare function getBoolVariable(args: GetBoolVariableArgs, opts?: pulumi.InvokeOptions): Promise<GetBoolVariableResult>;
+/**
+ * A collection of arguments for invoking getBoolVariable.
+ */
+export interface GetBoolVariableArgs {
+    /**
+     * The name of the automation account in which the Automation Variable exists.
+     */
+    automationAccountName: string;
+    /**
+     * The name of the Automation Variable.
+     */
+    name: string;
+    /**
+     * The Name of the Resource Group where the automation account exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getBoolVariable.
+ */
+export interface GetBoolVariableResult {
+    readonly automationAccountName: string;
+    /**
+     * The description of the Automation Variable.
+     */
+    readonly description: string;
+    /**
+     * Specifies if the Automation Variable is encrypted. Defaults to `false`.
+     */
+    readonly encrypted: boolean;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    readonly name: string;
+    readonly resourceGroupName: string;
+    /**
+     * The value of the Automation Variable as a `boolean`.
+     */
+    readonly value: boolean;
+}
+export declare function getBoolVariableOutput(args: GetBoolVariableOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetBoolVariableResult>;
+/**
+ * A collection of arguments for invoking getBoolVariable.
+ */
+export interface GetBoolVariableOutputArgs {
+    /**
+     * The name of the automation account in which the Automation Variable exists.
+     */
+    automationAccountName: pulumi.Input<string>;
+    /**
+     * The name of the Automation Variable.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The Name of the Resource Group where the automation account exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

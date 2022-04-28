@@ -1,0 +1,153 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Manages an Azure Backup Protected File Share to enable backups for file shares within an Azure Storage Account
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const rg = new azure.core.ResourceGroup("rg", {location: "West Europe"});
+ * const vault = new azure.recoveryservices.Vault("vault", {
+ *     location: rg.location,
+ *     resourceGroupName: rg.name,
+ *     sku: "Standard",
+ * });
+ * const sa = new azure.storage.Account("sa", {
+ *     location: rg.location,
+ *     resourceGroupName: rg.name,
+ *     accountTier: "Standard",
+ *     accountReplicationType: "LRS",
+ * });
+ * const exampleShare = new azure.storage.Share("exampleShare", {storageAccountName: sa.name});
+ * const protection_container = new azure.backup.ContainerStorageAccount("protection-container", {
+ *     resourceGroupName: rg.name,
+ *     recoveryVaultName: vault.name,
+ *     storageAccountId: sa.id,
+ * });
+ * const examplePolicyFileShare = new azure.backup.PolicyFileShare("examplePolicyFileShare", {
+ *     resourceGroupName: rg.name,
+ *     recoveryVaultName: vault.name,
+ *     backup: {
+ *         frequency: "Daily",
+ *         time: "23:00",
+ *     },
+ *     retentionDaily: {
+ *         count: 10,
+ *     },
+ * });
+ * const share1 = new azure.backup.ProtectedFileShare("share1", {
+ *     resourceGroupName: rg.name,
+ *     recoveryVaultName: vault.name,
+ *     sourceStorageAccountId: protection_container.storageAccountId,
+ *     sourceFileShareName: exampleShare.name,
+ *     backupPolicyId: examplePolicyFileShare.id,
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Azure Backup Protected File Shares can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:backup/protectedFileShare:ProtectedFileShare item1 "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/group1/providers/Microsoft.RecoveryServices/vaults/example-recovery-vault/backupFabrics/Azure/protectionContainers/StorageContainer;storage;group2;example-storage-account/protectedItems/AzureFileShare;3f6e3108a45793581bcbd1c61c87a3b2ceeb4ff4bc02a95ce9d1022b23722935"
+ * ```
+ *
+ *  -> **NOTE** The ID requires quoting as there are semicolons. This user unfriendly ID can be found in the Deployments of the used resourcegroup, look for an Deployment which starts with `ConfigureAFSProtection-`, click then `Go to resource`.
+ */
+export declare class ProtectedFileShare extends pulumi.CustomResource {
+    /**
+     * Get an existing ProtectedFileShare resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: ProtectedFileShareState, opts?: pulumi.CustomResourceOptions): ProtectedFileShare;
+    /**
+     * Returns true if the given object is an instance of ProtectedFileShare.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is ProtectedFileShare;
+    /**
+     * Specifies the ID of the backup policy to use. The policy must be an Azure File Share backup policy. Other types are not supported.
+     */
+    readonly backupPolicyId: pulumi.Output<string>;
+    /**
+     * Specifies the name of the Recovery Services Vault to use. Changing this forces a new resource to be created.
+     */
+    readonly recoveryVaultName: pulumi.Output<string>;
+    /**
+     * The name of the resource group in which to create the Azure Backup Protected File Share. Changing this forces a new resource to be created.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * Specifies the name of the file share to backup. Changing this forces a new resource to be created.
+     */
+    readonly sourceFileShareName: pulumi.Output<string>;
+    /**
+     * Specifies the ID of the storage account of the file share to backup. Changing this forces a new resource to be created.
+     */
+    readonly sourceStorageAccountId: pulumi.Output<string>;
+    /**
+     * Create a ProtectedFileShare resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: ProtectedFileShareArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering ProtectedFileShare resources.
+ */
+export interface ProtectedFileShareState {
+    /**
+     * Specifies the ID of the backup policy to use. The policy must be an Azure File Share backup policy. Other types are not supported.
+     */
+    backupPolicyId?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Recovery Services Vault to use. Changing this forces a new resource to be created.
+     */
+    recoveryVaultName?: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which to create the Azure Backup Protected File Share. Changing this forces a new resource to be created.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the file share to backup. Changing this forces a new resource to be created.
+     */
+    sourceFileShareName?: pulumi.Input<string>;
+    /**
+     * Specifies the ID of the storage account of the file share to backup. Changing this forces a new resource to be created.
+     */
+    sourceStorageAccountId?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a ProtectedFileShare resource.
+ */
+export interface ProtectedFileShareArgs {
+    /**
+     * Specifies the ID of the backup policy to use. The policy must be an Azure File Share backup policy. Other types are not supported.
+     */
+    backupPolicyId: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Recovery Services Vault to use. Changing this forces a new resource to be created.
+     */
+    recoveryVaultName: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which to create the Azure Backup Protected File Share. Changing this forces a new resource to be created.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * Specifies the name of the file share to backup. Changing this forces a new resource to be created.
+     */
+    sourceFileShareName: pulumi.Input<string>;
+    /**
+     * Specifies the ID of the storage account of the file share to backup. Changing this forces a new resource to be created.
+     */
+    sourceStorageAccountId: pulumi.Input<string>;
+}

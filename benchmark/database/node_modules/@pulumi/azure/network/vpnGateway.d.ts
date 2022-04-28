@@ -1,0 +1,182 @@
+import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
+/**
+ * Manages a VPN Gateway within a Virtual Hub, which enables Site-to-Site communication.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleVirtualNetwork = new azure.network.VirtualNetwork("exampleVirtualNetwork", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     addressSpaces: ["10.0.0.0/16"],
+ * });
+ * const exampleVirtualWan = new azure.network.VirtualWan("exampleVirtualWan", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: exampleResourceGroup.location,
+ * });
+ * const exampleVirtualHub = new azure.network.VirtualHub("exampleVirtualHub", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: exampleResourceGroup.location,
+ *     virtualWanId: exampleVirtualWan.id,
+ *     addressPrefix: "10.0.1.0/24",
+ * });
+ * const exampleVpnGateway = new azure.network.VpnGateway("exampleVpnGateway", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     virtualHubId: exampleVirtualHub.id,
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * VPN Gateways can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:network/vpnGateway:VpnGateway gateway1 /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/group1/providers/Microsoft.Network/vpnGateways/gateway1
+ * ```
+ */
+export declare class VpnGateway extends pulumi.CustomResource {
+    /**
+     * Get an existing VpnGateway resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: VpnGatewayState, opts?: pulumi.CustomResourceOptions): VpnGateway;
+    /**
+     * Returns true if the given object is an instance of VpnGateway.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is VpnGateway;
+    /**
+     * A `bgpSettings` block as defined below.
+     */
+    readonly bgpSettings: pulumi.Output<outputs.network.VpnGatewayBgpSettings>;
+    /**
+     * The Azure location where this VPN Gateway should be created. Changing this forces a new resource to be created.
+     */
+    readonly location: pulumi.Output<string>;
+    /**
+     * The Name which should be used for this VPN Gateway. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * The Name of the Resource Group in which this VPN Gateway should be created. Changing this forces a new resource to be created.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * Azure routing preference lets you to choose how your traffic routes between Azure and the internet. You can choose to route traffic either via the Microsoft network (default value, `Microsoft Network`), or via the ISP network (public internet, set to `Internet`). More context of the configuration can be found in the
+     * [Microsoft Docs](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-site-to-site-portal#gateway) to create a VPN Gateway. Changing this forces a new resource to be created.
+     */
+    readonly routingPreference: pulumi.Output<string>;
+    /**
+     * The Scale Unit for this VPN Gateway. Defaults to `1`.
+     */
+    readonly scaleUnit: pulumi.Output<number | undefined>;
+    /**
+     * A mapping of tags to assign to the VPN Gateway.
+     */
+    readonly tags: pulumi.Output<{
+        [key: string]: string;
+    } | undefined>;
+    /**
+     * The ID of the Virtual Hub within which this VPN Gateway should be created. Changing this forces a new resource to be created.
+     */
+    readonly virtualHubId: pulumi.Output<string>;
+    /**
+     * Create a VpnGateway resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: VpnGatewayArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering VpnGateway resources.
+ */
+export interface VpnGatewayState {
+    /**
+     * A `bgpSettings` block as defined below.
+     */
+    bgpSettings?: pulumi.Input<inputs.network.VpnGatewayBgpSettings>;
+    /**
+     * The Azure location where this VPN Gateway should be created. Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * The Name which should be used for this VPN Gateway. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The Name of the Resource Group in which this VPN Gateway should be created. Changing this forces a new resource to be created.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * Azure routing preference lets you to choose how your traffic routes between Azure and the internet. You can choose to route traffic either via the Microsoft network (default value, `Microsoft Network`), or via the ISP network (public internet, set to `Internet`). More context of the configuration can be found in the
+     * [Microsoft Docs](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-site-to-site-portal#gateway) to create a VPN Gateway. Changing this forces a new resource to be created.
+     */
+    routingPreference?: pulumi.Input<string>;
+    /**
+     * The Scale Unit for this VPN Gateway. Defaults to `1`.
+     */
+    scaleUnit?: pulumi.Input<number>;
+    /**
+     * A mapping of tags to assign to the VPN Gateway.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * The ID of the Virtual Hub within which this VPN Gateway should be created. Changing this forces a new resource to be created.
+     */
+    virtualHubId?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a VpnGateway resource.
+ */
+export interface VpnGatewayArgs {
+    /**
+     * A `bgpSettings` block as defined below.
+     */
+    bgpSettings?: pulumi.Input<inputs.network.VpnGatewayBgpSettings>;
+    /**
+     * The Azure location where this VPN Gateway should be created. Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * The Name which should be used for this VPN Gateway. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The Name of the Resource Group in which this VPN Gateway should be created. Changing this forces a new resource to be created.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * Azure routing preference lets you to choose how your traffic routes between Azure and the internet. You can choose to route traffic either via the Microsoft network (default value, `Microsoft Network`), or via the ISP network (public internet, set to `Internet`). More context of the configuration can be found in the
+     * [Microsoft Docs](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-site-to-site-portal#gateway) to create a VPN Gateway. Changing this forces a new resource to be created.
+     */
+    routingPreference?: pulumi.Input<string>;
+    /**
+     * The Scale Unit for this VPN Gateway. Defaults to `1`.
+     */
+    scaleUnit?: pulumi.Input<number>;
+    /**
+     * A mapping of tags to assign to the VPN Gateway.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * The ID of the Virtual Hub within which this VPN Gateway should be created. Changing this forces a new resource to be created.
+     */
+    virtualHubId: pulumi.Input<string>;
+}

@@ -1,0 +1,108 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing Key Vault.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.keyvault.getKeyVault({
+ *     name: "mykeyvault",
+ *     resourceGroupName: "some-resource-group",
+ * });
+ * export const vaultUri = example.then(example => example.vaultUri);
+ * ```
+ */
+export declare function getKeyVault(args: GetKeyVaultArgs, opts?: pulumi.InvokeOptions): Promise<GetKeyVaultResult>;
+/**
+ * A collection of arguments for invoking getKeyVault.
+ */
+export interface GetKeyVaultArgs {
+    /**
+     * Specifies the name of the Key Vault.
+     */
+    name: string;
+    /**
+     * The name of the Resource Group in which the Key Vault exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getKeyVault.
+ */
+export interface GetKeyVaultResult {
+    /**
+     * One or more `accessPolicy` blocks as defined below.
+     */
+    readonly accessPolicies: outputs.keyvault.GetKeyVaultAccessPolicy[];
+    /**
+     * Is Role Based Access Control (RBAC) for authorization of data actions enabled on this Key Vault?
+     */
+    readonly enableRbacAuthorization: boolean;
+    /**
+     * Can Azure Virtual Machines retrieve certificates stored as secrets from the Key Vault?
+     */
+    readonly enabledForDeployment: boolean;
+    /**
+     * Can Azure Disk Encryption retrieve secrets from the Key Vault?
+     */
+    readonly enabledForDiskEncryption: boolean;
+    /**
+     * Can Azure Resource Manager retrieve secrets from the Key Vault?
+     */
+    readonly enabledForTemplateDeployment: boolean;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * The Azure Region in which the Key Vault exists.
+     */
+    readonly location: string;
+    readonly name: string;
+    readonly networkAcls: outputs.keyvault.GetKeyVaultNetworkAcl[];
+    /**
+     * Is purge protection enabled on this Key Vault?
+     */
+    readonly purgeProtectionEnabled: boolean;
+    readonly resourceGroupName: string;
+    /**
+     * The Name of the SKU used for this Key Vault.
+     */
+    readonly skuName: string;
+    /**
+     * @deprecated Azure has removed support for disabling Soft Delete as of 2020-12-15, as such this field will always return 'true' and will be removed in version 3.0 of the Azure Provider.
+     */
+    readonly softDeleteEnabled: boolean;
+    /**
+     * A mapping of tags assigned to the Key Vault.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+    /**
+     * The Azure Active Directory Tenant ID used to authenticate requests for this Key Vault.
+     */
+    readonly tenantId: string;
+    /**
+     * The URI of the vault for performing operations on keys and secrets.
+     */
+    readonly vaultUri: string;
+}
+export declare function getKeyVaultOutput(args: GetKeyVaultOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetKeyVaultResult>;
+/**
+ * A collection of arguments for invoking getKeyVault.
+ */
+export interface GetKeyVaultOutputArgs {
+    /**
+     * Specifies the name of the Key Vault.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group in which the Key Vault exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

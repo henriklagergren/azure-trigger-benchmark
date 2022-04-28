@@ -1,0 +1,133 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Manages a Synapse Role Assignment.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleAccount = new azure.storage.Account("exampleAccount", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: exampleResourceGroup.location,
+ *     accountTier: "Standard",
+ *     accountReplicationType: "LRS",
+ *     accountKind: "StorageV2",
+ *     isHnsEnabled: "true",
+ * });
+ * const exampleDataLakeGen2Filesystem = new azure.storage.DataLakeGen2Filesystem("exampleDataLakeGen2Filesystem", {storageAccountId: exampleAccount.id});
+ * const exampleWorkspace = new azure.synapse.Workspace("exampleWorkspace", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: exampleResourceGroup.location,
+ *     storageDataLakeGen2FilesystemId: exampleDataLakeGen2Filesystem.id,
+ *     sqlAdministratorLogin: "sqladminuser",
+ *     sqlAdministratorLoginPassword: "H@Sh1CoR3!",
+ * });
+ * const exampleFirewallRule = new azure.synapse.FirewallRule("exampleFirewallRule", {
+ *     synapseWorkspaceId: azurerm_synapse_workspace.test.id,
+ *     startIpAddress: "0.0.0.0",
+ *     endIpAddress: "255.255.255.255",
+ * });
+ * const current = azure.core.getClientConfig({});
+ * const exampleRoleAssignment = new azure.synapse.RoleAssignment("exampleRoleAssignment", {
+ *     synapseWorkspaceId: exampleWorkspace.id,
+ *     roleName: "Synapse SQL Administrator",
+ *     principalId: current.then(current => current.objectId),
+ * }, {
+ *     dependsOn: [exampleFirewallRule],
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Synapse Role Assignment can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:synapse/roleAssignment:RoleAssignment example "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/group1/providers/Microsoft.Synapse/workspaces/workspace1|000000000000"
+ * ```
+ */
+export declare class RoleAssignment extends pulumi.CustomResource {
+    /**
+     * Get an existing RoleAssignment resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: RoleAssignmentState, opts?: pulumi.CustomResourceOptions): RoleAssignment;
+    /**
+     * Returns true if the given object is an instance of RoleAssignment.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is RoleAssignment;
+    /**
+     * The ID of the Principal (User, Group or Service Principal) to assign the Synapse Role Definition to. Changing this forces a new resource to be created.
+     */
+    readonly principalId: pulumi.Output<string>;
+    /**
+     * The Role Name of the Synapse Built-In Role. Changing this forces a new resource to be created.
+     */
+    readonly roleName: pulumi.Output<string>;
+    /**
+     * The Synapse Spark Pool which the Synapse Role Assignment applies to. Changing this forces a new resource to be created.
+     */
+    readonly synapseSparkPoolId: pulumi.Output<string | undefined>;
+    /**
+     * The Synapse Workspace which the Synapse Role Assignment applies to. Changing this forces a new resource to be created.
+     */
+    readonly synapseWorkspaceId: pulumi.Output<string | undefined>;
+    /**
+     * Create a RoleAssignment resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: RoleAssignmentArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering RoleAssignment resources.
+ */
+export interface RoleAssignmentState {
+    /**
+     * The ID of the Principal (User, Group or Service Principal) to assign the Synapse Role Definition to. Changing this forces a new resource to be created.
+     */
+    principalId?: pulumi.Input<string>;
+    /**
+     * The Role Name of the Synapse Built-In Role. Changing this forces a new resource to be created.
+     */
+    roleName?: pulumi.Input<string>;
+    /**
+     * The Synapse Spark Pool which the Synapse Role Assignment applies to. Changing this forces a new resource to be created.
+     */
+    synapseSparkPoolId?: pulumi.Input<string>;
+    /**
+     * The Synapse Workspace which the Synapse Role Assignment applies to. Changing this forces a new resource to be created.
+     */
+    synapseWorkspaceId?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a RoleAssignment resource.
+ */
+export interface RoleAssignmentArgs {
+    /**
+     * The ID of the Principal (User, Group or Service Principal) to assign the Synapse Role Definition to. Changing this forces a new resource to be created.
+     */
+    principalId: pulumi.Input<string>;
+    /**
+     * The Role Name of the Synapse Built-In Role. Changing this forces a new resource to be created.
+     */
+    roleName: pulumi.Input<string>;
+    /**
+     * The Synapse Spark Pool which the Synapse Role Assignment applies to. Changing this forces a new resource to be created.
+     */
+    synapseSparkPoolId?: pulumi.Input<string>;
+    /**
+     * The Synapse Workspace which the Synapse Role Assignment applies to. Changing this forces a new resource to be created.
+     */
+    synapseWorkspaceId?: pulumi.Input<string>;
+}

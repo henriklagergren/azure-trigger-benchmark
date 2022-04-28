@@ -1,0 +1,67 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing Data Share Account.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.datashare.getAccount({
+ *     name: "example-account",
+ *     resourceGroupName: "example-resource-group",
+ * });
+ * export const id = example.then(example => example.id);
+ * ```
+ */
+export declare function getAccount(args: GetAccountArgs, opts?: pulumi.InvokeOptions): Promise<GetAccountResult>;
+/**
+ * A collection of arguments for invoking getAccount.
+ */
+export interface GetAccountArgs {
+    /**
+     * The name of this Data Share Account.
+     */
+    name: string;
+    /**
+     * The name of the Resource Group where the Data Share Account exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getAccount.
+ */
+export interface GetAccountResult {
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * An `identity` block as defined below.
+     */
+    readonly identities: outputs.datashare.GetAccountIdentity[];
+    readonly name: string;
+    readonly resourceGroupName: string;
+    /**
+     * A mapping of tags assigned to the Data Share Account.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+}
+export declare function getAccountOutput(args: GetAccountOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetAccountResult>;
+/**
+ * A collection of arguments for invoking getAccount.
+ */
+export interface GetAccountOutputArgs {
+    /**
+     * The name of this Data Share Account.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group where the Data Share Account exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

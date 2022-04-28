@@ -1,0 +1,80 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing Consumption Budget for a specific resource group.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.consumption.getBudgetResourceGroup({
+ *     name: "existing",
+ *     resourceGroupId: azurerm_resource_group.example.id,
+ * });
+ * export const id = example.then(example => example.id);
+ * ```
+ */
+export declare function getBudgetResourceGroup(args: GetBudgetResourceGroupArgs, opts?: pulumi.InvokeOptions): Promise<GetBudgetResourceGroupResult>;
+/**
+ * A collection of arguments for invoking getBudgetResourceGroup.
+ */
+export interface GetBudgetResourceGroupArgs {
+    /**
+     * The name of this Consumption Budget.
+     */
+    name: string;
+    /**
+     * The ID of the subscription.
+     */
+    resourceGroupId: string;
+}
+/**
+ * A collection of values returned by getBudgetResourceGroup.
+ */
+export interface GetBudgetResourceGroupResult {
+    /**
+     * The total amount of cost to track with the budget.
+     */
+    readonly amount: number;
+    /**
+     * A `filter` block as defined below.
+     */
+    readonly filters: outputs.consumption.GetBudgetResourceGroupFilter[];
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * The name of the tag used for the filter.
+     */
+    readonly name: string;
+    /**
+     * A `notification` block as defined below.
+     */
+    readonly notifications: outputs.consumption.GetBudgetResourceGroupNotification[];
+    readonly resourceGroupId: string;
+    /**
+     * The time covered by a budget.
+     */
+    readonly timeGrain: string;
+    /**
+     * A `timePeriod` block as defined below.
+     */
+    readonly timePeriods: outputs.consumption.GetBudgetResourceGroupTimePeriod[];
+}
+export declare function getBudgetResourceGroupOutput(args: GetBudgetResourceGroupOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetBudgetResourceGroupResult>;
+/**
+ * A collection of arguments for invoking getBudgetResourceGroup.
+ */
+export interface GetBudgetResourceGroupOutputArgs {
+    /**
+     * The name of this Consumption Budget.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The ID of the subscription.
+     */
+    resourceGroupId: pulumi.Input<string>;
+}

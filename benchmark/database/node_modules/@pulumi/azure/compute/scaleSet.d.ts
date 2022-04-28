@@ -1,0 +1,591 @@
+import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
+/**
+ * Manages a virtual machine scale set.
+ *
+ * ## Disclaimers
+ *
+ * > **Note:** The `azure.compute.ScaleSet` resource has been superseded by the `azure.compute.LinuxVirtualMachineScaleSet`](linux_virtual_machine_scale_set.html) and `azure.compute.WindowsVirtualMachineScaleSet` resources. The existing `azure.compute.ScaleSet` resource will continue to be available throughout the 2.x releases however is in a feature-frozen state to maintain compatibility - new functionality will instead be added to the `azure.compute.LinuxVirtualMachineScaleSet` and `azure.compute.WindowsVirtualMachineScaleSet` resources.
+ *
+ * ## Example Usage
+ * ### With Managed Disks (Recommended)
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ * import * from "fs";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleVirtualNetwork = new azure.network.VirtualNetwork("exampleVirtualNetwork", {
+ *     addressSpaces: ["10.0.0.0/16"],
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ * });
+ * const exampleSubnet = new azure.network.Subnet("exampleSubnet", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     virtualNetworkName: exampleVirtualNetwork.name,
+ *     addressPrefixes: ["10.0.2.0/24"],
+ * });
+ * const examplePublicIp = new azure.network.PublicIp("examplePublicIp", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     allocationMethod: "Static",
+ *     domainNameLabel: exampleResourceGroup.name,
+ *     tags: {
+ *         environment: "staging",
+ *     },
+ * });
+ * const exampleLoadBalancer = new azure.lb.LoadBalancer("exampleLoadBalancer", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     frontendIpConfigurations: [{
+ *         name: "PublicIPAddress",
+ *         publicIpAddressId: examplePublicIp.id,
+ *     }],
+ * });
+ * const bpepool = new azure.lb.BackendAddressPool("bpepool", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     loadbalancerId: exampleLoadBalancer.id,
+ * });
+ * const lbnatpool = new azure.lb.NatPool("lbnatpool", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     loadbalancerId: exampleLoadBalancer.id,
+ *     protocol: "Tcp",
+ *     frontendPortStart: 50000,
+ *     frontendPortEnd: 50119,
+ *     backendPort: 22,
+ *     frontendIpConfigurationName: "PublicIPAddress",
+ * });
+ * const exampleProbe = new azure.lb.Probe("exampleProbe", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     loadbalancerId: exampleLoadBalancer.id,
+ *     protocol: "Http",
+ *     requestPath: "/health",
+ *     port: 8080,
+ * });
+ * const exampleScaleSet = new azure.compute.ScaleSet("exampleScaleSet", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     automaticOsUpgrade: true,
+ *     upgradePolicyMode: "Rolling",
+ *     rollingUpgradePolicy: {
+ *         maxBatchInstancePercent: 20,
+ *         maxUnhealthyInstancePercent: 20,
+ *         maxUnhealthyUpgradedInstancePercent: 5,
+ *         pauseTimeBetweenBatches: "PT0S",
+ *     },
+ *     healthProbeId: exampleProbe.id,
+ *     sku: {
+ *         name: "Standard_F2",
+ *         tier: "Standard",
+ *         capacity: 2,
+ *     },
+ *     storageProfileImageReference: {
+ *         publisher: "Canonical",
+ *         offer: "UbuntuServer",
+ *         sku: "16.04-LTS",
+ *         version: "latest",
+ *     },
+ *     storageProfileOsDisk: {
+ *         name: "",
+ *         caching: "ReadWrite",
+ *         createOption: "FromImage",
+ *         managedDiskType: "Standard_LRS",
+ *     },
+ *     storageProfileDataDisks: [{
+ *         lun: 0,
+ *         caching: "ReadWrite",
+ *         createOption: "Empty",
+ *         diskSizeGb: 10,
+ *     }],
+ *     osProfile: {
+ *         computerNamePrefix: "testvm",
+ *         adminUsername: "myadmin",
+ *     },
+ *     osProfileLinuxConfig: {
+ *         disablePasswordAuthentication: true,
+ *         sshKeys: [{
+ *             path: "/home/myadmin/.ssh/authorized_keys",
+ *             keyData: fs.readFileSync("~/.ssh/demo_key.pub"),
+ *         }],
+ *     },
+ *     networkProfiles: [{
+ *         name: "mynetworkprofile",
+ *         primary: true,
+ *         ipConfigurations: [{
+ *             name: "TestIPConfiguration",
+ *             primary: true,
+ *             subnetId: exampleSubnet.id,
+ *             loadBalancerBackendAddressPoolIds: [bpepool.id],
+ *             loadBalancerInboundNatRulesIds: [lbnatpool.id],
+ *         }],
+ *     }],
+ *     tags: {
+ *         environment: "staging",
+ *     },
+ * });
+ * ```
+ * ### With Unmanaged Disks
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ * import * from "fs";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleVirtualNetwork = new azure.network.VirtualNetwork("exampleVirtualNetwork", {
+ *     addressSpaces: ["10.0.0.0/16"],
+ *     location: "West US",
+ *     resourceGroupName: exampleResourceGroup.name,
+ * });
+ * const exampleSubnet = new azure.network.Subnet("exampleSubnet", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     virtualNetworkName: exampleVirtualNetwork.name,
+ *     addressPrefixes: ["10.0.2.0/24"],
+ * });
+ * const exampleAccount = new azure.storage.Account("exampleAccount", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: "westus",
+ *     accountTier: "Standard",
+ *     accountReplicationType: "LRS",
+ *     tags: {
+ *         environment: "staging",
+ *     },
+ * });
+ * const exampleContainer = new azure.storage.Container("exampleContainer", {
+ *     storageAccountName: exampleAccount.name,
+ *     containerAccessType: "private",
+ * });
+ * const exampleScaleSet = new azure.compute.ScaleSet("exampleScaleSet", {
+ *     location: "West US",
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     upgradePolicyMode: "Manual",
+ *     sku: {
+ *         name: "Standard_F2",
+ *         tier: "Standard",
+ *         capacity: 2,
+ *     },
+ *     osProfile: {
+ *         computerNamePrefix: "testvm",
+ *         adminUsername: "myadmin",
+ *     },
+ *     osProfileLinuxConfig: {
+ *         disablePasswordAuthentication: true,
+ *         sshKeys: [{
+ *             path: "/home/myadmin/.ssh/authorized_keys",
+ *             keyData: fs.readFileSync("~/.ssh/demo_key.pub"),
+ *         }],
+ *     },
+ *     networkProfiles: [{
+ *         name: "TestNetworkProfile",
+ *         primary: true,
+ *         ipConfigurations: [{
+ *             name: "TestIPConfiguration",
+ *             primary: true,
+ *             subnetId: exampleSubnet.id,
+ *         }],
+ *     }],
+ *     storageProfileOsDisk: {
+ *         name: "osDiskProfile",
+ *         caching: "ReadWrite",
+ *         createOption: "FromImage",
+ *         vhdContainers: [pulumi.interpolate`${exampleAccount.primaryBlobEndpoint}${exampleContainer.name}`],
+ *     },
+ *     storageProfileImageReference: {
+ *         publisher: "Canonical",
+ *         offer: "UbuntuServer",
+ *         sku: "16.04-LTS",
+ *         version: "latest",
+ *     },
+ * });
+ * ```
+ * ## Example of storageProfileImageReference with id
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleImage = new azure.compute.Image("exampleImage", {});
+ * // ...
+ * const exampleScaleSet = new azure.compute.ScaleSet("exampleScaleSet", {storageProfileImageReference: {
+ *     id: exampleImage.id,
+ * }});
+ * // ...
+ * ```
+ *
+ * ## Import
+ *
+ * Virtual Machine Scale Sets can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:compute/scaleSet:ScaleSet scaleset1 /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mygroup1/providers/Microsoft.Compute/virtualMachineScaleSets/scaleset1
+ * ```
+ */
+export declare class ScaleSet extends pulumi.CustomResource {
+    /**
+     * Get an existing ScaleSet resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: ScaleSetState, opts?: pulumi.CustomResourceOptions): ScaleSet;
+    /**
+     * Returns true if the given object is an instance of ScaleSet.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is ScaleSet;
+    /**
+     * Automatic OS patches can be applied by Azure to your scaleset. This is particularly useful when `upgradePolicyMode` is set to `Rolling`. Defaults to `false`.
+     */
+    readonly automaticOsUpgrade: pulumi.Output<boolean | undefined>;
+    /**
+     * A boot diagnostics profile block as referenced below.
+     */
+    readonly bootDiagnostics: pulumi.Output<outputs.compute.ScaleSetBootDiagnostics | undefined>;
+    /**
+     * Specifies the eviction policy for Virtual Machines in this Scale Set. Possible values are `Deallocate` and `Delete`.
+     */
+    readonly evictionPolicy: pulumi.Output<string | undefined>;
+    /**
+     * Can be specified multiple times to add extension profiles to the scale set. Each `extension` block supports the fields documented below.
+     */
+    readonly extensions: pulumi.Output<outputs.compute.ScaleSetExtension[] | undefined>;
+    /**
+     * Specifies the identifier for the load balancer health probe. Required when using `Rolling` as your `upgradePolicyMode`.
+     */
+    readonly healthProbeId: pulumi.Output<string | undefined>;
+    readonly identity: pulumi.Output<outputs.compute.ScaleSetIdentity>;
+    /**
+     * Specifies the Windows OS license type. If supplied, the only allowed values are `Windows_Client` and `Windows_Server`.
+     */
+    readonly licenseType: pulumi.Output<string>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    readonly location: pulumi.Output<string>;
+    /**
+     * Specifies the name of the virtual machine scale set resource. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * A collection of network profile block as documented below.
+     */
+    readonly networkProfiles: pulumi.Output<outputs.compute.ScaleSetNetworkProfile[]>;
+    /**
+     * A Virtual Machine OS Profile block as documented below.
+     */
+    readonly osProfile: pulumi.Output<outputs.compute.ScaleSetOsProfile>;
+    /**
+     * A Linux config block as documented below.
+     */
+    readonly osProfileLinuxConfig: pulumi.Output<outputs.compute.ScaleSetOsProfileLinuxConfig>;
+    /**
+     * A collection of Secret blocks as documented below.
+     */
+    readonly osProfileSecrets: pulumi.Output<outputs.compute.ScaleSetOsProfileSecret[] | undefined>;
+    /**
+     * A Windows config block as documented below.
+     */
+    readonly osProfileWindowsConfig: pulumi.Output<outputs.compute.ScaleSetOsProfileWindowsConfig | undefined>;
+    /**
+     * Specifies whether the virtual machine scale set should be overprovisioned. Defaults to `true`.
+     */
+    readonly overprovision: pulumi.Output<boolean | undefined>;
+    /**
+     * A plan block as documented below.
+     */
+    readonly plan: pulumi.Output<outputs.compute.ScaleSetPlan | undefined>;
+    /**
+     * Specifies the priority for the Virtual Machines in the Scale Set. Defaults to `Regular`. Possible values are `Low` and `Regular`.
+     */
+    readonly priority: pulumi.Output<string | undefined>;
+    /**
+     * The ID of the Proximity Placement Group to which this Virtual Machine should be assigned. Changing this forces a new resource to be created
+     */
+    readonly proximityPlacementGroupId: pulumi.Output<string | undefined>;
+    /**
+     * The name of the resource group in which to create the virtual machine scale set. Changing this forces a new resource to be created.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * A `rollingUpgradePolicy` block as defined below. This is only applicable when the `upgradePolicyMode` is `Rolling`.
+     */
+    readonly rollingUpgradePolicy: pulumi.Output<outputs.compute.ScaleSetRollingUpgradePolicy | undefined>;
+    /**
+     * Specifies whether the scale set is limited to a single placement group with a maximum size of 100 virtual machines. If set to false, managed disks must be used. Default is true. Changing this forces a new resource to be created. See [documentation](http://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-placement-groups) for more information.
+     */
+    readonly singlePlacementGroup: pulumi.Output<boolean | undefined>;
+    /**
+     * A sku block as documented below.
+     */
+    readonly sku: pulumi.Output<outputs.compute.ScaleSetSku>;
+    /**
+     * A storage profile data disk block as documented below
+     */
+    readonly storageProfileDataDisks: pulumi.Output<outputs.compute.ScaleSetStorageProfileDataDisk[] | undefined>;
+    /**
+     * A storage profile image reference block as documented below.
+     */
+    readonly storageProfileImageReference: pulumi.Output<outputs.compute.ScaleSetStorageProfileImageReference>;
+    /**
+     * A storage profile os disk block as documented below
+     */
+    readonly storageProfileOsDisk: pulumi.Output<outputs.compute.ScaleSetStorageProfileOsDisk>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    readonly tags: pulumi.Output<{
+        [key: string]: string;
+    } | undefined>;
+    /**
+     * Specifies the mode of an upgrade to virtual machines in the scale set. Possible values, `Rolling`, `Manual`, or `Automatic`. When choosing `Rolling`, you will need to set a health probe.
+     */
+    readonly upgradePolicyMode: pulumi.Output<string>;
+    /**
+     * A collection of availability zones to spread the Virtual Machines over.
+     */
+    readonly zones: pulumi.Output<string[] | undefined>;
+    /**
+     * Create a ScaleSet resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: ScaleSetArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering ScaleSet resources.
+ */
+export interface ScaleSetState {
+    /**
+     * Automatic OS patches can be applied by Azure to your scaleset. This is particularly useful when `upgradePolicyMode` is set to `Rolling`. Defaults to `false`.
+     */
+    automaticOsUpgrade?: pulumi.Input<boolean>;
+    /**
+     * A boot diagnostics profile block as referenced below.
+     */
+    bootDiagnostics?: pulumi.Input<inputs.compute.ScaleSetBootDiagnostics>;
+    /**
+     * Specifies the eviction policy for Virtual Machines in this Scale Set. Possible values are `Deallocate` and `Delete`.
+     */
+    evictionPolicy?: pulumi.Input<string>;
+    /**
+     * Can be specified multiple times to add extension profiles to the scale set. Each `extension` block supports the fields documented below.
+     */
+    extensions?: pulumi.Input<pulumi.Input<inputs.compute.ScaleSetExtension>[]>;
+    /**
+     * Specifies the identifier for the load balancer health probe. Required when using `Rolling` as your `upgradePolicyMode`.
+     */
+    healthProbeId?: pulumi.Input<string>;
+    identity?: pulumi.Input<inputs.compute.ScaleSetIdentity>;
+    /**
+     * Specifies the Windows OS license type. If supplied, the only allowed values are `Windows_Client` and `Windows_Server`.
+     */
+    licenseType?: pulumi.Input<string>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the virtual machine scale set resource. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * A collection of network profile block as documented below.
+     */
+    networkProfiles?: pulumi.Input<pulumi.Input<inputs.compute.ScaleSetNetworkProfile>[]>;
+    /**
+     * A Virtual Machine OS Profile block as documented below.
+     */
+    osProfile?: pulumi.Input<inputs.compute.ScaleSetOsProfile>;
+    /**
+     * A Linux config block as documented below.
+     */
+    osProfileLinuxConfig?: pulumi.Input<inputs.compute.ScaleSetOsProfileLinuxConfig>;
+    /**
+     * A collection of Secret blocks as documented below.
+     */
+    osProfileSecrets?: pulumi.Input<pulumi.Input<inputs.compute.ScaleSetOsProfileSecret>[]>;
+    /**
+     * A Windows config block as documented below.
+     */
+    osProfileWindowsConfig?: pulumi.Input<inputs.compute.ScaleSetOsProfileWindowsConfig>;
+    /**
+     * Specifies whether the virtual machine scale set should be overprovisioned. Defaults to `true`.
+     */
+    overprovision?: pulumi.Input<boolean>;
+    /**
+     * A plan block as documented below.
+     */
+    plan?: pulumi.Input<inputs.compute.ScaleSetPlan>;
+    /**
+     * Specifies the priority for the Virtual Machines in the Scale Set. Defaults to `Regular`. Possible values are `Low` and `Regular`.
+     */
+    priority?: pulumi.Input<string>;
+    /**
+     * The ID of the Proximity Placement Group to which this Virtual Machine should be assigned. Changing this forces a new resource to be created
+     */
+    proximityPlacementGroupId?: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which to create the virtual machine scale set. Changing this forces a new resource to be created.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * A `rollingUpgradePolicy` block as defined below. This is only applicable when the `upgradePolicyMode` is `Rolling`.
+     */
+    rollingUpgradePolicy?: pulumi.Input<inputs.compute.ScaleSetRollingUpgradePolicy>;
+    /**
+     * Specifies whether the scale set is limited to a single placement group with a maximum size of 100 virtual machines. If set to false, managed disks must be used. Default is true. Changing this forces a new resource to be created. See [documentation](http://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-placement-groups) for more information.
+     */
+    singlePlacementGroup?: pulumi.Input<boolean>;
+    /**
+     * A sku block as documented below.
+     */
+    sku?: pulumi.Input<inputs.compute.ScaleSetSku>;
+    /**
+     * A storage profile data disk block as documented below
+     */
+    storageProfileDataDisks?: pulumi.Input<pulumi.Input<inputs.compute.ScaleSetStorageProfileDataDisk>[]>;
+    /**
+     * A storage profile image reference block as documented below.
+     */
+    storageProfileImageReference?: pulumi.Input<inputs.compute.ScaleSetStorageProfileImageReference>;
+    /**
+     * A storage profile os disk block as documented below
+     */
+    storageProfileOsDisk?: pulumi.Input<inputs.compute.ScaleSetStorageProfileOsDisk>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * Specifies the mode of an upgrade to virtual machines in the scale set. Possible values, `Rolling`, `Manual`, or `Automatic`. When choosing `Rolling`, you will need to set a health probe.
+     */
+    upgradePolicyMode?: pulumi.Input<string>;
+    /**
+     * A collection of availability zones to spread the Virtual Machines over.
+     */
+    zones?: pulumi.Input<pulumi.Input<string>[]>;
+}
+/**
+ * The set of arguments for constructing a ScaleSet resource.
+ */
+export interface ScaleSetArgs {
+    /**
+     * Automatic OS patches can be applied by Azure to your scaleset. This is particularly useful when `upgradePolicyMode` is set to `Rolling`. Defaults to `false`.
+     */
+    automaticOsUpgrade?: pulumi.Input<boolean>;
+    /**
+     * A boot diagnostics profile block as referenced below.
+     */
+    bootDiagnostics?: pulumi.Input<inputs.compute.ScaleSetBootDiagnostics>;
+    /**
+     * Specifies the eviction policy for Virtual Machines in this Scale Set. Possible values are `Deallocate` and `Delete`.
+     */
+    evictionPolicy?: pulumi.Input<string>;
+    /**
+     * Can be specified multiple times to add extension profiles to the scale set. Each `extension` block supports the fields documented below.
+     */
+    extensions?: pulumi.Input<pulumi.Input<inputs.compute.ScaleSetExtension>[]>;
+    /**
+     * Specifies the identifier for the load balancer health probe. Required when using `Rolling` as your `upgradePolicyMode`.
+     */
+    healthProbeId?: pulumi.Input<string>;
+    identity?: pulumi.Input<inputs.compute.ScaleSetIdentity>;
+    /**
+     * Specifies the Windows OS license type. If supplied, the only allowed values are `Windows_Client` and `Windows_Server`.
+     */
+    licenseType?: pulumi.Input<string>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the virtual machine scale set resource. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * A collection of network profile block as documented below.
+     */
+    networkProfiles: pulumi.Input<pulumi.Input<inputs.compute.ScaleSetNetworkProfile>[]>;
+    /**
+     * A Virtual Machine OS Profile block as documented below.
+     */
+    osProfile: pulumi.Input<inputs.compute.ScaleSetOsProfile>;
+    /**
+     * A Linux config block as documented below.
+     */
+    osProfileLinuxConfig?: pulumi.Input<inputs.compute.ScaleSetOsProfileLinuxConfig>;
+    /**
+     * A collection of Secret blocks as documented below.
+     */
+    osProfileSecrets?: pulumi.Input<pulumi.Input<inputs.compute.ScaleSetOsProfileSecret>[]>;
+    /**
+     * A Windows config block as documented below.
+     */
+    osProfileWindowsConfig?: pulumi.Input<inputs.compute.ScaleSetOsProfileWindowsConfig>;
+    /**
+     * Specifies whether the virtual machine scale set should be overprovisioned. Defaults to `true`.
+     */
+    overprovision?: pulumi.Input<boolean>;
+    /**
+     * A plan block as documented below.
+     */
+    plan?: pulumi.Input<inputs.compute.ScaleSetPlan>;
+    /**
+     * Specifies the priority for the Virtual Machines in the Scale Set. Defaults to `Regular`. Possible values are `Low` and `Regular`.
+     */
+    priority?: pulumi.Input<string>;
+    /**
+     * The ID of the Proximity Placement Group to which this Virtual Machine should be assigned. Changing this forces a new resource to be created
+     */
+    proximityPlacementGroupId?: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which to create the virtual machine scale set. Changing this forces a new resource to be created.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * A `rollingUpgradePolicy` block as defined below. This is only applicable when the `upgradePolicyMode` is `Rolling`.
+     */
+    rollingUpgradePolicy?: pulumi.Input<inputs.compute.ScaleSetRollingUpgradePolicy>;
+    /**
+     * Specifies whether the scale set is limited to a single placement group with a maximum size of 100 virtual machines. If set to false, managed disks must be used. Default is true. Changing this forces a new resource to be created. See [documentation](http://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-placement-groups) for more information.
+     */
+    singlePlacementGroup?: pulumi.Input<boolean>;
+    /**
+     * A sku block as documented below.
+     */
+    sku: pulumi.Input<inputs.compute.ScaleSetSku>;
+    /**
+     * A storage profile data disk block as documented below
+     */
+    storageProfileDataDisks?: pulumi.Input<pulumi.Input<inputs.compute.ScaleSetStorageProfileDataDisk>[]>;
+    /**
+     * A storage profile image reference block as documented below.
+     */
+    storageProfileImageReference?: pulumi.Input<inputs.compute.ScaleSetStorageProfileImageReference>;
+    /**
+     * A storage profile os disk block as documented below
+     */
+    storageProfileOsDisk: pulumi.Input<inputs.compute.ScaleSetStorageProfileOsDisk>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * Specifies the mode of an upgrade to virtual machines in the scale set. Possible values, `Rolling`, `Manual`, or `Automatic`. When choosing `Rolling`, you will need to set a health probe.
+     */
+    upgradePolicyMode: pulumi.Input<string>;
+    /**
+     * A collection of availability zones to spread the Virtual Machines over.
+     */
+    zones?: pulumi.Input<pulumi.Input<string>[]>;
+}

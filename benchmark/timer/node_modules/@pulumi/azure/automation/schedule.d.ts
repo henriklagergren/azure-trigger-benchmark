@@ -1,0 +1,218 @@
+import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
+/**
+ * Manages a Automation Schedule.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleAccount = new azure.automation.Account("exampleAccount", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     sku: [{
+ *         name: "Basic",
+ *     }],
+ * });
+ * const exampleSchedule = new azure.automation.Schedule("exampleSchedule", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     automationAccountName: exampleAccount.name,
+ *     frequency: "Week",
+ *     interval: 1,
+ *     timezone: "Australia/Perth",
+ *     startTime: "2014-04-15T18:00:15+02:00",
+ *     description: "This is an example schedule",
+ *     weekDays: ["Friday"],
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Automation Schedule can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:automation/schedule:Schedule schedule1 /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/group1/providers/Microsoft.Automation/automationAccounts/account1/schedules/schedule1
+ * ```
+ */
+export declare class Schedule extends pulumi.CustomResource {
+    /**
+     * Get an existing Schedule resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: ScheduleState, opts?: pulumi.CustomResourceOptions): Schedule;
+    /**
+     * Returns true if the given object is an instance of Schedule.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is Schedule;
+    /**
+     * The name of the automation account in which the Schedule is created. Changing this forces a new resource to be created.
+     */
+    readonly automationAccountName: pulumi.Output<string>;
+    /**
+     * A description for this Schedule.
+     */
+    readonly description: pulumi.Output<string | undefined>;
+    /**
+     * The end time of the schedule.
+     */
+    readonly expiryTime: pulumi.Output<string>;
+    /**
+     * The frequency of the schedule. - can be either `OneTime`, `Day`, `Hour`, `Week`, or `Month`.
+     */
+    readonly frequency: pulumi.Output<string>;
+    /**
+     * The number of `frequency`s between runs. Only valid when frequency is `Day`, `Hour`, `Week`, or `Month` and defaults to `1`.
+     */
+    readonly interval: pulumi.Output<number>;
+    /**
+     * List of days of the month that the job should execute on. Must be between `1` and `31`. `-1` for last day of the month. Only valid when frequency is `Month`.
+     */
+    readonly monthDays: pulumi.Output<number[] | undefined>;
+    /**
+     * List of occurrences of days within a month. Only valid when frequency is `Month`. The `monthlyOccurrence` block supports fields documented below.
+     */
+    readonly monthlyOccurrences: pulumi.Output<outputs.automation.ScheduleMonthlyOccurrence[] | undefined>;
+    /**
+     * Specifies the name of the Schedule. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * The name of the resource group in which the Schedule is created. Changing this forces a new resource to be created.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * Start time of the schedule. Must be at least five minutes in the future. Defaults to seven minutes in the future from the time the resource is created.
+     */
+    readonly startTime: pulumi.Output<string>;
+    /**
+     * The timezone of the start time. Defaults to `UTC`. For possible values see: https://s2.automation.ext.azure.com/api/Orchestrator/TimeZones?_=1594792230258
+     */
+    readonly timezone: pulumi.Output<string | undefined>;
+    /**
+     * List of days of the week that the job should execute on. Only valid when frequency is `Week`.
+     */
+    readonly weekDays: pulumi.Output<string[] | undefined>;
+    /**
+     * Create a Schedule resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: ScheduleArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering Schedule resources.
+ */
+export interface ScheduleState {
+    /**
+     * The name of the automation account in which the Schedule is created. Changing this forces a new resource to be created.
+     */
+    automationAccountName?: pulumi.Input<string>;
+    /**
+     * A description for this Schedule.
+     */
+    description?: pulumi.Input<string>;
+    /**
+     * The end time of the schedule.
+     */
+    expiryTime?: pulumi.Input<string>;
+    /**
+     * The frequency of the schedule. - can be either `OneTime`, `Day`, `Hour`, `Week`, or `Month`.
+     */
+    frequency?: pulumi.Input<string>;
+    /**
+     * The number of `frequency`s between runs. Only valid when frequency is `Day`, `Hour`, `Week`, or `Month` and defaults to `1`.
+     */
+    interval?: pulumi.Input<number>;
+    /**
+     * List of days of the month that the job should execute on. Must be between `1` and `31`. `-1` for last day of the month. Only valid when frequency is `Month`.
+     */
+    monthDays?: pulumi.Input<pulumi.Input<number>[]>;
+    /**
+     * List of occurrences of days within a month. Only valid when frequency is `Month`. The `monthlyOccurrence` block supports fields documented below.
+     */
+    monthlyOccurrences?: pulumi.Input<pulumi.Input<inputs.automation.ScheduleMonthlyOccurrence>[]>;
+    /**
+     * Specifies the name of the Schedule. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which the Schedule is created. Changing this forces a new resource to be created.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * Start time of the schedule. Must be at least five minutes in the future. Defaults to seven minutes in the future from the time the resource is created.
+     */
+    startTime?: pulumi.Input<string>;
+    /**
+     * The timezone of the start time. Defaults to `UTC`. For possible values see: https://s2.automation.ext.azure.com/api/Orchestrator/TimeZones?_=1594792230258
+     */
+    timezone?: pulumi.Input<string>;
+    /**
+     * List of days of the week that the job should execute on. Only valid when frequency is `Week`.
+     */
+    weekDays?: pulumi.Input<pulumi.Input<string>[]>;
+}
+/**
+ * The set of arguments for constructing a Schedule resource.
+ */
+export interface ScheduleArgs {
+    /**
+     * The name of the automation account in which the Schedule is created. Changing this forces a new resource to be created.
+     */
+    automationAccountName: pulumi.Input<string>;
+    /**
+     * A description for this Schedule.
+     */
+    description?: pulumi.Input<string>;
+    /**
+     * The end time of the schedule.
+     */
+    expiryTime?: pulumi.Input<string>;
+    /**
+     * The frequency of the schedule. - can be either `OneTime`, `Day`, `Hour`, `Week`, or `Month`.
+     */
+    frequency: pulumi.Input<string>;
+    /**
+     * The number of `frequency`s between runs. Only valid when frequency is `Day`, `Hour`, `Week`, or `Month` and defaults to `1`.
+     */
+    interval?: pulumi.Input<number>;
+    /**
+     * List of days of the month that the job should execute on. Must be between `1` and `31`. `-1` for last day of the month. Only valid when frequency is `Month`.
+     */
+    monthDays?: pulumi.Input<pulumi.Input<number>[]>;
+    /**
+     * List of occurrences of days within a month. Only valid when frequency is `Month`. The `monthlyOccurrence` block supports fields documented below.
+     */
+    monthlyOccurrences?: pulumi.Input<pulumi.Input<inputs.automation.ScheduleMonthlyOccurrence>[]>;
+    /**
+     * Specifies the name of the Schedule. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which the Schedule is created. Changing this forces a new resource to be created.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * Start time of the schedule. Must be at least five minutes in the future. Defaults to seven minutes in the future from the time the resource is created.
+     */
+    startTime?: pulumi.Input<string>;
+    /**
+     * The timezone of the start time. Defaults to `UTC`. For possible values see: https://s2.automation.ext.azure.com/api/Orchestrator/TimeZones?_=1594792230258
+     */
+    timezone?: pulumi.Input<string>;
+    /**
+     * List of days of the week that the job should execute on. Only valid when frequency is `Week`.
+     */
+    weekDays?: pulumi.Input<pulumi.Input<string>[]>;
+}

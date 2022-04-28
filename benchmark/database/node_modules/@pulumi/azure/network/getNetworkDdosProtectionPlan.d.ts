@@ -1,0 +1,82 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Azure Network DDoS Protection Plan.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.network.getNetworkDdosProtectionPlan({
+ *     name: azurerm_network_ddos_protection_plan.example.name,
+ *     resourceGroupName: azurerm_network_ddos_protection_plan.example.resource_group_name,
+ * });
+ * export const ddosProtectionPlanId = example.then(example => example.id);
+ * ```
+ */
+export declare function getNetworkDdosProtectionPlan(args: GetNetworkDdosProtectionPlanArgs, opts?: pulumi.InvokeOptions): Promise<GetNetworkDdosProtectionPlanResult>;
+/**
+ * A collection of arguments for invoking getNetworkDdosProtectionPlan.
+ */
+export interface GetNetworkDdosProtectionPlanArgs {
+    /**
+     * The name of the Network DDoS Protection Plan.
+     */
+    name: string;
+    /**
+     * The name of the resource group where the Network DDoS Protection Plan exists.
+     */
+    resourceGroupName: string;
+    /**
+     * A mapping of tags assigned to the resource.
+     */
+    tags?: {
+        [key: string]: string;
+    };
+}
+/**
+ * A collection of values returned by getNetworkDdosProtectionPlan.
+ */
+export interface GetNetworkDdosProtectionPlanResult {
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * Specifies the supported Azure location where the resource exists.
+     */
+    readonly location: string;
+    readonly name: string;
+    readonly resourceGroupName: string;
+    /**
+     * A mapping of tags assigned to the resource.
+     */
+    readonly tags?: {
+        [key: string]: string;
+    };
+    /**
+     * A list of ID's of the Virtual Networks associated with this DDoS Protection Plan.
+     */
+    readonly virtualNetworkIds: string[];
+}
+export declare function getNetworkDdosProtectionPlanOutput(args: GetNetworkDdosProtectionPlanOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetNetworkDdosProtectionPlanResult>;
+/**
+ * A collection of arguments for invoking getNetworkDdosProtectionPlan.
+ */
+export interface GetNetworkDdosProtectionPlanOutputArgs {
+    /**
+     * The name of the Network DDoS Protection Plan.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the resource group where the Network DDoS Protection Plan exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * A mapping of tags assigned to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+}

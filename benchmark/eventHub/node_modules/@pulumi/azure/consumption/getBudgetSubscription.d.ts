@@ -1,0 +1,80 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing Consumption Budget for a specific subscription.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.consumption.getBudgetSubscription({
+ *     name: "existing",
+ *     subscriptionId: "/subscriptions/00000000-0000-0000-0000-000000000000/",
+ * });
+ * export const id = data.azurerm_consumption_budget.example.id;
+ * ```
+ */
+export declare function getBudgetSubscription(args: GetBudgetSubscriptionArgs, opts?: pulumi.InvokeOptions): Promise<GetBudgetSubscriptionResult>;
+/**
+ * A collection of arguments for invoking getBudgetSubscription.
+ */
+export interface GetBudgetSubscriptionArgs {
+    /**
+     * The name of this Consumption Budget.
+     */
+    name: string;
+    /**
+     * The ID of the subscription.
+     */
+    subscriptionId: string;
+}
+/**
+ * A collection of values returned by getBudgetSubscription.
+ */
+export interface GetBudgetSubscriptionResult {
+    /**
+     * The total amount of cost to track with the budget.
+     */
+    readonly amount: number;
+    /**
+     * A `filter` block as defined below.
+     */
+    readonly filters: outputs.consumption.GetBudgetSubscriptionFilter[];
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * The name of the tag to use for the filter.
+     */
+    readonly name: string;
+    /**
+     * A `notification` block as defined below.
+     */
+    readonly notifications: outputs.consumption.GetBudgetSubscriptionNotification[];
+    readonly subscriptionId: string;
+    /**
+     * The time covered by a budget.
+     */
+    readonly timeGrain: string;
+    /**
+     * A `timePeriod` block as defined below.
+     */
+    readonly timePeriods: outputs.consumption.GetBudgetSubscriptionTimePeriod[];
+}
+export declare function getBudgetSubscriptionOutput(args: GetBudgetSubscriptionOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetBudgetSubscriptionResult>;
+/**
+ * A collection of arguments for invoking getBudgetSubscription.
+ */
+export interface GetBudgetSubscriptionOutputArgs {
+    /**
+     * The name of this Consumption Budget.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The ID of the subscription.
+     */
+    subscriptionId: pulumi.Input<string>;
+}

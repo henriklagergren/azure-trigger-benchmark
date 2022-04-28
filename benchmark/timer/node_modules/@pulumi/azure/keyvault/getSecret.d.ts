@@ -1,0 +1,75 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Key Vault Secret.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.keyvault.getSecret({
+ *     name: "secret-sauce",
+ *     keyVaultId: data.azurerm_key_vault.existing.id,
+ * });
+ * export const secretValue = example.then(example => example.value);
+ * ```
+ */
+export declare function getSecret(args: GetSecretArgs, opts?: pulumi.InvokeOptions): Promise<GetSecretResult>;
+/**
+ * A collection of arguments for invoking getSecret.
+ */
+export interface GetSecretArgs {
+    /**
+     * Specifies the ID of the Key Vault instance where the Secret resides, available on the `azure.keyvault.KeyVault` Data Source / Resource.
+     */
+    keyVaultId: string;
+    /**
+     * Specifies the name of the Key Vault Secret.
+     */
+    name: string;
+}
+/**
+ * A collection of values returned by getSecret.
+ */
+export interface GetSecretResult {
+    /**
+     * The content type for the Key Vault Secret.
+     */
+    readonly contentType: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    readonly keyVaultId: string;
+    readonly name: string;
+    /**
+     * Any tags assigned to this resource.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+    /**
+     * The value of the Key Vault Secret.
+     */
+    readonly value: string;
+    /**
+     * The current version of the Key Vault Secret.
+     */
+    readonly version: string;
+    readonly versionlessId: string;
+}
+export declare function getSecretOutput(args: GetSecretOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetSecretResult>;
+/**
+ * A collection of arguments for invoking getSecret.
+ */
+export interface GetSecretOutputArgs {
+    /**
+     * Specifies the ID of the Key Vault instance where the Secret resides, available on the `azure.keyvault.KeyVault` Data Source / Resource.
+     */
+    keyVaultId: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Key Vault Secret.
+     */
+    name: pulumi.Input<string>;
+}

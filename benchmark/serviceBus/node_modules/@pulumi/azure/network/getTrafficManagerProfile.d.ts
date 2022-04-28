@@ -1,0 +1,110 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing Traffic Manager Profile.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.network.getTrafficManagerProfile({
+ *     name: "test",
+ *     resourceGroupName: "test",
+ * });
+ * export const trafficRoutingMethod = data.azurerm_traffic_manager_profile.traffic_routing_method;
+ * ```
+ */
+export declare function getTrafficManagerProfile(args: GetTrafficManagerProfileArgs, opts?: pulumi.InvokeOptions): Promise<GetTrafficManagerProfileResult>;
+/**
+ * A collection of arguments for invoking getTrafficManagerProfile.
+ */
+export interface GetTrafficManagerProfileArgs {
+    /**
+     * Specifies the name of the Traffic Manager Profile.
+     */
+    name: string;
+    /**
+     * Specifies the name of the resource group the Traffic Manager Profile is located in.
+     */
+    resourceGroupName: string;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    tags?: {
+        [key: string]: string;
+    };
+    /**
+     * Indicates whether Traffic View is enabled for the Traffic Manager profile.
+     */
+    trafficViewEnabled?: boolean;
+}
+/**
+ * A collection of values returned by getTrafficManagerProfile.
+ */
+export interface GetTrafficManagerProfileResult {
+    /**
+     * This block specifies the DNS configuration of the Profile.
+     */
+    readonly dnsConfigs: outputs.network.GetTrafficManagerProfileDnsConfig[];
+    /**
+     * The FQDN of the created Profile.
+     */
+    readonly fqdn: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * This block specifies the Endpoint monitoring configuration for the Profile.
+     */
+    readonly monitorConfigs: outputs.network.GetTrafficManagerProfileMonitorConfig[];
+    /**
+     * The name of the custom header.
+     */
+    readonly name: string;
+    /**
+     * The status of the profile.
+     */
+    readonly profileStatus: string;
+    readonly resourceGroupName: string;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    readonly tags?: {
+        [key: string]: string;
+    };
+    /**
+     * Specifies the algorithm used to route traffic.
+     */
+    readonly trafficRoutingMethod: string;
+    /**
+     * Indicates whether Traffic View is enabled for the Traffic Manager profile.
+     */
+    readonly trafficViewEnabled?: boolean;
+}
+export declare function getTrafficManagerProfileOutput(args: GetTrafficManagerProfileOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetTrafficManagerProfileResult>;
+/**
+ * A collection of arguments for invoking getTrafficManagerProfile.
+ */
+export interface GetTrafficManagerProfileOutputArgs {
+    /**
+     * Specifies the name of the Traffic Manager Profile.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * Specifies the name of the resource group the Traffic Manager Profile is located in.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * Indicates whether Traffic View is enabled for the Traffic Manager profile.
+     */
+    trafficViewEnabled?: pulumi.Input<boolean>;
+}

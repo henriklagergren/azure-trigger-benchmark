@@ -1,0 +1,16 @@
+{
+  "bindings": [
+    {
+      "type": "eventHubTrigger",
+      "name": "eventHubMessages",
+      "direction": "in",
+      "eventHubName": "%EVENT_HUB_NAME%",
+      "maxEventBatchSize": 1,
+      "maxDelay": "00:00:01",
+      "connection": "EVENT_HUB_CONNTECTION_STRING",
+      "cardinality": "many",
+      "consumerGroup": "$Default"
+    }
+  ],
+  "scriptFile": "../dist/EventHubTrigger-node/index.js"
+}

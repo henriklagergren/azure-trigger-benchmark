@@ -1,0 +1,179 @@
+import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
+/**
+ * Manages a Media Services Account.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleAccount = new azure.storage.Account("exampleAccount", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: exampleResourceGroup.location,
+ *     accountTier: "Standard",
+ *     accountReplicationType: "GRS",
+ * });
+ * const exampleServiceAccount = new azure.media.ServiceAccount("exampleServiceAccount", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     storageAccounts: [{
+ *         id: exampleAccount.id,
+ *         isPrimary: true,
+ *     }],
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Media Services Accounts can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:mediaservices/account:Account account /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mygroup1/providers/Microsoft.Media/mediaservices/account1
+ * ```
+ *
+ * @deprecated azure.mediaservices.Account has been deprecated in favor of azure.media.ServiceAccount
+ */
+export declare class Account extends pulumi.CustomResource {
+    /**
+     * Get an existing Account resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: AccountState, opts?: pulumi.CustomResourceOptions): Account;
+    /**
+     * Returns true if the given object is an instance of Account.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is Account;
+    /**
+     * An `identity` block as defined below.
+     */
+    readonly identity: pulumi.Output<outputs.mediaservices.AccountIdentity | undefined>;
+    /**
+     * A `keyDeliveryAccessControl` block as defined below.
+     */
+    readonly keyDeliveryAccessControl: pulumi.Output<outputs.mediaservices.AccountKeyDeliveryAccessControl>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    readonly location: pulumi.Output<string>;
+    /**
+     * Specifies the name of the Media Services Account. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * The name of the resource group in which to create the Media Services Account. Changing this forces a new resource to be created.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * One or more `storageAccount` blocks as defined below.
+     */
+    readonly storageAccounts: pulumi.Output<outputs.mediaservices.AccountStorageAccount[]>;
+    /**
+     * Specifies the storage authentication type.
+     * Possible value is  `ManagedIdentity` or `System`.
+     */
+    readonly storageAuthenticationType: pulumi.Output<string>;
+    /**
+     * A mapping of tags assigned to the resource.
+     */
+    readonly tags: pulumi.Output<{
+        [key: string]: string;
+    } | undefined>;
+    /**
+     * Create a Account resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    /** @deprecated azure.mediaservices.Account has been deprecated in favor of azure.media.ServiceAccount */
+    constructor(name: string, args: AccountArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering Account resources.
+ */
+export interface AccountState {
+    /**
+     * An `identity` block as defined below.
+     */
+    identity?: pulumi.Input<inputs.mediaservices.AccountIdentity>;
+    /**
+     * A `keyDeliveryAccessControl` block as defined below.
+     */
+    keyDeliveryAccessControl?: pulumi.Input<inputs.mediaservices.AccountKeyDeliveryAccessControl>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Media Services Account. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which to create the Media Services Account. Changing this forces a new resource to be created.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * One or more `storageAccount` blocks as defined below.
+     */
+    storageAccounts?: pulumi.Input<pulumi.Input<inputs.mediaservices.AccountStorageAccount>[]>;
+    /**
+     * Specifies the storage authentication type.
+     * Possible value is  `ManagedIdentity` or `System`.
+     */
+    storageAuthenticationType?: pulumi.Input<string>;
+    /**
+     * A mapping of tags assigned to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+}
+/**
+ * The set of arguments for constructing a Account resource.
+ */
+export interface AccountArgs {
+    /**
+     * An `identity` block as defined below.
+     */
+    identity?: pulumi.Input<inputs.mediaservices.AccountIdentity>;
+    /**
+     * A `keyDeliveryAccessControl` block as defined below.
+     */
+    keyDeliveryAccessControl?: pulumi.Input<inputs.mediaservices.AccountKeyDeliveryAccessControl>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Media Services Account. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which to create the Media Services Account. Changing this forces a new resource to be created.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * One or more `storageAccount` blocks as defined below.
+     */
+    storageAccounts: pulumi.Input<pulumi.Input<inputs.mediaservices.AccountStorageAccount>[]>;
+    /**
+     * Specifies the storage authentication type.
+     * Possible value is  `ManagedIdentity` or `System`.
+     */
+    storageAuthenticationType?: pulumi.Input<string>;
+    /**
+     * A mapping of tags assigned to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+}

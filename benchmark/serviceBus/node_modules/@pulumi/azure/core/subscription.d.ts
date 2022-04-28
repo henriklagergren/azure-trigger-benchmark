@@ -1,0 +1,201 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Manages an Alias for a Subscription - which adds an Alias to an existing Subscription, allowing it to be managed in the provider - or create a new Subscription with a new Alias.
+ *
+ * > **NOTE:** Destroying a Subscription controlled by this resource will place the Subscription into a cancelled state. It is possible to re-activate a subscription within 90-days of cancellation, after which time the Subscription is irrevocably deleted, and the Subscription ID cannot be re-used. For further information see [here](https://docs.microsoft.com/en-us/azure/cost-management-billing/manage/cancel-azure-subscription#what-happens-after-subscription-cancellation). Users can optionally delete a Subscription once 72 hours have passed, however, this functionality is not suitable for this provider. A `Deleted` subscription cannot be reactivated.
+ *
+ * > **NOTE:** It is not possible to destroy (cancel) a subscription if it contains resources. If resources are present that are not managed by the provider then these will need to be removed before the Subscription can be destroyed.
+ *
+ * > **NOTE:** Azure supports Multiple Aliases per Subscription, however, to reliably manage this resource in this provider only a single Alias is supported.
+ *
+ * ## Example Usage
+ * ### Creating A New Alias And Subscription For An Enrollment Account
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleEnrollmentAccountScope = azure.billing.getEnrollmentAccountScope({
+ *     billingAccountName: "1234567890",
+ *     enrollmentAccountName: "0123456",
+ * });
+ * const exampleSubscription = new azure.core.Subscription("exampleSubscription", {
+ *     subscriptionName: "My Example EA Subscription",
+ *     billingScopeId: exampleEnrollmentAccountScope.then(exampleEnrollmentAccountScope => exampleEnrollmentAccountScope.id),
+ * });
+ * ```
+ * ### Creating A New Alias And Subscription For A Microsoft Customer Account
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleMcaAccountScope = azure.billing.getMcaAccountScope({
+ *     billingAccountName: "e879cf0f-2b4d-5431-109a-f72fc9868693:024cabf4-7321-4cf9-be59-df0c77ca51de_2019-05-31",
+ *     billingProfileName: "PE2Q-NOIT-BG7-TGB",
+ *     invoiceSectionName: "MTT4-OBS7-PJA-TGB",
+ * });
+ * const exampleSubscription = new azure.core.Subscription("exampleSubscription", {
+ *     subscriptionName: "My Example MCA Subscription",
+ *     billingScopeId: exampleMcaAccountScope.then(exampleMcaAccountScope => exampleMcaAccountScope.id),
+ * });
+ * ```
+ * ### Creating A New Alias And Subscription For A Microsoft Partner Account
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleMpaAccountScope = azure.billing.getMpaAccountScope({
+ *     billingAccountName: "e879cf0f-2b4d-5431-109a-f72fc9868693:024cabf4-7321-4cf9-be59-df0c77ca51de_2019-05-31",
+ *     customerName: "2281f543-7321-4cf9-1e23-edb4Oc31a31c",
+ * });
+ * const exampleSubscription = new azure.core.Subscription("exampleSubscription", {
+ *     subscriptionName: "My Example MPA Subscription",
+ *     billingScopeId: exampleMpaAccountScope.then(exampleMpaAccountScope => exampleMpaAccountScope.id),
+ * });
+ * ```
+ * ### Adding An Alias To An Existing Subscription
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = new azure.core.Subscription("example", {
+ *     alias: "examplesub",
+ *     subscriptionId: "12345678-12234-5678-9012-123456789012",
+ *     subscriptionName: "My Example Subscription",
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Subscriptions can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:core/subscription:Subscription example "/providers/Microsoft.Subscription/aliases/subscription1"
+ * ```
+ *
+ *  In this scenario, the `subscription_id` property can be completed and the provider will assume control of the existing subscription by creating an Alias. See the `adding an Alias to an existing Subscription` above. This provider requires an alias to correctly manage Subscription resources due to Azure Subscription API design.
+ */
+export declare class Subscription extends pulumi.CustomResource {
+    /**
+     * Get an existing Subscription resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: SubscriptionState, opts?: pulumi.CustomResourceOptions): Subscription;
+    /**
+     * Returns true if the given object is an instance of Subscription.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is Subscription;
+    /**
+     * The Alias name for the subscription. This provider will generate a new GUID if this is not supplied. Changing this forces a new Subscription to be created.
+     */
+    readonly alias: pulumi.Output<string>;
+    /**
+     * The Azure Billing Scope ID. Can be a Microsoft Customer Account Billing Scope ID, a Microsoft Partner Account Billing Scope ID or an Enrollment Billing Scope ID.
+     */
+    readonly billingScopeId: pulumi.Output<string | undefined>;
+    /**
+     * The ID of the Subscription. Changing this forces a new Subscription to be created.
+     */
+    readonly subscriptionId: pulumi.Output<string>;
+    /**
+     * The Name of the Subscription. This is the Display Name in the portal.
+     */
+    readonly subscriptionName: pulumi.Output<string>;
+    /**
+     * A mapping of tags to assign to the Subscription.
+     */
+    readonly tags: pulumi.Output<{
+        [key: string]: string;
+    } | undefined>;
+    /**
+     * The ID of the Tenant to which the subscription belongs.
+     */
+    readonly tenantId: pulumi.Output<string>;
+    /**
+     * The workload type of the Subscription.  Possible values are `Production` (default) and `DevTest`. Changing this forces a new Subscription to be created.
+     */
+    readonly workload: pulumi.Output<string | undefined>;
+    /**
+     * Create a Subscription resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: SubscriptionArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering Subscription resources.
+ */
+export interface SubscriptionState {
+    /**
+     * The Alias name for the subscription. This provider will generate a new GUID if this is not supplied. Changing this forces a new Subscription to be created.
+     */
+    alias?: pulumi.Input<string>;
+    /**
+     * The Azure Billing Scope ID. Can be a Microsoft Customer Account Billing Scope ID, a Microsoft Partner Account Billing Scope ID or an Enrollment Billing Scope ID.
+     */
+    billingScopeId?: pulumi.Input<string>;
+    /**
+     * The ID of the Subscription. Changing this forces a new Subscription to be created.
+     */
+    subscriptionId?: pulumi.Input<string>;
+    /**
+     * The Name of the Subscription. This is the Display Name in the portal.
+     */
+    subscriptionName?: pulumi.Input<string>;
+    /**
+     * A mapping of tags to assign to the Subscription.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * The ID of the Tenant to which the subscription belongs.
+     */
+    tenantId?: pulumi.Input<string>;
+    /**
+     * The workload type of the Subscription.  Possible values are `Production` (default) and `DevTest`. Changing this forces a new Subscription to be created.
+     */
+    workload?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a Subscription resource.
+ */
+export interface SubscriptionArgs {
+    /**
+     * The Alias name for the subscription. This provider will generate a new GUID if this is not supplied. Changing this forces a new Subscription to be created.
+     */
+    alias?: pulumi.Input<string>;
+    /**
+     * The Azure Billing Scope ID. Can be a Microsoft Customer Account Billing Scope ID, a Microsoft Partner Account Billing Scope ID or an Enrollment Billing Scope ID.
+     */
+    billingScopeId?: pulumi.Input<string>;
+    /**
+     * The ID of the Subscription. Changing this forces a new Subscription to be created.
+     */
+    subscriptionId?: pulumi.Input<string>;
+    /**
+     * The Name of the Subscription. This is the Display Name in the portal.
+     */
+    subscriptionName: pulumi.Input<string>;
+    /**
+     * A mapping of tags to assign to the Subscription.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * The workload type of the Subscription.  Possible values are `Production` (default) and `DevTest`. Changing this forces a new Subscription to be created.
+     */
+    workload?: pulumi.Input<string>;
+}

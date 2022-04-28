@@ -1,0 +1,191 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Manages a Key Vault Managed Hardware Security Module.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const current = azure.core.getClientConfig({});
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleManagedHardwareSecurityModule = new azure.keyvault.ManagedHardwareSecurityModule("exampleManagedHardwareSecurityModule", {
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     location: exampleResourceGroup.location,
+ *     skuName: "Standard_B1",
+ *     purgeProtectionEnabled: false,
+ *     softDeleteRetentionDays: 90,
+ *     tenantId: current.then(current => current.tenantId),
+ *     adminObjectIds: [current.then(current => current.objectId)],
+ *     tags: {
+ *         Env: "Test",
+ *     },
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Key Vault Managed Hardware Security Module can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:keyvault/managedHardwareSecurityModule:ManagedHardwareSecurityModule example /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mygroup1/providers/Microsoft.KeyVault/managedHSMs/hsm1
+ * ```
+ */
+export declare class ManagedHardwareSecurityModule extends pulumi.CustomResource {
+    /**
+     * Get an existing ManagedHardwareSecurityModule resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: ManagedHardwareSecurityModuleState, opts?: pulumi.CustomResourceOptions): ManagedHardwareSecurityModule;
+    /**
+     * Returns true if the given object is an instance of ManagedHardwareSecurityModule.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is ManagedHardwareSecurityModule;
+    /**
+     * Specifies a list of administrators object IDs for the key vault Managed Hardware Security Module. Changing this forces a new resource to be created.
+     */
+    readonly adminObjectIds: pulumi.Output<string[]>;
+    /**
+     * The URI of the Key Vault Managed Hardware Security Module, used for performing operations on keys.
+     */
+    readonly hsmUri: pulumi.Output<string>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    readonly location: pulumi.Output<string>;
+    /**
+     * Specifies the name of the Key Vault Managed Hardware Security Module. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * Is Purge Protection enabled for this Key Vault Managed Hardware Security Module? Defaults to `false`. Changing this forces a new resource to be created.
+     */
+    readonly purgeProtectionEnabled: pulumi.Output<boolean | undefined>;
+    /**
+     * The name of the resource group in which to create the Key Vault Managed Hardware Security Module. Changing this forces a new resource to be created.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * The Name of the SKU used for this Key Vault Managed Hardware Security Module. Possible value is `Standard_B1`. Changing this forces a new resource to be created.
+     */
+    readonly skuName: pulumi.Output<string>;
+    /**
+     * The number of days that items should be retained for once soft-deleted. This value can be between `7` and `90` days. Defaults to `90`. Changing this forces a new resource to be created.
+     */
+    readonly softDeleteRetentionDays: pulumi.Output<number | undefined>;
+    /**
+     * A mapping of tags to assign to the resource. Changing this forces a new resource to be created.
+     */
+    readonly tags: pulumi.Output<{
+        [key: string]: string;
+    } | undefined>;
+    /**
+     * The Azure Active Directory Tenant ID that should be used for authenticating requests to the key vault Managed Hardware Security Module. Changing this forces a new resource to be created.
+     */
+    readonly tenantId: pulumi.Output<string>;
+    /**
+     * Create a ManagedHardwareSecurityModule resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: ManagedHardwareSecurityModuleArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering ManagedHardwareSecurityModule resources.
+ */
+export interface ManagedHardwareSecurityModuleState {
+    /**
+     * Specifies a list of administrators object IDs for the key vault Managed Hardware Security Module. Changing this forces a new resource to be created.
+     */
+    adminObjectIds?: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * The URI of the Key Vault Managed Hardware Security Module, used for performing operations on keys.
+     */
+    hsmUri?: pulumi.Input<string>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Key Vault Managed Hardware Security Module. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * Is Purge Protection enabled for this Key Vault Managed Hardware Security Module? Defaults to `false`. Changing this forces a new resource to be created.
+     */
+    purgeProtectionEnabled?: pulumi.Input<boolean>;
+    /**
+     * The name of the resource group in which to create the Key Vault Managed Hardware Security Module. Changing this forces a new resource to be created.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * The Name of the SKU used for this Key Vault Managed Hardware Security Module. Possible value is `Standard_B1`. Changing this forces a new resource to be created.
+     */
+    skuName?: pulumi.Input<string>;
+    /**
+     * The number of days that items should be retained for once soft-deleted. This value can be between `7` and `90` days. Defaults to `90`. Changing this forces a new resource to be created.
+     */
+    softDeleteRetentionDays?: pulumi.Input<number>;
+    /**
+     * A mapping of tags to assign to the resource. Changing this forces a new resource to be created.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * The Azure Active Directory Tenant ID that should be used for authenticating requests to the key vault Managed Hardware Security Module. Changing this forces a new resource to be created.
+     */
+    tenantId?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a ManagedHardwareSecurityModule resource.
+ */
+export interface ManagedHardwareSecurityModuleArgs {
+    /**
+     * Specifies a list of administrators object IDs for the key vault Managed Hardware Security Module. Changing this forces a new resource to be created.
+     */
+    adminObjectIds: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Key Vault Managed Hardware Security Module. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * Is Purge Protection enabled for this Key Vault Managed Hardware Security Module? Defaults to `false`. Changing this forces a new resource to be created.
+     */
+    purgeProtectionEnabled?: pulumi.Input<boolean>;
+    /**
+     * The name of the resource group in which to create the Key Vault Managed Hardware Security Module. Changing this forces a new resource to be created.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * The Name of the SKU used for this Key Vault Managed Hardware Security Module. Possible value is `Standard_B1`. Changing this forces a new resource to be created.
+     */
+    skuName: pulumi.Input<string>;
+    /**
+     * The number of days that items should be retained for once soft-deleted. This value can be between `7` and `90` days. Defaults to `90`. Changing this forces a new resource to be created.
+     */
+    softDeleteRetentionDays?: pulumi.Input<number>;
+    /**
+     * A mapping of tags to assign to the resource. Changing this forces a new resource to be created.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * The Azure Active Directory Tenant ID that should be used for authenticating requests to the key vault Managed Hardware Security Module. Changing this forces a new resource to be created.
+     */
+    tenantId: pulumi.Input<string>;
+}

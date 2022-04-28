@@ -1,0 +1,150 @@
+import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
+/**
+ * Manages a Recurrence Trigger within a Logic App Workflow
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleWorkflow = new azure.logicapps.Workflow("exampleWorkflow", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ * });
+ * const exampleTriggerRecurrence = new azure.logicapps.TriggerRecurrence("exampleTriggerRecurrence", {
+ *     logicAppId: exampleWorkflow.id,
+ *     frequency: "Day",
+ *     interval: 1,
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Logic App Recurrence Triggers can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:logicapps/triggerRecurrence:TriggerRecurrence daily /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mygroup1/providers/Microsoft.Logic/workflows/workflow1/triggers/daily
+ * ```
+ */
+export declare class TriggerRecurrence extends pulumi.CustomResource {
+    /**
+     * Get an existing TriggerRecurrence resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: TriggerRecurrenceState, opts?: pulumi.CustomResourceOptions): TriggerRecurrence;
+    /**
+     * Returns true if the given object is an instance of TriggerRecurrence.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is TriggerRecurrence;
+    /**
+     * Specifies the Frequency at which this Trigger should be run. Possible values include `Month`, `Week`, `Day`, `Hour`, `Minute` and `Second`.
+     */
+    readonly frequency: pulumi.Output<string>;
+    /**
+     * Specifies interval used for the Frequency, for example a value of `4` for `interval` and `hour` for `frequency` would run the Trigger every 4 hours.
+     */
+    readonly interval: pulumi.Output<number>;
+    /**
+     * Specifies the ID of the Logic App Workflow. Changing this forces a new resource to be created.
+     */
+    readonly logicAppId: pulumi.Output<string>;
+    /**
+     * Specifies the name of the Recurrence Triggers to be created within the Logic App Workflow. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * A `schedule` block as specified below.
+     */
+    readonly schedule: pulumi.Output<outputs.logicapps.TriggerRecurrenceSchedule | undefined>;
+    /**
+     * Specifies the start date and time for this trigger in RFC3339 format: `2000-01-02T03:04:05Z`.
+     */
+    readonly startTime: pulumi.Output<string | undefined>;
+    /**
+     * Specifies the time zone for this trigger.  Supported time zone options are listed [here](https://support.microsoft.com/en-us/help/973627/microsoft-time-zone-index-values)
+     */
+    readonly timeZone: pulumi.Output<string>;
+    /**
+     * Create a TriggerRecurrence resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: TriggerRecurrenceArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering TriggerRecurrence resources.
+ */
+export interface TriggerRecurrenceState {
+    /**
+     * Specifies the Frequency at which this Trigger should be run. Possible values include `Month`, `Week`, `Day`, `Hour`, `Minute` and `Second`.
+     */
+    frequency?: pulumi.Input<string>;
+    /**
+     * Specifies interval used for the Frequency, for example a value of `4` for `interval` and `hour` for `frequency` would run the Trigger every 4 hours.
+     */
+    interval?: pulumi.Input<number>;
+    /**
+     * Specifies the ID of the Logic App Workflow. Changing this forces a new resource to be created.
+     */
+    logicAppId?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Recurrence Triggers to be created within the Logic App Workflow. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * A `schedule` block as specified below.
+     */
+    schedule?: pulumi.Input<inputs.logicapps.TriggerRecurrenceSchedule>;
+    /**
+     * Specifies the start date and time for this trigger in RFC3339 format: `2000-01-02T03:04:05Z`.
+     */
+    startTime?: pulumi.Input<string>;
+    /**
+     * Specifies the time zone for this trigger.  Supported time zone options are listed [here](https://support.microsoft.com/en-us/help/973627/microsoft-time-zone-index-values)
+     */
+    timeZone?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a TriggerRecurrence resource.
+ */
+export interface TriggerRecurrenceArgs {
+    /**
+     * Specifies the Frequency at which this Trigger should be run. Possible values include `Month`, `Week`, `Day`, `Hour`, `Minute` and `Second`.
+     */
+    frequency: pulumi.Input<string>;
+    /**
+     * Specifies interval used for the Frequency, for example a value of `4` for `interval` and `hour` for `frequency` would run the Trigger every 4 hours.
+     */
+    interval: pulumi.Input<number>;
+    /**
+     * Specifies the ID of the Logic App Workflow. Changing this forces a new resource to be created.
+     */
+    logicAppId: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Recurrence Triggers to be created within the Logic App Workflow. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * A `schedule` block as specified below.
+     */
+    schedule?: pulumi.Input<inputs.logicapps.TriggerRecurrenceSchedule>;
+    /**
+     * Specifies the start date and time for this trigger in RFC3339 format: `2000-01-02T03:04:05Z`.
+     */
+    startTime?: pulumi.Input<string>;
+    /**
+     * Specifies the time zone for this trigger.  Supported time zone options are listed [here](https://support.microsoft.com/en-us/help/973627/microsoft-time-zone-index-values)
+     */
+    timeZone?: pulumi.Input<string>;
+}

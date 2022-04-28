@@ -1,0 +1,125 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.sql.getSqlManagedInstance({
+ *     name: "example_mi",
+ *     resourceGroupName: "example-resources",
+ * });
+ * export const sqlInstanceId = example.then(example => example.id);
+ * ```
+ * ## Attribues Reference
+ *
+ * * `id` - The SQL Managed Instance ID.
+ *
+ * * `fqdn` - The fully qualified domain name of the Azure Managed SQL Instance.
+ *
+ * * `location` - Location where the resource exists.
+ *
+ * * `skuName` - SKU Name for the SQL Managed Instance.
+ *
+ * * `vcores` - Number of cores assigned to your instance.
+ *
+ * * `storageSizeInGb` - Maximum storage space for your instance.
+ *
+ * * `licenseType` - Type of license the Managed Instance uses.
+ *
+ * * `administratorLogin` - The administrator login name for the new server.
+ *
+ * * `subnetId` - The subnet resource id that the SQL Managed Instance is associated with.
+ *
+ * * `collation` - Specifies how the SQL Managed Instance is collated.
+ *
+ * * `publicDataEndpointEnabled` - Is the public data endpoint enabled?
+ *
+ * * `minimumTlsVersion` - The Minimum TLS Version.
+ *
+ * * `proxyOverride` - How the SQL Managed Instance is accessed.
+ *
+ * * `timezoneId` - The TimeZone ID that the SQL Managed Instance is operating in.
+ *
+ * * `dnsZonePartnerId` - The ID of the Managed Instance which is sharing the DNS zone.
+ *
+ * * `identity` - An `identity` block as defined below.
+ *
+ * * `storageAccountType` - Storage account type used to store backups for this SQL Managed Instance.
+ *
+ * * `tags` - A mapping of tags assigned to the resource.
+ *
+ * ***
+ *
+ * The `identity` block exports the following:
+ *
+ * * `principalId` - The Principal ID for the Service Principal associated with the Identity of this SQL Managed Instance.
+ *
+ * * `tenantId` - The Tenant ID for the Service Principal associated with the Identity of this SQL Managed Instance.
+ */
+export declare function getSqlManagedInstance(args: GetSqlManagedInstanceArgs, opts?: pulumi.InvokeOptions): Promise<GetSqlManagedInstanceResult>;
+/**
+ * A collection of arguments for invoking getSqlManagedInstance.
+ */
+export interface GetSqlManagedInstanceArgs {
+    /**
+     * The name of the SQL Managed Instance.
+     */
+    name: string;
+    /**
+     * The name of the Resource Group in which the SQL Managed Instance exists.
+     */
+    resourceGroupName: string;
+    tags?: {
+        [key: string]: string;
+    };
+}
+/**
+ * A collection of values returned by getSqlManagedInstance.
+ */
+export interface GetSqlManagedInstanceResult {
+    readonly administratorLogin: string;
+    readonly collation: string;
+    readonly dnsZonePartnerId: string;
+    readonly fqdn: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    readonly identities: outputs.sql.GetSqlManagedInstanceIdentity[];
+    readonly licenseType: string;
+    readonly location: string;
+    readonly minimumTlsVersion: string;
+    readonly name: string;
+    readonly proxyOverride: string;
+    readonly publicDataEndpointEnabled: boolean;
+    readonly resourceGroupName: string;
+    readonly skuName: string;
+    readonly storageAccountType: string;
+    readonly storageSizeInGb: number;
+    readonly subnetId: string;
+    readonly tags?: {
+        [key: string]: string;
+    };
+    readonly timezoneId: string;
+    readonly vcores: number;
+}
+export declare function getSqlManagedInstanceOutput(args: GetSqlManagedInstanceOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetSqlManagedInstanceResult>;
+/**
+ * A collection of arguments for invoking getSqlManagedInstance.
+ */
+export interface GetSqlManagedInstanceOutputArgs {
+    /**
+     * The name of the SQL Managed Instance.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group in which the SQL Managed Instance exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+}

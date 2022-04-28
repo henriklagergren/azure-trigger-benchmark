@@ -1,0 +1,82 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Private DNS Zone.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.privatedns.getDnsZone({
+ *     name: "contoso.internal",
+ *     resourceGroupName: "contoso-dns",
+ * });
+ * export const privateDnsZoneId = example.then(example => example.id);
+ * ```
+ */
+export declare function getDnsZone(args: GetDnsZoneArgs, opts?: pulumi.InvokeOptions): Promise<GetDnsZoneResult>;
+/**
+ * A collection of arguments for invoking getDnsZone.
+ */
+export interface GetDnsZoneArgs {
+    /**
+     * The name of the Private DNS Zone.
+     */
+    name: string;
+    /**
+     * The Name of the Resource Group where the Private DNS Zone exists.
+     * If the Name of the Resource Group is not provided, the first Private DNS Zone from the list of Private
+     * DNS Zones in your subscription that matches `name` will be returned.
+     */
+    resourceGroupName?: string;
+}
+/**
+ * A collection of values returned by getDnsZone.
+ */
+export interface GetDnsZoneResult {
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * Maximum number of recordsets that can be created in this Private Zone.
+     */
+    readonly maxNumberOfRecordSets: number;
+    /**
+     * Maximum number of Virtual Networks that can be linked to this Private Zone.
+     */
+    readonly maxNumberOfVirtualNetworkLinks: number;
+    /**
+     * Maximum number of Virtual Networks that can be linked to this Private Zone with registration enabled.
+     */
+    readonly maxNumberOfVirtualNetworkLinksWithRegistration: number;
+    readonly name: string;
+    /**
+     * The number of recordsets currently in the zone.
+     */
+    readonly numberOfRecordSets: number;
+    readonly resourceGroupName: string;
+    /**
+     * A mapping of tags for the zone.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+}
+export declare function getDnsZoneOutput(args: GetDnsZoneOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetDnsZoneResult>;
+/**
+ * A collection of arguments for invoking getDnsZone.
+ */
+export interface GetDnsZoneOutputArgs {
+    /**
+     * The name of the Private DNS Zone.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The Name of the Resource Group where the Private DNS Zone exists.
+     * If the Name of the Resource Group is not provided, the first Private DNS Zone from the list of Private
+     * DNS Zones in your subscription that matches `name` will be returned.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+}

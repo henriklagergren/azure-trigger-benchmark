@@ -1,0 +1,77 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing Key Vault Certificate Issuer.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleKeyVault = azure.keyvault.getKeyVault({
+ *     name: "mykeyvault",
+ *     resourceGroupName: "some-resource-group",
+ * });
+ * const exampleCertificateIssuer = exampleKeyVault.then(exampleKeyVault => azure.keyvault.getCertificateIssuer({
+ *     name: "existing",
+ *     keyVaultId: exampleKeyVault.id,
+ * }));
+ * export const id = exampleCertificateIssuer.then(exampleCertificateIssuer => exampleCertificateIssuer.id);
+ * ```
+ */
+export declare function getCertificateIssuer(args: GetCertificateIssuerArgs, opts?: pulumi.InvokeOptions): Promise<GetCertificateIssuerResult>;
+/**
+ * A collection of arguments for invoking getCertificateIssuer.
+ */
+export interface GetCertificateIssuerArgs {
+    /**
+     * The ID of the Key Vault in which to locate the Certificate Issuer.
+     */
+    keyVaultId: string;
+    /**
+     * The name of the Key Vault Certificate Issuer.
+     */
+    name: string;
+}
+/**
+ * A collection of values returned by getCertificateIssuer.
+ */
+export interface GetCertificateIssuerResult {
+    /**
+     * The account number with the third-party Certificate Issuer.
+     */
+    readonly accountId: string;
+    /**
+     * A list of `admin` blocks as defined below.
+     */
+    readonly admins: outputs.keyvault.GetCertificateIssuerAdmin[];
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    readonly keyVaultId: string;
+    readonly name: string;
+    /**
+     * The organization ID with the third-party Certificate Issuer.
+     */
+    readonly orgId: string;
+    /**
+     * The name of the third-party Certificate Issuer.
+     */
+    readonly providerName: string;
+}
+export declare function getCertificateIssuerOutput(args: GetCertificateIssuerOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetCertificateIssuerResult>;
+/**
+ * A collection of arguments for invoking getCertificateIssuer.
+ */
+export interface GetCertificateIssuerOutputArgs {
+    /**
+     * The ID of the Key Vault in which to locate the Certificate Issuer.
+     */
+    keyVaultId: pulumi.Input<string>;
+    /**
+     * The name of the Key Vault Certificate Issuer.
+     */
+    name: pulumi.Input<string>;
+}

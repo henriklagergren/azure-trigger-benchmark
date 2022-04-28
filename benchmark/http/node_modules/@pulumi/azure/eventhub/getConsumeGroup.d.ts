@@ -1,0 +1,79 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Event Hubs Consumer Group within an Event Hub.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const test = azure.eventhub.getConsumeGroup({
+ *     name: azurerm_eventhub_consumer_group.test.name,
+ *     namespaceName: azurerm_eventhub_namespace.test.name,
+ *     eventhubName: azurerm_eventhub.test.name,
+ *     resourceGroupName: azurerm_resource_group.test.name,
+ * });
+ * ```
+ */
+export declare function getConsumeGroup(args: GetConsumeGroupArgs, opts?: pulumi.InvokeOptions): Promise<GetConsumeGroupResult>;
+/**
+ * A collection of arguments for invoking getConsumeGroup.
+ */
+export interface GetConsumeGroupArgs {
+    /**
+     * Specifies the name of the EventHub.
+     */
+    eventhubName: string;
+    /**
+     * Specifies the name of the EventHub Consumer Group resource.
+     */
+    name: string;
+    /**
+     * Specifies the name of the grandparent EventHub Namespace.
+     */
+    namespaceName: string;
+    /**
+     * The name of the resource group in which the EventHub Consumer Group's grandparent Namespace exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getConsumeGroup.
+ */
+export interface GetConsumeGroupResult {
+    readonly eventhubName: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    readonly name: string;
+    readonly namespaceName: string;
+    readonly resourceGroupName: string;
+    /**
+     * Specifies the user metadata.
+     */
+    readonly userMetadata: string;
+}
+export declare function getConsumeGroupOutput(args: GetConsumeGroupOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetConsumeGroupResult>;
+/**
+ * A collection of arguments for invoking getConsumeGroup.
+ */
+export interface GetConsumeGroupOutputArgs {
+    /**
+     * Specifies the name of the EventHub.
+     */
+    eventhubName: pulumi.Input<string>;
+    /**
+     * Specifies the name of the EventHub Consumer Group resource.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * Specifies the name of the grandparent EventHub Namespace.
+     */
+    namespaceName: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which the EventHub Consumer Group's grandparent Namespace exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

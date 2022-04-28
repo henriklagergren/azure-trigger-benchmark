@@ -1,0 +1,189 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Manages a Key Vault Secret.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const current = azure.core.getClientConfig({});
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleKeyVault = new azure.keyvault.KeyVault("exampleKeyVault", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     tenantId: current.then(current => current.tenantId),
+ *     skuName: "premium",
+ *     softDeleteRetentionDays: 7,
+ *     accessPolicies: [{
+ *         tenantId: current.then(current => current.tenantId),
+ *         objectId: current.then(current => current.objectId),
+ *         keyPermissions: [
+ *             "create",
+ *             "get",
+ *         ],
+ *         secretPermissions: [
+ *             "set",
+ *             "get",
+ *             "delete",
+ *             "purge",
+ *             "recover",
+ *         ],
+ *     }],
+ * });
+ * const exampleSecret = new azure.keyvault.Secret("exampleSecret", {
+ *     value: "szechuan",
+ *     keyVaultId: exampleKeyVault.id,
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Key Vault Secrets which are Enabled can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:keyvault/secret:Secret example "https://example-keyvault.vault.azure.net/secrets/example/fdf067c93bbb4b22bff4d8b7a9a56217"
+ * ```
+ */
+export declare class Secret extends pulumi.CustomResource {
+    /**
+     * Get an existing Secret resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: SecretState, opts?: pulumi.CustomResourceOptions): Secret;
+    /**
+     * Returns true if the given object is an instance of Secret.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is Secret;
+    /**
+     * Specifies the content type for the Key Vault Secret.
+     */
+    readonly contentType: pulumi.Output<string | undefined>;
+    /**
+     * Expiration UTC datetime (Y-m-d'T'H:M:S'Z').
+     */
+    readonly expirationDate: pulumi.Output<string | undefined>;
+    /**
+     * The ID of the Key Vault where the Secret should be created.
+     */
+    readonly keyVaultId: pulumi.Output<string>;
+    /**
+     * Specifies the name of the Key Vault Secret. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * Key not usable before the provided UTC datetime (Y-m-d'T'H:M:S'Z').
+     */
+    readonly notBeforeDate: pulumi.Output<string | undefined>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    readonly tags: pulumi.Output<{
+        [key: string]: string;
+    } | undefined>;
+    /**
+     * Specifies the value of the Key Vault Secret.
+     */
+    readonly value: pulumi.Output<string>;
+    /**
+     * The current version of the Key Vault Secret.
+     */
+    readonly version: pulumi.Output<string>;
+    /**
+     * The Base ID of the Key Vault Secret.
+     */
+    readonly versionlessId: pulumi.Output<string>;
+    /**
+     * Create a Secret resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: SecretArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering Secret resources.
+ */
+export interface SecretState {
+    /**
+     * Specifies the content type for the Key Vault Secret.
+     */
+    contentType?: pulumi.Input<string>;
+    /**
+     * Expiration UTC datetime (Y-m-d'T'H:M:S'Z').
+     */
+    expirationDate?: pulumi.Input<string>;
+    /**
+     * The ID of the Key Vault where the Secret should be created.
+     */
+    keyVaultId?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Key Vault Secret. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * Key not usable before the provided UTC datetime (Y-m-d'T'H:M:S'Z').
+     */
+    notBeforeDate?: pulumi.Input<string>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * Specifies the value of the Key Vault Secret.
+     */
+    value?: pulumi.Input<string>;
+    /**
+     * The current version of the Key Vault Secret.
+     */
+    version?: pulumi.Input<string>;
+    /**
+     * The Base ID of the Key Vault Secret.
+     */
+    versionlessId?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a Secret resource.
+ */
+export interface SecretArgs {
+    /**
+     * Specifies the content type for the Key Vault Secret.
+     */
+    contentType?: pulumi.Input<string>;
+    /**
+     * Expiration UTC datetime (Y-m-d'T'H:M:S'Z').
+     */
+    expirationDate?: pulumi.Input<string>;
+    /**
+     * The ID of the Key Vault where the Secret should be created.
+     */
+    keyVaultId: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Key Vault Secret. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * Key not usable before the provided UTC datetime (Y-m-d'T'H:M:S'Z').
+     */
+    notBeforeDate?: pulumi.Input<string>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * Specifies the value of the Key Vault Secret.
+     */
+    value: pulumi.Input<string>;
+}

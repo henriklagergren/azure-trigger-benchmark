@@ -1,0 +1,135 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Manages a Firewall Rule for a MariaDB Server
+ *
+ * ## Example Usage
+ * ### Single IP Address)
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = new azure.mariadb.FirewallRule("example", {
+ *     endIpAddress: "40.112.8.12",
+ *     resourceGroupName: "test-rg",
+ *     serverName: "test-server",
+ *     startIpAddress: "40.112.8.12",
+ * });
+ * ```
+ * ### IP Range)
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = new azure.mariadb.FirewallRule("example", {
+ *     endIpAddress: "40.112.255.255",
+ *     resourceGroupName: "test-rg",
+ *     serverName: "test-server",
+ *     startIpAddress: "40.112.0.0",
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * MariaDB Firewall rules can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:mariadb/firewallRule:FirewallRule rule1 /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mygroup1/providers/Microsoft.DBforMariaDB/servers/server1/firewallRules/rule1
+ * ```
+ */
+export declare class FirewallRule extends pulumi.CustomResource {
+    /**
+     * Get an existing FirewallRule resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: FirewallRuleState, opts?: pulumi.CustomResourceOptions): FirewallRule;
+    /**
+     * Returns true if the given object is an instance of FirewallRule.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is FirewallRule;
+    /**
+     * Specifies the End IP Address associated with this Firewall Rule. Changing this forces a new resource to be created.
+     */
+    readonly endIpAddress: pulumi.Output<string>;
+    /**
+     * Specifies the name of the MariaDB Firewall Rule. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * The name of the resource group in which the MariaDB Server exists. Changing this forces a new resource to be created.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * Specifies the name of the MariaDB Server. Changing this forces a new resource to be created.
+     */
+    readonly serverName: pulumi.Output<string>;
+    /**
+     * Specifies the Start IP Address associated with this Firewall Rule. Changing this forces a new resource to be created.
+     */
+    readonly startIpAddress: pulumi.Output<string>;
+    /**
+     * Create a FirewallRule resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: FirewallRuleArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering FirewallRule resources.
+ */
+export interface FirewallRuleState {
+    /**
+     * Specifies the End IP Address associated with this Firewall Rule. Changing this forces a new resource to be created.
+     */
+    endIpAddress?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the MariaDB Firewall Rule. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which the MariaDB Server exists. Changing this forces a new resource to be created.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the MariaDB Server. Changing this forces a new resource to be created.
+     */
+    serverName?: pulumi.Input<string>;
+    /**
+     * Specifies the Start IP Address associated with this Firewall Rule. Changing this forces a new resource to be created.
+     */
+    startIpAddress?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a FirewallRule resource.
+ */
+export interface FirewallRuleArgs {
+    /**
+     * Specifies the End IP Address associated with this Firewall Rule. Changing this forces a new resource to be created.
+     */
+    endIpAddress: pulumi.Input<string>;
+    /**
+     * Specifies the name of the MariaDB Firewall Rule. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which the MariaDB Server exists. Changing this forces a new resource to be created.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * Specifies the name of the MariaDB Server. Changing this forces a new resource to be created.
+     */
+    serverName: pulumi.Input<string>;
+    /**
+     * Specifies the Start IP Address associated with this Firewall Rule. Changing this forces a new resource to be created.
+     */
+    startIpAddress: pulumi.Input<string>;
+}

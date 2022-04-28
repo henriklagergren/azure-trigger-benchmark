@@ -1,0 +1,114 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Load Balancer Rule.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleLB = azure.lb.getLB({
+ *     name: "example-lb",
+ *     resourceGroupName: "example-resources",
+ * });
+ * const exampleLBRule = exampleLB.then(exampleLB => azure.lb.getLBRule({
+ *     name: "first",
+ *     resourceGroupName: "example-resources",
+ *     loadbalancerId: exampleLB.id,
+ * }));
+ * export const lbRuleId = exampleLBRule.then(exampleLBRule => exampleLBRule.id);
+ * ```
+ */
+export declare function getLBRule(args: GetLBRuleArgs, opts?: pulumi.InvokeOptions): Promise<GetLBRuleResult>;
+/**
+ * A collection of arguments for invoking getLBRule.
+ */
+export interface GetLBRuleArgs {
+    /**
+     * The ID of the Load Balancer Rule.
+     */
+    loadbalancerId: string;
+    /**
+     * The name of this Load Balancer Rule.
+     */
+    name: string;
+    /**
+     * The name of the Resource Group where the Load Balancer Rule exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getLBRule.
+ */
+export interface GetLBRuleResult {
+    /**
+     * A reference to a Backend Address Pool over which this Load Balancing Rule operates.
+     */
+    readonly backendAddressPoolId: string;
+    /**
+     * The port used for internal connections on the endpoint.
+     */
+    readonly backendPort: number;
+    /**
+     * If outbound SNAT is enabled for this Load Balancer Rule.
+     */
+    readonly disableOutboundSnat: boolean;
+    /**
+     * If Floating IPs are enabled for this Load Balancer Rule
+     */
+    readonly enableFloatingIp: boolean;
+    /**
+     * If TCP Reset is enabled for this Load Balancer Rule.
+     */
+    readonly enableTcpReset: boolean;
+    /**
+     * The name of the frontend IP configuration to which the rule is associated.
+     */
+    readonly frontendIpConfigurationName: string;
+    /**
+     * The port for the external endpoint.
+     */
+    readonly frontendPort: number;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * Specifies the idle timeout in minutes for TCP connections.
+     */
+    readonly idleTimeoutInMinutes: number;
+    /**
+     * Specifies the load balancing distribution type used by the Load Balancer.
+     */
+    readonly loadDistribution: string;
+    readonly loadbalancerId: string;
+    readonly name: string;
+    /**
+     * A reference to a Probe used by this Load Balancing Rule.
+     */
+    readonly probeId: string;
+    /**
+     * The transport protocol for the external endpoint.
+     */
+    readonly protocol: string;
+    readonly resourceGroupName: string;
+}
+export declare function getLBRuleOutput(args: GetLBRuleOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetLBRuleResult>;
+/**
+ * A collection of arguments for invoking getLBRule.
+ */
+export interface GetLBRuleOutputArgs {
+    /**
+     * The ID of the Load Balancer Rule.
+     */
+    loadbalancerId: pulumi.Input<string>;
+    /**
+     * The name of this Load Balancer Rule.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group where the Load Balancer Rule exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

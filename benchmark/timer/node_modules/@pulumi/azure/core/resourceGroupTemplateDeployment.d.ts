@@ -1,0 +1,159 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Manages a Resource Group Template Deployment.
+ *
+ * > **Note:** This resource will automatically attempt to delete resources deployed by the ARM Template when it is deleted. This behavior can be disabled in the provider `features` block by setting the `deleteNestedItemsDuringDeletion` field to `false` within the `templateDeployment` block.
+ *
+ * ## Import
+ *
+ * Resource Group Template Deployments can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:core/resourceGroupTemplateDeployment:ResourceGroupTemplateDeployment example /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/group1/providers/Microsoft.Resources/deployments/template1
+ * ```
+ */
+export declare class ResourceGroupTemplateDeployment extends pulumi.CustomResource {
+    /**
+     * Get an existing ResourceGroupTemplateDeployment resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: ResourceGroupTemplateDeploymentState, opts?: pulumi.CustomResourceOptions): ResourceGroupTemplateDeployment;
+    /**
+     * Returns true if the given object is an instance of ResourceGroupTemplateDeployment.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is ResourceGroupTemplateDeployment;
+    /**
+     * The Debug Level which should be used for this Resource Group Template Deployment. Possible values are `none`, `requestContent`, `responseContent` and `requestContent, responseContent`.
+     */
+    readonly debugLevel: pulumi.Output<string | undefined>;
+    /**
+     * The Deployment Mode for this Resource Group Template Deployment. Possible values are `Complete` (where resources in the Resource Group not specified in the ARM Template will be destroyed) and `Incremental` (where resources are additive only).
+     */
+    readonly deploymentMode: pulumi.Output<string>;
+    /**
+     * The name which should be used for this Resource Group Template Deployment. Changing this forces a new Resource Group Template Deployment to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * The JSON Content of the Outputs of the ARM Template Deployment.
+     */
+    readonly outputContent: pulumi.Output<string>;
+    /**
+     * The contents of the ARM Template parameters file - containing a JSON list of parameters.
+     */
+    readonly parametersContent: pulumi.Output<string>;
+    /**
+     * The name of the Resource Group where the Resource Group Template Deployment should exist. Changing this forces a new Resource Group Template Deployment to be created.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * A mapping of tags which should be assigned to the Resource Group Template Deployment.
+     */
+    readonly tags: pulumi.Output<{
+        [key: string]: string;
+    } | undefined>;
+    /**
+     * The contents of the ARM Template which should be deployed into this Resource Group. Cannot be specified with `templateSpecVersionId`.
+     */
+    readonly templateContent: pulumi.Output<string>;
+    /**
+     * The ID of the Template Spec Version to deploy. Cannot be specified with `templateContent`.
+     */
+    readonly templateSpecVersionId: pulumi.Output<string | undefined>;
+    /**
+     * Create a ResourceGroupTemplateDeployment resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: ResourceGroupTemplateDeploymentArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering ResourceGroupTemplateDeployment resources.
+ */
+export interface ResourceGroupTemplateDeploymentState {
+    /**
+     * The Debug Level which should be used for this Resource Group Template Deployment. Possible values are `none`, `requestContent`, `responseContent` and `requestContent, responseContent`.
+     */
+    debugLevel?: pulumi.Input<string>;
+    /**
+     * The Deployment Mode for this Resource Group Template Deployment. Possible values are `Complete` (where resources in the Resource Group not specified in the ARM Template will be destroyed) and `Incremental` (where resources are additive only).
+     */
+    deploymentMode?: pulumi.Input<string>;
+    /**
+     * The name which should be used for this Resource Group Template Deployment. Changing this forces a new Resource Group Template Deployment to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The JSON Content of the Outputs of the ARM Template Deployment.
+     */
+    outputContent?: pulumi.Input<string>;
+    /**
+     * The contents of the ARM Template parameters file - containing a JSON list of parameters.
+     */
+    parametersContent?: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group where the Resource Group Template Deployment should exist. Changing this forces a new Resource Group Template Deployment to be created.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * A mapping of tags which should be assigned to the Resource Group Template Deployment.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * The contents of the ARM Template which should be deployed into this Resource Group. Cannot be specified with `templateSpecVersionId`.
+     */
+    templateContent?: pulumi.Input<string>;
+    /**
+     * The ID of the Template Spec Version to deploy. Cannot be specified with `templateContent`.
+     */
+    templateSpecVersionId?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a ResourceGroupTemplateDeployment resource.
+ */
+export interface ResourceGroupTemplateDeploymentArgs {
+    /**
+     * The Debug Level which should be used for this Resource Group Template Deployment. Possible values are `none`, `requestContent`, `responseContent` and `requestContent, responseContent`.
+     */
+    debugLevel?: pulumi.Input<string>;
+    /**
+     * The Deployment Mode for this Resource Group Template Deployment. Possible values are `Complete` (where resources in the Resource Group not specified in the ARM Template will be destroyed) and `Incremental` (where resources are additive only).
+     */
+    deploymentMode: pulumi.Input<string>;
+    /**
+     * The name which should be used for this Resource Group Template Deployment. Changing this forces a new Resource Group Template Deployment to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The contents of the ARM Template parameters file - containing a JSON list of parameters.
+     */
+    parametersContent?: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group where the Resource Group Template Deployment should exist. Changing this forces a new Resource Group Template Deployment to be created.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * A mapping of tags which should be assigned to the Resource Group Template Deployment.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * The contents of the ARM Template which should be deployed into this Resource Group. Cannot be specified with `templateSpecVersionId`.
+     */
+    templateContent?: pulumi.Input<string>;
+    /**
+     * The ID of the Template Spec Version to deploy. Cannot be specified with `templateContent`.
+     */
+    templateSpecVersionId?: pulumi.Input<string>;
+}

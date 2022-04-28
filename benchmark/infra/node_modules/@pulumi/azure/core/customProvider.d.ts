@@ -1,0 +1,155 @@
+import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
+/**
+ * Manages an Azure Custom Provider.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleCustomProvider = new azure.core.CustomProvider("exampleCustomProvider", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     resourceTypes: [{
+ *         name: "dEf1",
+ *         endpoint: "https://testendpoint.com/",
+ *     }],
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Custom Provider can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:core/customProvider:CustomProvider example /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example/providers/Microsoft.CustomProviders/resourceProviders/example
+ * ```
+ */
+export declare class CustomProvider extends pulumi.CustomResource {
+    /**
+     * Get an existing CustomProvider resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: CustomProviderState, opts?: pulumi.CustomResourceOptions): CustomProvider;
+    /**
+     * Returns true if the given object is an instance of CustomProvider.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is CustomProvider;
+    /**
+     * Any number of `action` block as defined below. One of `resourceType` or `action` must be specified.
+     */
+    readonly actions: pulumi.Output<outputs.core.CustomProviderAction[] | undefined>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    readonly location: pulumi.Output<string>;
+    /**
+     * Specifies the name of the Custom Provider. Changing this forces a new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * The name of the resource group in which to create the Custom Provider.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * Any number of `resourceType` block as defined below. One of `resourceType` or `action` must be specified.
+     */
+    readonly resourceTypes: pulumi.Output<outputs.core.CustomProviderResourceType[] | undefined>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    readonly tags: pulumi.Output<{
+        [key: string]: string;
+    } | undefined>;
+    /**
+     * Any number of `validation` block as defined below.
+     */
+    readonly validations: pulumi.Output<outputs.core.CustomProviderValidation[] | undefined>;
+    /**
+     * Create a CustomProvider resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: CustomProviderArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering CustomProvider resources.
+ */
+export interface CustomProviderState {
+    /**
+     * Any number of `action` block as defined below. One of `resourceType` or `action` must be specified.
+     */
+    actions?: pulumi.Input<pulumi.Input<inputs.core.CustomProviderAction>[]>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Custom Provider. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which to create the Custom Provider.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * Any number of `resourceType` block as defined below. One of `resourceType` or `action` must be specified.
+     */
+    resourceTypes?: pulumi.Input<pulumi.Input<inputs.core.CustomProviderResourceType>[]>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * Any number of `validation` block as defined below.
+     */
+    validations?: pulumi.Input<pulumi.Input<inputs.core.CustomProviderValidation>[]>;
+}
+/**
+ * The set of arguments for constructing a CustomProvider resource.
+ */
+export interface CustomProviderArgs {
+    /**
+     * Any number of `action` block as defined below. One of `resourceType` or `action` must be specified.
+     */
+    actions?: pulumi.Input<pulumi.Input<inputs.core.CustomProviderAction>[]>;
+    /**
+     * Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Custom Provider. Changing this forces a new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which to create the Custom Provider.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * Any number of `resourceType` block as defined below. One of `resourceType` or `action` must be specified.
+     */
+    resourceTypes?: pulumi.Input<pulumi.Input<inputs.core.CustomProviderResourceType>[]>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * Any number of `validation` block as defined below.
+     */
+    validations?: pulumi.Input<pulumi.Input<inputs.core.CustomProviderValidation>[]>;
+}

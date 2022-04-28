@@ -1,0 +1,79 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing Dev Test Lab Virtual Network.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.devtest.getVirtualNetwork({
+ *     name: "example-network",
+ *     labName: "examplelab",
+ *     resourceGroupName: "example-resource",
+ * });
+ * export const labSubnetName = example.then(example => example.allowedSubnets?[0]?.labSubnetName);
+ * ```
+ */
+export declare function getVirtualNetwork(args: GetVirtualNetworkArgs, opts?: pulumi.InvokeOptions): Promise<GetVirtualNetworkResult>;
+/**
+ * A collection of arguments for invoking getVirtualNetwork.
+ */
+export interface GetVirtualNetworkArgs {
+    /**
+     * Specifies the name of the Dev Test Lab.
+     */
+    labName: string;
+    /**
+     * Specifies the name of the Virtual Network.
+     */
+    name: string;
+    /**
+     * Specifies the name of the resource group that contains the Virtual Network.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getVirtualNetwork.
+ */
+export interface GetVirtualNetworkResult {
+    /**
+     * The list of subnets enabled for the virtual network as defined below.
+     */
+    readonly allowedSubnets: outputs.devtest.GetVirtualNetworkAllowedSubnet[];
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    readonly labName: string;
+    readonly name: string;
+    readonly resourceGroupName: string;
+    /**
+     * The list of permission overrides for the subnets as defined below.
+     */
+    readonly subnetOverrides: outputs.devtest.GetVirtualNetworkSubnetOverride[];
+    /**
+     * The unique immutable identifier of the virtual network.
+     */
+    readonly uniqueIdentifier: string;
+}
+export declare function getVirtualNetworkOutput(args: GetVirtualNetworkOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetVirtualNetworkResult>;
+/**
+ * A collection of arguments for invoking getVirtualNetwork.
+ */
+export interface GetVirtualNetworkOutputArgs {
+    /**
+     * Specifies the name of the Dev Test Lab.
+     */
+    labName: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Virtual Network.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * Specifies the name of the resource group that contains the Virtual Network.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

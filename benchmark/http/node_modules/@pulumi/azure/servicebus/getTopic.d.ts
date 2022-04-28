@@ -1,0 +1,109 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Service Bus Topic.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.servicebus.getTopic({
+ *     name: "existing",
+ *     resourceGroupName: "existing",
+ *     namespaceName: "existing",
+ * });
+ * export const id = example.then(example => example.id);
+ * ```
+ */
+export declare function getTopic(args: GetTopicArgs, opts?: pulumi.InvokeOptions): Promise<GetTopicResult>;
+/**
+ * A collection of arguments for invoking getTopic.
+ */
+export interface GetTopicArgs {
+    /**
+     * The name of this Service Bus Topic.
+     */
+    name: string;
+    namespaceId?: string;
+    /**
+     * The name of the Service Bus Namespace.
+     */
+    namespaceName?: string;
+    /**
+     * The name of the Resource Group where the Service Bus Topic exists.
+     */
+    resourceGroupName?: string;
+}
+/**
+ * A collection of values returned by getTopic.
+ */
+export interface GetTopicResult {
+    /**
+     * The ISO 8601 timespan duration of the idle interval after which the Topic is automatically deleted, minimum of 5 minutes.
+     */
+    readonly autoDeleteOnIdle: string;
+    /**
+     * The ISO 8601 timespan duration of TTL of messages sent to this topic if no TTL value is set on the message itself.
+     */
+    readonly defaultMessageTtl: string;
+    /**
+     * The ISO 8601 timespan duration during which duplicates can be detected.
+     */
+    readonly duplicateDetectionHistoryTimeWindow: string;
+    /**
+     * Boolean flag which controls if server-side batched operations are enabled.
+     */
+    readonly enableBatchedOperations: boolean;
+    /**
+     * Boolean flag which controls whether Express Entities are enabled. An express topic holds a message in memory temporarily before writing it to persistent storage.
+     */
+    readonly enableExpress: boolean;
+    /**
+     * Boolean flag which controls whether to enable the topic to be partitioned across multiple message brokers.
+     */
+    readonly enablePartitioning: boolean;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * Integer value which controls the size of memory allocated for the topic. For supported values see the "Queue/topic size" section of [this document](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-quotas).
+     */
+    readonly maxSizeInMegabytes: number;
+    readonly name: string;
+    readonly namespaceId?: string;
+    readonly namespaceName?: string;
+    /**
+     * Boolean flag which controls whether the Topic requires duplicate detection.
+     */
+    readonly requiresDuplicateDetection: boolean;
+    readonly resourceGroupName?: string;
+    /**
+     * The Status of the Service Bus Topic. Acceptable values are Active or Disabled.
+     */
+    readonly status: string;
+    /**
+     * Boolean flag which controls whether the Topic supports ordering.
+     */
+    readonly supportOrdering: boolean;
+}
+export declare function getTopicOutput(args: GetTopicOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetTopicResult>;
+/**
+ * A collection of arguments for invoking getTopic.
+ */
+export interface GetTopicOutputArgs {
+    /**
+     * The name of this Service Bus Topic.
+     */
+    name: pulumi.Input<string>;
+    namespaceId?: pulumi.Input<string>;
+    /**
+     * The name of the Service Bus Namespace.
+     */
+    namespaceName?: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group where the Service Bus Topic exists.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+}

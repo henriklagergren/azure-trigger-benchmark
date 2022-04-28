@@ -1,0 +1,87 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Manages the Data Access Settings for Azure Security Center.
+ *
+ * > **NOTE:** This resource requires the `Owner` permission on the Subscription.
+ *
+ * > **NOTE:** Deletion of this resource does not change or reset the data access settings
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = new azure.securitycenter.Setting("example", {
+ *     enabled: true,
+ *     settingName: "MCAS",
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * The setting can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:securitycenter/setting:Setting example /subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Security/settings/<setting_name>
+ * ```
+ */
+export declare class Setting extends pulumi.CustomResource {
+    /**
+     * Get an existing Setting resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: SettingState, opts?: pulumi.CustomResourceOptions): Setting;
+    /**
+     * Returns true if the given object is an instance of Setting.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is Setting;
+    /**
+     * Boolean flag to enable/disable data access.
+     */
+    readonly enabled: pulumi.Output<boolean>;
+    /**
+     * The setting to manage. Possible values are `MCAS` and `WDATP`.
+     */
+    readonly settingName: pulumi.Output<string>;
+    /**
+     * Create a Setting resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: SettingArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering Setting resources.
+ */
+export interface SettingState {
+    /**
+     * Boolean flag to enable/disable data access.
+     */
+    enabled?: pulumi.Input<boolean>;
+    /**
+     * The setting to manage. Possible values are `MCAS` and `WDATP`.
+     */
+    settingName?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a Setting resource.
+ */
+export interface SettingArgs {
+    /**
+     * Boolean flag to enable/disable data access.
+     */
+    enabled: pulumi.Input<boolean>;
+    /**
+     * The setting to manage. Possible values are `MCAS` and `WDATP`.
+     */
+    settingName: pulumi.Input<string>;
+}

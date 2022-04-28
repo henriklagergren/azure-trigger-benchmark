@@ -1,0 +1,125 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing MySQL Server.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.mysql.getServer({
+ *     name: "existingMySqlServer",
+ *     resourceGroupName: "existingResGroup",
+ * });
+ * export const id = example.then(example => example.id);
+ * ```
+ */
+export declare function getServer(args: GetServerArgs, opts?: pulumi.InvokeOptions): Promise<GetServerResult>;
+/**
+ * A collection of arguments for invoking getServer.
+ */
+export interface GetServerArgs {
+    /**
+     * Specifies the name of the MySQL Server.
+     */
+    name: string;
+    /**
+     * The name of the resource group for the MySQL Server.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getServer.
+ */
+export interface GetServerResult {
+    /**
+     * The Administrator Login for the MySQL Server.
+     */
+    readonly administratorLogin: string;
+    /**
+     * The auto grow setting for this MySQL Server.
+     */
+    readonly autoGrowEnabled: boolean;
+    /**
+     * The backup retention days for this MySQL server.
+     */
+    readonly backupRetentionDays: number;
+    /**
+     * The FQDN of the MySQL Server.
+     */
+    readonly fqdn: string;
+    /**
+     * The geo redundant backup setting for this MySQL Server.
+     */
+    readonly geoRedundantBackupEnabled: boolean;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * An `identity` block for this MySQL server as defined below.
+     */
+    readonly identities: outputs.mysql.GetServerIdentity[];
+    /**
+     * Whether or not infrastructure is encrypted for this MySQL Server.
+     */
+    readonly infrastructureEncryptionEnabled: boolean;
+    /**
+     * The Azure location where the resource exists.
+     */
+    readonly location: string;
+    readonly name: string;
+    /**
+     * Whether or not public network access is allowed for this MySQL Server.
+     */
+    readonly publicNetworkAccessEnabled: boolean;
+    readonly resourceGroupName: string;
+    readonly restorePointInTime: string;
+    /**
+     * The SKU Name for this MySQL Server.
+     */
+    readonly skuName: string;
+    /**
+     * Specifies if SSL should be enforced on connections for this MySQL Server.
+     */
+    readonly sslEnforcementEnabled: boolean;
+    /**
+     * The minimum TLS version to support for this MySQL Server.
+     */
+    readonly sslMinimalTlsVersionEnforced: string;
+    /**
+     * Max storage allowed for this MySQL Server.
+     */
+    readonly storageMb: number;
+    /**
+     * A mapping of tags to assign to the resource.
+     * ---
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+    /**
+     * Threat detection policy configuration, known in the API as Server Security Alerts Policy. The `threatDetectionPolicy` block exports fields documented below.
+     */
+    readonly threatDetectionPolicies: outputs.mysql.GetServerThreatDetectionPolicy[];
+    /**
+     * The version of this MySQL Server.
+     */
+    readonly version: string;
+}
+export declare function getServerOutput(args: GetServerOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetServerResult>;
+/**
+ * A collection of arguments for invoking getServer.
+ */
+export interface GetServerOutputArgs {
+    /**
+     * Specifies the name of the MySQL Server.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the resource group for the MySQL Server.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

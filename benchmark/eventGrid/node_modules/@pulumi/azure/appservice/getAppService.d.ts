@@ -1,0 +1,133 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing App Service.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.appservice.getAppService({
+ *     name: "search-app-service",
+ *     resourceGroupName: "search-service",
+ * });
+ * export const appServiceId = example.then(example => example.id);
+ * ```
+ */
+export declare function getAppService(args: GetAppServiceArgs, opts?: pulumi.InvokeOptions): Promise<GetAppServiceResult>;
+/**
+ * A collection of arguments for invoking getAppService.
+ */
+export interface GetAppServiceArgs {
+    /**
+     * The name of the App Service.
+     */
+    name: string;
+    /**
+     * The Name of the Resource Group where the App Service exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getAppService.
+ */
+export interface GetAppServiceResult {
+    /**
+     * The ID of the App Service Plan within which the App Service exists.
+     */
+    readonly appServicePlanId: string;
+    /**
+     * A key-value pair of App Settings for the App Service.
+     */
+    readonly appSettings: {
+        [key: string]: string;
+    };
+    /**
+     * Does the App Service send session affinity cookies, which route client requests in the same session to the same instance?
+     */
+    readonly clientAffinityEnabled: boolean;
+    /**
+     * Does the App Service require client certificates for incoming requests?
+     */
+    readonly clientCertEnabled: boolean;
+    /**
+     * An `connectionString` block as defined below.
+     */
+    readonly connectionStrings: outputs.appservice.GetAppServiceConnectionString[];
+    /**
+     * An identifier used by App Service to perform domain ownership verification via DNS TXT record.
+     */
+    readonly customDomainVerificationId: string;
+    /**
+     * The Default Hostname associated with the App Service - such as `mysite.azurewebsites.net`
+     */
+    readonly defaultSiteHostname: string;
+    /**
+     * Is the App Service Enabled?
+     */
+    readonly enabled: boolean;
+    /**
+     * Can the App Service only be accessed via HTTPS?
+     */
+    readonly httpsOnly: boolean;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * The Azure location where the App Service exists.
+     */
+    readonly location: string;
+    /**
+     * The name for this IP Restriction.
+     */
+    readonly name: string;
+    /**
+     * A list of outbound IP addresses - such as `["52.23.25.3", "52.143.43.12"]`
+     */
+    readonly outboundIpAddressLists: string[];
+    /**
+     * A comma separated list of outbound IP addresses - such as `52.23.25.3,52.143.43.12`
+     */
+    readonly outboundIpAddresses: string;
+    /**
+     * A list of outbound IP addresses - such as `["52.23.25.3", "52.143.43.12", "52.143.43.17"]` - not all of which are necessarily in use. Superset of `outboundIpAddressList`.
+     */
+    readonly possibleOutboundIpAddressLists: string[];
+    /**
+     * A comma separated list of outbound IP addresses - such as `52.23.25.3,52.143.43.12,52.143.43.17` - not all of which are necessarily in use. Superset of `outboundIpAddresses`.
+     */
+    readonly possibleOutboundIpAddresses: string;
+    readonly resourceGroupName: string;
+    /**
+     * A `siteConfig` block as defined below.
+     */
+    readonly siteConfigs: outputs.appservice.GetAppServiceSiteConfig[];
+    readonly siteCredentials: outputs.appservice.GetAppServiceSiteCredential[];
+    /**
+     * A `sourceControl` block as defined below.
+     */
+    readonly sourceControls: outputs.appservice.GetAppServiceSourceControl[];
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+}
+export declare function getAppServiceOutput(args: GetAppServiceOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetAppServiceResult>;
+/**
+ * A collection of arguments for invoking getAppService.
+ */
+export interface GetAppServiceOutputArgs {
+    /**
+     * The name of the App Service.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The Name of the Resource Group where the App Service exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

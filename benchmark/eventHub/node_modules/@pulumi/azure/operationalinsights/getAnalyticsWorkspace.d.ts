@@ -1,0 +1,91 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Log Analytics (formally Operational Insights) Workspace.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.operationalinsights.getAnalyticsWorkspace({
+ *     name: "acctest-01",
+ *     resourceGroupName: "acctest",
+ * });
+ * export const logAnalyticsWorkspaceId = example.then(example => example.workspaceId);
+ * ```
+ */
+export declare function getAnalyticsWorkspace(args: GetAnalyticsWorkspaceArgs, opts?: pulumi.InvokeOptions): Promise<GetAnalyticsWorkspaceResult>;
+/**
+ * A collection of arguments for invoking getAnalyticsWorkspace.
+ */
+export interface GetAnalyticsWorkspaceArgs {
+    /**
+     * Specifies the name of the Log Analytics Workspace.
+     */
+    name: string;
+    /**
+     * The name of the resource group in which the Log Analytics workspace is located in.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getAnalyticsWorkspace.
+ */
+export interface GetAnalyticsWorkspaceResult {
+    /**
+     * The workspace daily quota for ingestion in GB.
+     */
+    readonly dailyQuotaGb: number;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    readonly location: string;
+    readonly name: string;
+    /**
+     * @deprecated this property has been removed from the API and will be removed in version 3.0 of the provider
+     */
+    readonly portalUrl: string;
+    /**
+     * The Primary shared key for the Log Analytics Workspace.
+     */
+    readonly primarySharedKey: string;
+    readonly resourceGroupName: string;
+    /**
+     * The workspace data retention in days.
+     */
+    readonly retentionInDays: number;
+    /**
+     * The Secondary shared key for the Log Analytics Workspace.
+     */
+    readonly secondarySharedKey: string;
+    /**
+     * The Sku of the Log Analytics Workspace.
+     */
+    readonly sku: string;
+    /**
+     * A mapping of tags assigned to the resource.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+    /**
+     * The Workspace (or Customer) ID for the Log Analytics Workspace.
+     */
+    readonly workspaceId: string;
+}
+export declare function getAnalyticsWorkspaceOutput(args: GetAnalyticsWorkspaceOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetAnalyticsWorkspaceResult>;
+/**
+ * A collection of arguments for invoking getAnalyticsWorkspace.
+ */
+export interface GetAnalyticsWorkspaceOutputArgs {
+    /**
+     * Specifies the name of the Log Analytics Workspace.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the resource group in which the Log Analytics workspace is located in.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

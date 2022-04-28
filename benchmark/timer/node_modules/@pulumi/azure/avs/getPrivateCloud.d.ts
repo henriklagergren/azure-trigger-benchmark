@@ -1,0 +1,103 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+export declare function getPrivateCloud(args: GetPrivateCloudArgs, opts?: pulumi.InvokeOptions): Promise<GetPrivateCloudResult>;
+/**
+ * A collection of arguments for invoking getPrivateCloud.
+ */
+export interface GetPrivateCloudArgs {
+    /**
+     * The name of this Vmware Private Cloud.
+     */
+    name: string;
+    /**
+     * The name of the Resource Group where the Vmware Private Cloud exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getPrivateCloud.
+ */
+export interface GetPrivateCloudResult {
+    /**
+     * A `circuit` block as defined below.
+     */
+    readonly circuits: outputs.avs.GetPrivateCloudCircuit[];
+    /**
+     * The endpoint for the HCX Cloud Manager.
+     */
+    readonly hcxCloudManagerEndpoint: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * Is the Vmware Private Cluster connected to the internet?
+     */
+    readonly internetConnectionEnabled: boolean;
+    /**
+     * The Azure Region where the Vmware Private Cloud exists.
+     */
+    readonly location: string;
+    /**
+     * A `managementCluster` block as defined below.
+     */
+    readonly managementClusters: outputs.avs.GetPrivateCloudManagementCluster[];
+    /**
+     * The network used to access vCenter Server and NSX-T Manager.
+     */
+    readonly managementSubnetCidr: string;
+    readonly name: string;
+    /**
+     * The subnet cidr of the Vmware Private Cloud.
+     */
+    readonly networkSubnetCidr: string;
+    /**
+     * The thumbprint of the NSX-T Manager SSL certificate.
+     */
+    readonly nsxtCertificateThumbprint: string;
+    /**
+     * The endpoint for the NSX-T Data Center manager.
+     */
+    readonly nsxtManagerEndpoint: string;
+    /**
+     * The network which isused for virtual machine cold migration, cloning, and snapshot migration.
+     */
+    readonly provisioningSubnetCidr: string;
+    readonly resourceGroupName: string;
+    /**
+     * The Name of the SKU used for this Private Cloud.
+     */
+    readonly skuName: string;
+    /**
+     * A mapping of tags assigned to the Vmware Private Cloud.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+    /**
+     * The thumbprint of the vCenter Server SSL certificate.
+     */
+    readonly vcenterCertificateThumbprint: string;
+    /**
+     * The endpoint for Virtual Center Server Appliance.
+     */
+    readonly vcsaEndpoint: string;
+    /**
+     * The network which is used for live migration of virtual machines.
+     */
+    readonly vmotionSubnetCidr: string;
+}
+export declare function getPrivateCloudOutput(args: GetPrivateCloudOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetPrivateCloudResult>;
+/**
+ * A collection of arguments for invoking getPrivateCloud.
+ */
+export interface GetPrivateCloudOutputArgs {
+    /**
+     * The name of this Vmware Private Cloud.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group where the Vmware Private Cloud exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

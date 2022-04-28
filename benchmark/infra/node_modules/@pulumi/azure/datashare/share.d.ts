@@ -1,0 +1,147 @@
+import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
+/**
+ * Manages a Data Share.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleAccount = new azure.datashare.Account("exampleAccount", {
+ *     location: exampleResourceGroup.location,
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     tags: {
+ *         foo: "bar",
+ *     },
+ * });
+ * const exampleShare = new azure.datashare.Share("exampleShare", {
+ *     accountId: exampleAccount.id,
+ *     kind: "CopyBased",
+ *     description: "example desc",
+ *     terms: "example terms",
+ *     snapshotSchedule: {
+ *         name: "example-ss",
+ *         recurrence: "Day",
+ *         startTime: "2020-04-17T04:47:52.9614956Z",
+ *     },
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Data Shares can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:datashare/share:Share example /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/group1/providers/Microsoft.DataShare/accounts/account1/shares/share1
+ * ```
+ */
+export declare class Share extends pulumi.CustomResource {
+    /**
+     * Get an existing Share resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: ShareState, opts?: pulumi.CustomResourceOptions): Share;
+    /**
+     * Returns true if the given object is an instance of Share.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is Share;
+    /**
+     * The ID of the Data Share account in which the Data Share is created. Changing this forces a new Data Share to be created.
+     */
+    readonly accountId: pulumi.Output<string>;
+    /**
+     * The Data Share's description.
+     */
+    readonly description: pulumi.Output<string | undefined>;
+    /**
+     * The kind of the Data Share. Possible values are `CopyBased` and `InPlace`. Changing this forces a new Data Share to be created.
+     */
+    readonly kind: pulumi.Output<string>;
+    /**
+     * The name which should be used for this Data Share. Changing this forces a new Data Share to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * A `snapshotSchedule` block as defined below.
+     */
+    readonly snapshotSchedule: pulumi.Output<outputs.datashare.ShareSnapshotSchedule | undefined>;
+    /**
+     * The terms of the Data Share.
+     */
+    readonly terms: pulumi.Output<string | undefined>;
+    /**
+     * Create a Share resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: ShareArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering Share resources.
+ */
+export interface ShareState {
+    /**
+     * The ID of the Data Share account in which the Data Share is created. Changing this forces a new Data Share to be created.
+     */
+    accountId?: pulumi.Input<string>;
+    /**
+     * The Data Share's description.
+     */
+    description?: pulumi.Input<string>;
+    /**
+     * The kind of the Data Share. Possible values are `CopyBased` and `InPlace`. Changing this forces a new Data Share to be created.
+     */
+    kind?: pulumi.Input<string>;
+    /**
+     * The name which should be used for this Data Share. Changing this forces a new Data Share to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * A `snapshotSchedule` block as defined below.
+     */
+    snapshotSchedule?: pulumi.Input<inputs.datashare.ShareSnapshotSchedule>;
+    /**
+     * The terms of the Data Share.
+     */
+    terms?: pulumi.Input<string>;
+}
+/**
+ * The set of arguments for constructing a Share resource.
+ */
+export interface ShareArgs {
+    /**
+     * The ID of the Data Share account in which the Data Share is created. Changing this forces a new Data Share to be created.
+     */
+    accountId: pulumi.Input<string>;
+    /**
+     * The Data Share's description.
+     */
+    description?: pulumi.Input<string>;
+    /**
+     * The kind of the Data Share. Possible values are `CopyBased` and `InPlace`. Changing this forces a new Data Share to be created.
+     */
+    kind: pulumi.Input<string>;
+    /**
+     * The name which should be used for this Data Share. Changing this forces a new Data Share to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * A `snapshotSchedule` block as defined below.
+     */
+    snapshotSchedule?: pulumi.Input<inputs.datashare.ShareSnapshotSchedule>;
+    /**
+     * The terms of the Data Share.
+     */
+    terms?: pulumi.Input<string>;
+}

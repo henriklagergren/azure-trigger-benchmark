@@ -1,0 +1,90 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about a set of existing Public IP Addresses.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = pulumi.output(azure.network.getPublicIPs({
+ *     attachmentStatus: "Attached",
+ *     resourceGroupName: "pip-test",
+ * }));
+ * ```
+ */
+export declare function getPublicIPs(args: GetPublicIPsArgs, opts?: pulumi.InvokeOptions): Promise<GetPublicIPsResult>;
+/**
+ * A collection of arguments for invoking getPublicIPs.
+ */
+export interface GetPublicIPsArgs {
+    /**
+     * The Allocation Type for the Public IP Address. Possible values include `Static` or `Dynamic`.
+     */
+    allocationType?: string;
+    /**
+     * @deprecated This property has been deprecated in favour of `attachment_status` to improve filtering
+     */
+    attached?: boolean;
+    /**
+     * Filter to include IP Addresses which are attached to a device, such as a VM/LB (`Attached`) or unattached (`Unattached`). To allow for both, use `All`.
+     */
+    attachmentStatus?: string;
+    /**
+     * A prefix match used for the IP Addresses `name` field, case sensitive.
+     */
+    namePrefix?: string;
+    /**
+     * Specifies the name of the resource group.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getPublicIPs.
+ */
+export interface GetPublicIPsResult {
+    readonly allocationType?: string;
+    /**
+     * @deprecated This property has been deprecated in favour of `attachment_status` to improve filtering
+     */
+    readonly attached?: boolean;
+    readonly attachmentStatus?: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    readonly namePrefix?: string;
+    /**
+     * A List of `publicIps` blocks as defined below filtered by the criteria above.
+     */
+    readonly publicIps: outputs.network.GetPublicIPsPublicIp[];
+    readonly resourceGroupName: string;
+}
+export declare function getPublicIPsOutput(args: GetPublicIPsOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetPublicIPsResult>;
+/**
+ * A collection of arguments for invoking getPublicIPs.
+ */
+export interface GetPublicIPsOutputArgs {
+    /**
+     * The Allocation Type for the Public IP Address. Possible values include `Static` or `Dynamic`.
+     */
+    allocationType?: pulumi.Input<string>;
+    /**
+     * @deprecated This property has been deprecated in favour of `attachment_status` to improve filtering
+     */
+    attached?: pulumi.Input<boolean>;
+    /**
+     * Filter to include IP Addresses which are attached to a device, such as a VM/LB (`Attached`) or unattached (`Unattached`). To allow for both, use `All`.
+     */
+    attachmentStatus?: pulumi.Input<string>;
+    /**
+     * A prefix match used for the IP Addresses `name` field, case sensitive.
+     */
+    namePrefix?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the resource group.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

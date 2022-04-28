@@ -1,0 +1,95 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing Spring Cloud Application.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.appplatform.getSpringCloudApp({
+ *     name: azurerm_spring_cloud_app.example.name,
+ *     resourceGroupName: azurerm_spring_cloud_app.example.resource_group_name,
+ *     serviceName: azurerm_spring_cloud_app.example.service_name,
+ * });
+ * export const springCloudAppId = example.then(example => example.id);
+ * ```
+ */
+export declare function getSpringCloudApp(args: GetSpringCloudAppArgs, opts?: pulumi.InvokeOptions): Promise<GetSpringCloudAppResult>;
+/**
+ * A collection of arguments for invoking getSpringCloudApp.
+ */
+export interface GetSpringCloudAppArgs {
+    /**
+     * The name of the Spring Cloud Application.
+     */
+    name: string;
+    /**
+     * The name of the Resource Group where the Spring Cloud Application exists.
+     */
+    resourceGroupName: string;
+    /**
+     * The name of the Spring Cloud Service.
+     */
+    serviceName: string;
+}
+/**
+ * A collection of values returned by getSpringCloudApp.
+ */
+export interface GetSpringCloudAppResult {
+    /**
+     * The Fully Qualified DNS Name.
+     */
+    readonly fqdn: string;
+    /**
+     * Is only https allowed?
+     */
+    readonly httpsOnly: boolean;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * An `identity` block as defined below.
+     */
+    readonly identities: outputs.appplatform.GetSpringCloudAppIdentity[];
+    /**
+     * Does the Spring Cloud Application have public endpoint?
+     */
+    readonly isPublic: boolean;
+    readonly name: string;
+    /**
+     * A `persistentDisk` block as defined below.
+     */
+    readonly persistentDisks: outputs.appplatform.GetSpringCloudAppPersistentDisk[];
+    readonly resourceGroupName: string;
+    readonly serviceName: string;
+    /**
+     * Is End to End TLS Enabled?
+     */
+    readonly tlsEnabled: boolean;
+    /**
+     * The public endpoint of the Spring Cloud Application.
+     */
+    readonly url: string;
+}
+export declare function getSpringCloudAppOutput(args: GetSpringCloudAppOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetSpringCloudAppResult>;
+/**
+ * A collection of arguments for invoking getSpringCloudApp.
+ */
+export interface GetSpringCloudAppOutputArgs {
+    /**
+     * The name of the Spring Cloud Application.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group where the Spring Cloud Application exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * The name of the Spring Cloud Service.
+     */
+    serviceName: pulumi.Input<string>;
+}

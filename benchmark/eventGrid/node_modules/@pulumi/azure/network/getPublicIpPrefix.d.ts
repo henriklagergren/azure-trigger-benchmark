@@ -1,0 +1,83 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Public IP Prefix.
+ *
+ * ## Example Usage
+ * ### Reference An Existing)
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.network.getPublicIpPrefix({
+ *     name: "name_of_public_ip",
+ *     resourceGroupName: "name_of_resource_group",
+ * });
+ * export const publicIpPrefix = example.then(example => example.ipPrefix);
+ * ```
+ */
+export declare function getPublicIpPrefix(args: GetPublicIpPrefixArgs, opts?: pulumi.InvokeOptions): Promise<GetPublicIpPrefixResult>;
+/**
+ * A collection of arguments for invoking getPublicIpPrefix.
+ */
+export interface GetPublicIpPrefixArgs {
+    /**
+     * Specifies the name of the public IP prefix.
+     */
+    name: string;
+    /**
+     * Specifies the name of the resource group.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getPublicIpPrefix.
+ */
+export interface GetPublicIpPrefixResult {
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    readonly ipPrefix: string;
+    /**
+     * The supported Azure location where the resource exists.
+     */
+    readonly location: string;
+    /**
+     * The name of the Public IP prefix resource.
+     */
+    readonly name: string;
+    /**
+     * The number of bits of the prefix.
+     */
+    readonly prefixLength: number;
+    /**
+     * The name of the resource group in which to create the public IP.
+     */
+    readonly resourceGroupName: string;
+    /**
+     * The SKU of the Public IP Prefix.
+     */
+    readonly sku: string;
+    /**
+     * A mapping of tags to assigned to the resource.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+    readonly zones: string[];
+}
+export declare function getPublicIpPrefixOutput(args: GetPublicIpPrefixOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetPublicIpPrefixResult>;
+/**
+ * A collection of arguments for invoking getPublicIpPrefix.
+ */
+export interface GetPublicIpPrefixOutputArgs {
+    /**
+     * Specifies the name of the public IP prefix.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * Specifies the name of the resource group.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

@@ -1,0 +1,204 @@
+import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
+/**
+ * Manages a custom virtual machine image that can be used to create virtual machines.
+ *
+ * ## Example Usage
+ * ### Creating From VHD
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleImage = new azure.compute.Image("exampleImage", {
+ *     location: "West US",
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     osDisk: {
+ *         osType: "Linux",
+ *         osState: "Generalized",
+ *         blobUri: "{blob_uri}",
+ *         sizeGb: 30,
+ *     },
+ * });
+ * ```
+ * ### Creating From Virtual Machine (VM Must Be Generalized Beforehand)
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const exampleResourceGroup = new azure.core.ResourceGroup("exampleResourceGroup", {location: "West Europe"});
+ * const exampleImage = new azure.compute.Image("exampleImage", {
+ *     location: "West US",
+ *     resourceGroupName: exampleResourceGroup.name,
+ *     sourceVirtualMachineId: "{vm_id}",
+ * });
+ * ```
+ *
+ * ## Import
+ *
+ * Images can be imported using the `resource id`, e.g.
+ *
+ * ```sh
+ *  $ pulumi import azure:compute/image:Image example /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mygroup1/providers/microsoft.compute/images/image1
+ * ```
+ */
+export declare class Image extends pulumi.CustomResource {
+    /**
+     * Get an existing Image resource's state with the given name, ID, and optional extra
+     * properties used to qualify the lookup.
+     *
+     * @param name The _unique_ name of the resulting resource.
+     * @param id The _unique_ provider ID of the resource to lookup.
+     * @param state Any extra arguments used during the lookup.
+     * @param opts Optional settings to control the behavior of the CustomResource.
+     */
+    static get(name: string, id: pulumi.Input<pulumi.ID>, state?: ImageState, opts?: pulumi.CustomResourceOptions): Image;
+    /**
+     * Returns true if the given object is an instance of Image.  This is designed to work even
+     * when multiple copies of the Pulumi SDK have been loaded into the same process.
+     */
+    static isInstance(obj: any): obj is Image;
+    /**
+     * One or more `dataDisk` elements as defined below.
+     */
+    readonly dataDisks: pulumi.Output<outputs.compute.ImageDataDisk[] | undefined>;
+    /**
+     * The HyperVGenerationType of the VirtualMachine created from the image as `V1`, `V2`. The default is `V1`.
+     */
+    readonly hyperVGeneration: pulumi.Output<string | undefined>;
+    /**
+     * Specified the supported Azure location where the resource exists.
+     * Changing this forces a new resource to be created.
+     */
+    readonly location: pulumi.Output<string>;
+    /**
+     * Specifies the name of the image. Changing this forces a
+     * new resource to be created.
+     */
+    readonly name: pulumi.Output<string>;
+    /**
+     * One or more `osDisk` elements as defined below.
+     */
+    readonly osDisk: pulumi.Output<outputs.compute.ImageOsDisk | undefined>;
+    /**
+     * The name of the resource group in which to create
+     * the image. Changing this forces a new resource to be created.
+     */
+    readonly resourceGroupName: pulumi.Output<string>;
+    /**
+     * The Virtual Machine ID from which to create the image.
+     */
+    readonly sourceVirtualMachineId: pulumi.Output<string | undefined>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    readonly tags: pulumi.Output<{
+        [key: string]: string;
+    } | undefined>;
+    /**
+     * Is zone resiliency enabled?  Defaults to `false`.  Changing this forces a new resource to be created.
+     */
+    readonly zoneResilient: pulumi.Output<boolean | undefined>;
+    /**
+     * Create a Image resource with the given unique name, arguments, and options.
+     *
+     * @param name The _unique_ name of the resource.
+     * @param args The arguments to use to populate this resource's properties.
+     * @param opts A bag of options that control this resource's behavior.
+     */
+    constructor(name: string, args: ImageArgs, opts?: pulumi.CustomResourceOptions);
+}
+/**
+ * Input properties used for looking up and filtering Image resources.
+ */
+export interface ImageState {
+    /**
+     * One or more `dataDisk` elements as defined below.
+     */
+    dataDisks?: pulumi.Input<pulumi.Input<inputs.compute.ImageDataDisk>[]>;
+    /**
+     * The HyperVGenerationType of the VirtualMachine created from the image as `V1`, `V2`. The default is `V1`.
+     */
+    hyperVGeneration?: pulumi.Input<string>;
+    /**
+     * Specified the supported Azure location where the resource exists.
+     * Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the image. Changing this forces a
+     * new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * One or more `osDisk` elements as defined below.
+     */
+    osDisk?: pulumi.Input<inputs.compute.ImageOsDisk>;
+    /**
+     * The name of the resource group in which to create
+     * the image. Changing this forces a new resource to be created.
+     */
+    resourceGroupName?: pulumi.Input<string>;
+    /**
+     * The Virtual Machine ID from which to create the image.
+     */
+    sourceVirtualMachineId?: pulumi.Input<string>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * Is zone resiliency enabled?  Defaults to `false`.  Changing this forces a new resource to be created.
+     */
+    zoneResilient?: pulumi.Input<boolean>;
+}
+/**
+ * The set of arguments for constructing a Image resource.
+ */
+export interface ImageArgs {
+    /**
+     * One or more `dataDisk` elements as defined below.
+     */
+    dataDisks?: pulumi.Input<pulumi.Input<inputs.compute.ImageDataDisk>[]>;
+    /**
+     * The HyperVGenerationType of the VirtualMachine created from the image as `V1`, `V2`. The default is `V1`.
+     */
+    hyperVGeneration?: pulumi.Input<string>;
+    /**
+     * Specified the supported Azure location where the resource exists.
+     * Changing this forces a new resource to be created.
+     */
+    location?: pulumi.Input<string>;
+    /**
+     * Specifies the name of the image. Changing this forces a
+     * new resource to be created.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * One or more `osDisk` elements as defined below.
+     */
+    osDisk?: pulumi.Input<inputs.compute.ImageOsDisk>;
+    /**
+     * The name of the resource group in which to create
+     * the image. Changing this forces a new resource to be created.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * The Virtual Machine ID from which to create the image.
+     */
+    sourceVirtualMachineId?: pulumi.Input<string>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    tags?: pulumi.Input<{
+        [key: string]: pulumi.Input<string>;
+    }>;
+    /**
+     * Is zone resiliency enabled?  Defaults to `false`.  Changing this forces a new resource to be created.
+     */
+    zoneResilient?: pulumi.Input<boolean>;
+}

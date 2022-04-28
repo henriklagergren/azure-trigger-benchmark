@@ -1,0 +1,103 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing Azure Firewall.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.network.getFirewall({
+ *     name: "firewall1",
+ *     resourceGroupName: "firewall-RG",
+ * });
+ * export const firewallPrivateIp = example.then(example => example.ipConfigurations?[0]?.privateIpAddress);
+ * ```
+ */
+export declare function getFirewall(args: GetFirewallArgs, opts?: pulumi.InvokeOptions): Promise<GetFirewallResult>;
+/**
+ * A collection of arguments for invoking getFirewall.
+ */
+export interface GetFirewallArgs {
+    /**
+     * The name of the Azure Firewall.
+     */
+    name: string;
+    /**
+     * The name of the Resource Group in which the Azure Firewall exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getFirewall.
+ */
+export interface GetFirewallResult {
+    /**
+     * The list of DNS servers that the Azure Firewall will direct DNS traffic to the for name resolution.
+     */
+    readonly dnsServers: string[];
+    /**
+     * The ID of the Firewall Policy applied to the Azure Firewall.
+     */
+    readonly firewallPolicyId: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * A `ipConfiguration` block as defined below.
+     */
+    readonly ipConfigurations: outputs.network.GetFirewallIpConfiguration[];
+    /**
+     * The Azure location where the Azure Firewall exists.
+     */
+    readonly location: string;
+    /**
+     * A `managementIpConfiguration` block as defined below, which allows force-tunnelling of traffic to be performed by the firewall.
+     */
+    readonly managementIpConfigurations: outputs.network.GetFirewallManagementIpConfiguration[];
+    readonly name: string;
+    readonly resourceGroupName: string;
+    /**
+     * The sku name of the Azure Firewall.
+     */
+    readonly skuName: string;
+    /**
+     * The sku tier of the Azure Firewall.
+     */
+    readonly skuTier: string;
+    /**
+     * A mapping of tags assigned to the Azure Firewall.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+    /**
+     * The operation mode for threat intelligence-based filtering.
+     */
+    readonly threatIntelMode: string;
+    /**
+     * A `virtualHub` block as defined below.
+     */
+    readonly virtualHubs: outputs.network.GetFirewallVirtualHub[];
+    /**
+     * The availability zones in which the Azure Firewall is created.
+     */
+    readonly zones: string[];
+}
+export declare function getFirewallOutput(args: GetFirewallOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetFirewallResult>;
+/**
+ * A collection of arguments for invoking getFirewall.
+ */
+export interface GetFirewallOutputArgs {
+    /**
+     * The name of the Azure Firewall.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group in which the Azure Firewall exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}

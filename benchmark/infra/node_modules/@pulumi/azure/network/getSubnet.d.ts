@@ -1,0 +1,94 @@
+import * as pulumi from "@pulumi/pulumi";
+/**
+ * Use this data source to access information about an existing Subnet within a Virtual Network.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.network.getSubnet({
+ *     name: "backend",
+ *     virtualNetworkName: "production",
+ *     resourceGroupName: "networking",
+ * });
+ * export const subnetId = example.then(example => example.id);
+ * ```
+ */
+export declare function getSubnet(args: GetSubnetArgs, opts?: pulumi.InvokeOptions): Promise<GetSubnetResult>;
+/**
+ * A collection of arguments for invoking getSubnet.
+ */
+export interface GetSubnetArgs {
+    /**
+     * Specifies the name of the Subnet.
+     */
+    name: string;
+    /**
+     * Specifies the name of the resource group the Virtual Network is located in.
+     */
+    resourceGroupName: string;
+    /**
+     * Specifies the name of the Virtual Network this Subnet is located within.
+     */
+    virtualNetworkName: string;
+}
+/**
+ * A collection of values returned by getSubnet.
+ */
+export interface GetSubnetResult {
+    /**
+     * (Deprecated) The address prefix used for the subnet.
+     */
+    readonly addressPrefix: string;
+    /**
+     * The address prefixes for the subnet.
+     */
+    readonly addressPrefixes: string[];
+    /**
+     * Enable or Disable network policies for the private link endpoint on the subnet.
+     */
+    readonly enforcePrivateLinkEndpointNetworkPolicies: boolean;
+    /**
+     * Enable or Disable network policies for the private link service on the subnet.
+     */
+    readonly enforcePrivateLinkServiceNetworkPolicies: boolean;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    readonly name: string;
+    /**
+     * The ID of the Network Security Group associated with the subnet.
+     */
+    readonly networkSecurityGroupId: string;
+    readonly resourceGroupName: string;
+    /**
+     * The ID of the Route Table associated with this subnet.
+     */
+    readonly routeTableId: string;
+    /**
+     * A list of Service Endpoints within this subnet.
+     */
+    readonly serviceEndpoints: string[];
+    readonly virtualNetworkName: string;
+}
+export declare function getSubnetOutput(args: GetSubnetOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetSubnetResult>;
+/**
+ * A collection of arguments for invoking getSubnet.
+ */
+export interface GetSubnetOutputArgs {
+    /**
+     * Specifies the name of the Subnet.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * Specifies the name of the resource group the Virtual Network is located in.
+     */
+    resourceGroupName: pulumi.Input<string>;
+    /**
+     * Specifies the name of the Virtual Network this Subnet is located within.
+     */
+    virtualNetworkName: pulumi.Input<string>;
+}

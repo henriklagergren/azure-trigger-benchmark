@@ -1,0 +1,91 @@
+import * as pulumi from "@pulumi/pulumi";
+import { output as outputs } from "../types";
+/**
+ * Use this data source to access information about an existing App Configuration.
+ *
+ * ## Example Usage
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as azure from "@pulumi/azure";
+ *
+ * const example = azure.appconfiguration.getConfigurationStore({
+ *     name: "existing",
+ *     resourceGroupName: "existing",
+ * });
+ * export const id = example.then(example => example.id);
+ * ```
+ */
+export declare function getConfigurationStore(args: GetConfigurationStoreArgs, opts?: pulumi.InvokeOptions): Promise<GetConfigurationStoreResult>;
+/**
+ * A collection of arguments for invoking getConfigurationStore.
+ */
+export interface GetConfigurationStoreArgs {
+    /**
+     * The Name of this App Configuration.
+     */
+    name: string;
+    /**
+     * The name of the Resource Group where the App Configuration exists.
+     */
+    resourceGroupName: string;
+}
+/**
+ * A collection of values returned by getConfigurationStore.
+ */
+export interface GetConfigurationStoreResult {
+    /**
+     * The Endpoint used to access this App Configuration.
+     */
+    readonly endpoint: string;
+    /**
+     * The provider-assigned unique ID for this managed resource.
+     */
+    readonly id: string;
+    /**
+     * The Azure Region where the App Configuration exists.
+     */
+    readonly location: string;
+    readonly name: string;
+    /**
+     * A `primaryReadKey` block as defined below containing the primary read access key.
+     */
+    readonly primaryReadKeys: outputs.appconfiguration.GetConfigurationStorePrimaryReadKey[];
+    /**
+     * A `primaryWriteKey` block as defined below containing the primary write access key.
+     */
+    readonly primaryWriteKeys: outputs.appconfiguration.GetConfigurationStorePrimaryWriteKey[];
+    readonly resourceGroupName: string;
+    /**
+     * A `secondaryReadKey` block as defined below containing the secondary read access key.
+     */
+    readonly secondaryReadKeys: outputs.appconfiguration.GetConfigurationStoreSecondaryReadKey[];
+    /**
+     * A `secondaryWriteKey` block as defined below containing the secondary write access key.
+     */
+    readonly secondaryWriteKeys: outputs.appconfiguration.GetConfigurationStoreSecondaryWriteKey[];
+    /**
+     * The name of the SKU used for this App Configuration.
+     */
+    readonly sku: string;
+    /**
+     * A mapping of tags assigned to the App Configuration.
+     */
+    readonly tags: {
+        [key: string]: string;
+    };
+}
+export declare function getConfigurationStoreOutput(args: GetConfigurationStoreOutputArgs, opts?: pulumi.InvokeOptions): pulumi.Output<GetConfigurationStoreResult>;
+/**
+ * A collection of arguments for invoking getConfigurationStore.
+ */
+export interface GetConfigurationStoreOutputArgs {
+    /**
+     * The Name of this App Configuration.
+     */
+    name: pulumi.Input<string>;
+    /**
+     * The name of the Resource Group where the App Configuration exists.
+     */
+    resourceGroupName: pulumi.Input<string>;
+}
