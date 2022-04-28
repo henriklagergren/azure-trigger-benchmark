@@ -47,7 +47,8 @@ const getHttpFunction = (url: string, operationId: any) =>
 const getStorageFunction = (
   container: any,
   storageAccount: any,
-  operationId: any
+  operationId: any,
+  appInsights: any,
 ) =>
   new Promise<Response>(resolve => {
     let credential = new Identity.EnvironmentCredential()
@@ -61,6 +62,17 @@ const getStorageFunction = (
     const content: string = 'Hello world!'
     const blobName = `${new Date().getTime()}.txt`
     const blockBlobClient = containerClient.getBlockBlobClient(blobName)
+    
+    // Track dependency on completion
+    appInsights.defaultClient.trackDependency({
+      name: 'CompletionTrackStorage',
+      dependencyTypeName: 'HTTP',
+      resultCode: "200",
+      success: true,
+      duration: "10",
+      id: operationId,
+      data: ''
+    })
 
     blockBlobClient
       .upload(content, content.length, {
@@ -88,7 +100,7 @@ const getStorageFunction = (
       )
   })
 
-const getQueueFunction = (queue: any, storageAccount: any, operationId: any) =>
+const getQueueFunction = (queue: any, storageAccount: any, operationId: any, appInsights: any) =>
   new Promise<Response>(resolve => {
     let credential = new Identity.EnvironmentCredential()
 
@@ -100,6 +112,17 @@ const getQueueFunction = (queue: any, storageAccount: any, operationId: any) =>
     const queueClient = queueServiceClient.getQueueClient(queue)
 
     const base64Encode = (str: string) => Buffer.from(str).toString('base64')
+    
+    // Track dependency on completion
+    appInsights.defaultClient.trackDependency({
+      name: 'CompletionTrackQueue',
+      dependencyTypeName: 'HTTP',
+      resultCode: "200",
+      success: true,
+      duration: "10",
+      id: operationId,
+      data: ''
+    })
 
     // Send message (operationId) to queue
     queueClient
@@ -127,7 +150,8 @@ const getQueueFunction = (queue: any, storageAccount: any, operationId: any) =>
 const getDatabaseFunction = (
   databaseName: string,
   containerName: string,
-  operationId: any
+  operationId: any,
+  appInsights: any
 ) =>
   new Promise<Response>(async resolve => {
     const endpoint = process.env.ACCOUNTDB_ENDPOINT!
@@ -143,6 +167,17 @@ const getDatabaseFunction = (
       newOperationId: operationId,
       isComplete: false
     }
+
+    // Track dependency on completion
+    appInsights.defaultClient.trackDependency({
+    name: 'CompletionTrackDatabase',
+    dependencyTypeName: 'HTTP',
+    resultCode: "200",
+    success: true,
+    duration: "10",
+    id: operationId,
+    data: ''
+    })
 
     await container.items
       .create(newItem)
@@ -166,8 +201,18 @@ const getDatabaseFunction = (
       )
   })
 
-const getTimerFunction = (url: string, operationId: any) =>
+const getTimerFunction = (url: string, operationId: any, appInsights: any) =>
   new Promise<Response>(resolve => {
+    // Track dependency on completion
+    appInsights.defaultClient.trackDependency({
+      name: 'CompletionTrackTimer',
+      dependencyTypeName: 'HTTP',
+      resultCode: "200",
+      success: true,
+      duration: "10",
+      id: operationId,
+      data: ''
+    })
     axios
       .post(
         url,
@@ -202,7 +247,8 @@ const getTimerFunction = (url: string, operationId: any) =>
 const getServiceBusResources = (
   serviceBusName: string,
   topicName: string,
-  operationId: string
+  operationId: string,
+  appInsights: any
 ) =>
   new Promise<Response>(async resolve => {
     let credential = new Identity.EnvironmentCredential()
@@ -212,38 +258,22 @@ const getServiceBusResources = (
       credential
     )
 
-    const messages = [{ body: operationId }]
+    const message = { body: operationId };
+    const sender = client.createSender(topicName);
+    let batch = await sender.createMessageBatch();
+    batch.tryAddMessage(message);
+      
+    // Track dependency on completion
+    appInsights.defaultClient.trackDependency({
+      name: 'CompletionTrackserviceBusTopic',
+      dependencyTypeName: 'HTTP',
+      resultCode: "200",
+      success: true,
+      data: "",
+      duration: "10",
+      id: operationId
+    })
 
-    const sender = client.createSender(topicName)
-
-    try {
-      // Tries to send all messages in a single batch.
-      // Will fail if the messages cannot fit in a batch.
-      // await sender.sendMessages(messages);
-
-      // create a batch object
-      let batch = await sender.createMessageBatch()
-      for (let i = 0; i < messages.length; i++) {
-        // for each message in the arry
-
-        // try to add the message to the batch
-        if (!batch.tryAddMessage(messages[i])) {
-          // if it fails to add the message to the current batch
-          // send the current batch as it is full
-          await sender.sendMessages(batch)
-
-          // then, create a new batch
-          batch = await sender.createMessageBatch()
-
-          // now, add the message failed to be added to the previous batch to this batch
-          if (!batch.tryAddMessage(messages[i])) {
-            // if it still can't be added to the batch, the message is probably too big to fit in a batch
-            throw new Error('Message too big to fit in a batch')
-          }
-        }
-      }
-
-      // Send the last created batch of messages to the topic
       await sender
         .sendMessages(batch)
         .then(() =>
@@ -269,15 +299,14 @@ const getServiceBusResources = (
 
       // Close the sender
       await sender.close()
-    } finally {
       await client.close()
-    }
   })
 
 const getEventHubFunction = (
   eventHubName: string,
   eventHubNamespace: string,
-  operationId: string
+  operationId: string,
+  appInsights: any
 ) =>
   new Promise<Response>(async resolve => {
     const producer = new EventHub.EventHubProducerClient(
@@ -289,6 +318,16 @@ const getEventHubFunction = (
     const batch = await producer.createBatch()
 
     batch.tryAdd({ body: operationId })
+           // Track dependency on completion
+           appInsights.defaultClient.trackDependency({
+            name: 'CompletionTrackEventHub',
+            dependencyTypeName: 'HTTP',
+            resultCode: "200",
+            success: true,
+            duration: "10",
+            id: operationId,
+            data: ''
+          })
 
     producer
       .sendBatch(batch)
@@ -317,7 +356,8 @@ const getEventHubFunction = (
 const getEventGridFunction = (
   storageAccountName: string,
   storageContainerName: string,
-  operationId: any
+  operationId: any,
+  appInsights: any
 ) =>
   new Promise<Response>(async resolve => {
     let credential = new Identity.EnvironmentCredential()
@@ -333,6 +373,17 @@ const getEventGridFunction = (
     const content: string = 'Hello world!'
     const blobName = operationId
     const blockBlobClient = containerClient.getBlockBlobClient(blobName)
+    
+    // Track dependency on completion
+    appInsights.defaultClient.trackDependency({
+      name: 'CompletionTrackEventGrid',
+      dependencyTypeName: 'HTTP',
+      resultCode: "200",
+      success: true,
+      duration: "10",
+      id: operationId,
+      data: ''
+    })
 
     blockBlobClient
       .upload(content, content.length, {
@@ -391,7 +442,7 @@ const handler = async (context: any, req: any) => {
       triggerType === 'timer' ||
       triggerType === 'eventHub' ||
       triggerType === 'eventGrid' ||
-      triggerType === 'serviceBus')
+      triggerType === 'serviceBusTopic')
   const triggerInput: string = req.query && req.query.input
 
   if (validTrigger && triggerInput) {
@@ -427,19 +478,11 @@ const handler = async (context: any, req: any) => {
         const response = await getQueueFunction(
           queueInputs[0],
           queueInputs[1],
-          correlationContext.operation.id
+          correlationContext.operation.id,
+          appInsights
         )
 
-        // Track dependency on completion
-        appInsights.defaultClient.trackDependency({
-          name: 'CompletionTrackQueue',
-          dependencyTypeName: 'HTTP',
-          resultCode: response.status,
-          success: true,
-          duration: Date.now() - startTime,
-          id: correlationContext.operation.parentId,
-          data: ''
-        })
+        
         appInsights.defaultClient.flush()
         return response
       }, correlationContext)()
@@ -453,18 +496,10 @@ const handler = async (context: any, req: any) => {
           const response = await getStorageFunction(
             storageInputs[0],
             storageInputs[1],
-            correlationContext.operation.parentId
+            correlationContext.operation.parentId,
+            appInsights
           )
-          // Track dependency on completion
-          appInsights.defaultClient.trackDependency({
-            name: 'CompletionTrackStorage',
-            dependencyTypeName: 'HTTP',
-            resultCode: response.status,
-            success: true,
-            duration: Date.now() - startTime,
-            id: correlationContext.operation.parentId,
-            data: ''
-          })
+          
           appInsights.defaultClient.flush()
           return response
         }, correlationContext)()
@@ -480,18 +515,10 @@ const handler = async (context: any, req: any) => {
           const response = await getDatabaseFunction(
             databaseInputs[0],
             databaseInputs[1],
-            correlationContext.operation.id
+            correlationContext.operation.id,
+            appInsights
           )
-          // Track dependency on completion
-          appInsights.defaultClient.trackDependency({
-            name: 'CompletionTrackDatabase',
-            dependencyTypeName: 'HTTP',
-            resultCode: response.status,
-            success: true,
-            duration: Date.now() - startTime,
-            id: correlationContext.operation.parentId,
-            data: ''
-          })
+
           appInsights.defaultClient.flush()
           return response
         }, correlationContext)()
@@ -503,41 +530,25 @@ const handler = async (context: any, req: any) => {
         const startTime = Date.now() // Start trackRequest timer
         const response = await getTimerFunction(
           triggerInput,
-          correlationContext.operation.parentId
+          correlationContext.operation.parentId,
+          appInsights
         )
-        // Track dependency on completion
-        appInsights.defaultClient.trackDependency({
-          name: 'CompletionTrackTimer',
-          dependencyTypeName: 'HTTP',
-          resultCode: response.status,
-          success: true,
-          duration: Date.now() - startTime,
-          id: correlationContext.operation.parentId,
-          data: ''
-        })
+
         appInsights.defaultClient.flush()
         return response
       }, correlationContext)()
     }
-    if (triggerType === 'serviceBus') {
+    if (triggerType === 'serviceBusTopic') {
       const serviceBusInputs = triggerInput.split(',')
       return appInsights.wrapWithCorrelationContext(async () => {
         const startTime = Date.now() // Start trackRequest timer
         const response = await getServiceBusResources(
           serviceBusInputs[0],
           serviceBusInputs[1],
-          correlationContext.operation.parentId
+          correlationContext.operation.parentId,
+          appInsights
         )
-        // Track dependency on completion
-        appInsights.defaultClient.trackDependency({
-          name: 'CompletionTrackserviceBus',
-          dependencyTypeName: 'HTTP',
-          resultCode: response.status,
-          success: true,
-          data: req.query.input,
-          duration: Date.now() - startTime,
-          id: correlationContext.operation.parentId
-        })
+
         appInsights.defaultClient.flush()
 
         return response
@@ -551,18 +562,9 @@ const handler = async (context: any, req: any) => {
         const response = await getEventHubFunction(
           eventHubInputs[0],
           eventHubInputs[1],
-          correlationContext.operation.id
+          correlationContext.operation.id,
+          appInsights
         )
-        // Track dependency on completion
-        appInsights.defaultClient.trackDependency({
-          name: 'CompletionTrackEventHub',
-          dependencyTypeName: 'HTTP',
-          resultCode: response.status,
-          success: true,
-          duration: Date.now() - startTime,
-          id: correlationContext.operation.parentId,
-          data: ''
-        })
 
         appInsights.defaultClient.flush()
         return response
@@ -576,18 +578,10 @@ const handler = async (context: any, req: any) => {
         const response = await getEventGridFunction(
           eventGridInputs[0],
           eventGridInputs[1],
-          correlationContext.operation.id
+          correlationContext.operation.id,
+          appInsights
         )
-        // Track dependency on completion
-        appInsights.defaultClient.trackDependency({
-          name: 'CompletionTrackEventGrid',
-          dependencyTypeName: 'HTTP',
-          resultCode: response.status,
-          success: true,
-          duration: Date.now() - startTime,
-          id: correlationContext.operation.parentId,
-          data: ''
-        })
+
         appInsights.defaultClient.flush()
         return response
       }, correlationContext)()

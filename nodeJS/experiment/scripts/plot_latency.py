@@ -25,17 +25,17 @@ if(os.isfile('./../results/latency/timer.csv')):
     result_list.append(pd.read_csv(
         './../results/latency/timer.csv', delimiter=","))
 
-if(os.isfile('./../results/latency/serviceBus.csv')):
+if(os.isfile('./../results/latency/servicebustopic.csv')):
     result_list.append(pd.read_csv(
-        './../results/latency/serviceBus.csv', delimiter=","))
+        './../results/latency/servicebustopic.csv', delimiter=","))
 
-if(os.isfile('./../results/latency/eventHub.csv')):
+if(os.isfile('./../results/latency/eventhub.csv')):
     result_list.append(pd.read_csv(
-        './../results/latency/eventHub.csv', delimiter=","))
+        './../results/latency/eventhub.csv', delimiter=","))
 
-if(os.isfile('./../results/latency/eventGrid.csv')):
+if(os.isfile('./../results/latency/eventgrid.csv')):
     result_list.append(pd.read_csv(
-        './../results/latency/eventGrid.csv', delimiter=","))
+        './../results/latency/eventgrid.csv', delimiter=","))
 
 
 result_df = pd.concat(result_list)

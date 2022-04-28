@@ -6,30 +6,42 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.Azure.WebJobs.Logging.ApplicationInsights;
+using Microsoft.ApplicationInsights;
 using Newtonsoft.Json;
 
 namespace dotnet
 {
-  public static class HttpTrigger
-  {
-    [FunctionName("HttpTrigger-dotnet")]
-    public static async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-        ILogger log)
+    public class HttpTrigger
     {
-      log.LogInformation("C# HTTP trigger function processed a request.");
+        private readonly TelemetryClient telemetryClient;
 
-      string name = req.Query["name"];
+        public HttpTrigger(TelemetryConfiguration telemetryConfiguration)
+        {
+            this.telemetryClient = new TelemetryClient(telemetryConfiguration);
+        }
 
-      string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-      dynamic data = JsonConvert.DeserializeObject(requestBody);
-      name = name ?? data?.name;
 
-      string responseMessage = string.IsNullOrEmpty(name)
-          ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-          : $"Hello, {name}. This HTTP triggered function executed successfully.";
+        [FunctionName("HttpTrigger-dotnet")]
+        public async Task<IActionResult> Run(
+              [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+              ILogger log)
+        {
 
-      return new OkObjectResult(responseMessage);
+            this.telemetryClient.TrackDependency(
+              dependencyName: "Custom operationId http",
+              target: "http://",
+              dependencyTypeName: "HTTP",
+              data: "",
+              startTime: DateTime.Now,
+              duration: TimeSpan.FromMilliseconds(10),
+              resultCode: "200",
+              success: true
+            );
+
+            return new OkObjectResult("success");
+        }
     }
-  }
 }

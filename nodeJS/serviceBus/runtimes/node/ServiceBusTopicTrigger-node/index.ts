@@ -34,7 +34,7 @@ export default async function contextPropagatingServiceBusTopicTrigger (
 
     appInsights.defaultClient.trackDependency({
       target: `http://`,
-      name: 'Custom operationId serviceBus',
+      name: 'Custom operationId serviceBusTopic',
       dependencyTypeName: 'HTTP',
       resultCode: 200,
       success: true,

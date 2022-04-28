@@ -231,7 +231,7 @@ deploy_serviceBus_trigger() {
 
   echo "Write URL to .env"
 
-  sed -i"" -e "s|^BENCHMARK_URL=.*|BENCHMARK_URL=\"$BENCHMARK_URL\?trigger=serviceBus\&input=$SERVICE_BUS_NAMESPACE,$TOPIC_NAME\"|" $FILE_NAME
+  sed -i"" -e "s|^BENCHMARK_URL=.*|BENCHMARK_URL=\"$BENCHMARK_URL\?trigger=serviceBusTopic\&input=$SERVICE_BUS_NAMESPACE,$TOPIC_NAME\"|" $FILE_NAME
 
   #echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=serviceBus&input=$SERVICE_BUS_NAMESPACE,$TOPIC_NAME\"" >>$FILE_NAME
   echo "Initilize Function App"
