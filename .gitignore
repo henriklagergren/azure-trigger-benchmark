@@ -4,10 +4,8 @@
 */_pycache_/
 .DS_Store
 
-nodeJS/*/node_modules/
-nodeJS/experiment/results/reliability/*
-nodeJS/experiment/results/latency/*
-nodeJS/experiment/.sb/
-nodeJS/experiment/__pycache__/
-nodeJS/experiment/scripts/analyze_latency_tao.py
-nodeJS/experiment/data/*
+benchmark/experiment/results/reliability/*
+benchmark/experiment/results/latency/*
+benchmark/experiment/.sb/
+benchmark/experiment/__pycache__/
+benchmark/experiment/data/*
