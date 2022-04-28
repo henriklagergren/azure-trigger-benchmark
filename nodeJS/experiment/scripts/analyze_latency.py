@@ -187,7 +187,7 @@ for entry in all_entries:
             all_groups[index].append(entry)
 
 for trigger_type in trigger_pick:
-    print('Analyzes latency for ' + trigger_type[0])
+    print('Analyzes latency for ' + trigger_type)
     print('Checking the validity of traces...')
 
     all_valid_groups = []
@@ -231,7 +231,7 @@ for trigger_type in trigger_pick:
             (delta.seconds*1000000 + delta.microseconds) / 1000)
 
     print('')
-    print('## RESULTS ' + trigger_type[0].upper() + " ##")
+    print('## RESULTS ' + trigger_type.upper() + " ##")
     print('')
     print(all_trigger_delays_ms)
     print('')
@@ -241,12 +241,12 @@ for trigger_type in trigger_pick:
     print('Number of valid entries: ' + str(len(all_trigger_delays_ms)))
     print('')
 
-    with open("./../results/latency/" + trigger_type[0] + '.csv', 'w', newline='') as file:
+    with open("./../results/latency/" + trigger_type + '.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["trigger_type", "latency"])
         count = 0
         for value in all_trigger_delays_ms:
-            writer.writerow([trigger_type[0], value])
+            writer.writerow([trigger_type, value])
             count = count + 1
 
     print('')

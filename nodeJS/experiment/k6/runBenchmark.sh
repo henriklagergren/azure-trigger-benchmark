@@ -12,7 +12,7 @@ deploy_http_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting Http benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) benchmark.js
+  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
   echo "Http benchmark finished"
 }
 
@@ -26,7 +26,7 @@ deploy_storage_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting storage benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) benchmark.js
+k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
   echo "Storage benchmark finished"
 }
 
@@ -40,7 +40,7 @@ deploy_queue_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting queue benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) benchmark.js
+k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
   echo "Queue benchmark finished"
 }
 
@@ -54,7 +54,7 @@ deploy_database_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting database benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) benchmark.js
+k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
   echo "Database benchmark finished"
 }
 
@@ -68,7 +68,7 @@ deploy_timer_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting timer benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) benchmark.js
+k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
   echo "Timer benchmark finished"
 }
 
@@ -82,7 +82,7 @@ deploy_serviceBus_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting Service bus benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) benchmark.js
+k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
   echo "Service bus benchmark finished"
 }
 
@@ -96,7 +96,7 @@ deploy_eventHub_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting Event hub benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) benchmark.js
+k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
   echo "Event hub benchmark finished"
 }
 
@@ -110,7 +110,7 @@ deploy_eventGrid_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting Event grid benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) benchmark.js
+k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
   echo "Event grid benchmark finished"
 }
 
@@ -126,14 +126,23 @@ deploy_all_benchmarks() {
 }
 
 # Read input flags
-while getopts 't:r:' flag; do
+while getopts 't:r:b:' flag; do
   case "${flag}" in
   t) TRIGGER_TYPE="${OPTARG}" ;;
   r) RUNTIME="${OPTARG}" ;; 
   l) LOCATION="${OPTARG}" ;;
+  b) BURST_SIZE="${OPTARG}" ;;
   *) exit 1 ;;
   esac
 done
+
+if [ "$BURST_SIZE" = '10' ] || [ "$BURST_SIZE" = '50' ] || [ "$BURST_SIZE" = '100' ] || [ "$BURST_SIZE" = '300' ]; then
+  echo "Burst size valid: $BURST_SIZE"
+  echo "BURST_SIZE=\"$BURST_SIZE\"" >>'./../../.env'
+else
+  echo 'ERROR: Invalid burst size'
+  exit
+fi 
 
 if [ "$RUNTIME" = 'node' ] || [ "$RUNTIME" = 'dotnet' ]; then
   echo "Runtime valid: $RUNTIME"
