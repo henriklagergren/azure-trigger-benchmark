@@ -9,6 +9,4 @@ benchmark/experiment/results/latency/*
 benchmark/experiment/.sb/
 benchmark/experiment/__pycache__/
 benchmark/experiment/data/*
-benchmark/*/node_modules/
-node_modules
-database/node_modules/
+benchmark/*/node_modules/*
