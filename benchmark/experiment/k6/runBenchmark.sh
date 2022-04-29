@@ -136,13 +136,23 @@ while getopts 't:r:b:' flag; do
   esac
 done
 
+BURST_SIZE_OLD=''
+
 if [ "$BURST_SIZE" = '10' ] || [ "$BURST_SIZE" = '50' ] || [ "$BURST_SIZE" = '100' ] || [ "$BURST_SIZE" = '300' ]; then
   echo "Burst size valid: $BURST_SIZE"
-  echo "BURST_SIZE=\"$BURST_SIZE\"" >>'./../../.env'
+  BURST_SIZE_OLD=$(sed -n 's/^BURST_SIZE=\(.*\)/\1/p'  < './../../.env')
 else
   echo 'ERROR: Invalid burst size'
   exit
 fi 
+
+
+if [ $BURST_SIZE_OLD = "\"10\"" ] || [ $BURST_SIZE_OLD = "\"50\"" ] || [ $BURST_SIZE_OLD = "\"100\"" ] || [ $BURST_SIZE_OLD = "\"300\"" ]; then
+  sed -i"" -e "s|^BURST_SIZE=.*|BURST_SIZE=\"$BURST_SIZE\"|" './../../.env'
+else
+  echo "BURST_SIZE=\"$BURST_SIZE\"" >>'./../../.env'
+fi
+
 
 if [ "$RUNTIME" = 'node' ] || [ "$RUNTIME" = 'dotnet' ]; then
   echo "Runtime valid: $RUNTIME"

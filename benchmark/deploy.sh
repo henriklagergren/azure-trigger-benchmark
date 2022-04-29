@@ -6,11 +6,14 @@ LOCATION=''
 FUNCTION_APP_URL=''
 FUNCTIONAPP_NAME=''
 RESOURCE_GROUP=''
+BURST_SIZE=''
 
 deploy_shared_resources() {
+  BURST_SIZE=$(sed -n 's/^BURST_SIZE=\(.*\)/\1/p'  < './.env')
   echo "PULUMI_AZURE_LOCATION=\"$LOCATION\"" >'./.env'
   echo "RUNTIME=\"$RUNTIME\"" >>'./.env'
   echo "BENCHMARK_URL=" >> './.env'
+  echo "BURST_SIZE=$BURST_SIZE" >> './.env'
   
   cd shared/ && pulumi stack select shared -c && pulumi up -f -y
 
@@ -316,6 +319,7 @@ deploy_eventGrid_trigger() {
 }
 
 checkIfSharedNeedDeploy(){
+  BURST_SIZE=$(sed -n 's/^BURST_SIZE=\(.*\)/\1/p'  < ./.env)
   TEMP_RUNTIME=''
   TEMP_LOCATION=''
   while read line; do    
@@ -333,6 +337,7 @@ if [ "$TEMP_RUNTIME" = "" ] || [ "$TEMP_RUNTIME" != "RUNTIME=\"$RUNTIME\"" ] || 
   cd ..
 else 
   echo No change of runtime nor location. Skipping update of shared resources.
+  sed -i"" -e "s|^BURST_SIZE=.*|BURST_SIZE=$BURST_SIZE|" "./.env"
   cd shared
   # Get Resource group name
   RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
@@ -371,6 +376,7 @@ else
   echo 'ERROR: Unsupported location'
   exit
 fi
+
 
 # Decide which trigger to deploy based on input flag
 if [ "$TRIGGER_TYPE" = 'http' ]; then
