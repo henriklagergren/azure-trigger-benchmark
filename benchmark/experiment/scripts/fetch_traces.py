@@ -55,7 +55,7 @@ traces = requests.get('https://api.applicationinsights.io/v1/apps/' +
 traces = traces.json()
 
 all_entries = pd.DataFrame(
-    columns=['type', 'name', 'timestamp', 'operation_id', 'runtime', 'trigger', 'duration', 'iteration_id'])
+    columns=['type', 'name', 'timestamp', 'operation_id', 'runtime', 'trigger', 'duration', 'iteration_id', 'invoke_mode', 'invoke_input'])
 
 trigger_pick = ["http", "storage", "queue",
                 "database", "eventhub", "eventgrid", "servicebustopic"]
@@ -141,6 +141,10 @@ for value in traces["tables"][0]["rows"]:
                         custom_values['operationId'], "runtime"] = custom_values['runtime']
         all_entries.loc[all_entries['operation_id'] ==
                         custom_values['operationId'], "iteration_id"] = custom_values['iterationId']
+        all_entries.loc[all_entries['operation_id'] ==
+                        custom_values['operationId'], "invoke_mode"] = custom_values['invokeMode']
+        all_entries.loc[all_entries['operation_id'] ==
+                        custom_values['operationId'], "invoke_input"] = custom_values['invokeInput']
     else:
         d = {}
         d['type'] = 'TRACE'

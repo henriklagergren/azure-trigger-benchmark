@@ -452,6 +452,8 @@ const handler = async (context: any, req: any) => {
       message: 'InvokerEndpoint details',
       properties: {
         iterationId: req.query.id,
+        invokeMode: req.query.invokeMode,
+        invokeInput: req.query.invokeInput,
         triggerType: triggerType,
         runtime: process.env.RUNTIME,
         operationId: correlationContext.operation.id
