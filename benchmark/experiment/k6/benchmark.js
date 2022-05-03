@@ -4,7 +4,7 @@ import exec from 'k6/execution'
 var total_target_samples = 1000
 var target_samples_per_burst_size = total_target_samples / 4
 var inter_burst_pauses = 10
-var burst_sizes = [10, 50, 100, 300]
+var mode = ''
 
 function range (size, startAt = 0) {
   return [...Array(size).keys()].map(i => i + startAt)
@@ -33,34 +33,43 @@ function k6_options_burst (burst_size) {
   return options
 }
 
-function k6_options_order () {
+function k6_options_inter (invoke_delay) {
   var options = {
     insecureSkipTLSVerify: true,
     noConnectionReuse: false,
-    scenarios: {
-      out_of_order: {
-        executor: 'constant-arrival-rate',
-        duration: '30s',
-        rate: 10,
-        timeUnit: '100ms',
-        preAllocatedVUs: 2,
-        maxVUs: 20
-      }
+    scenarios: {}
+  }
+
+  for (let i = 0; i < 10; i++) {
+    options.scenarios[`inter_${i + 1}`] = {
+      executor: 'per-vu-iterations',
+      vus: 1,
+      iterations: 1,
+      startTime: `${invoke_delay * i}ms`
     }
   }
+  return options
 }
-/*
-if ((__ENV.BURST_SIZE = 'all')) {
-  burst_sizes.forEach(size => {
-    export let options = k6_options_burst(size)
-  })
+
+if (__ENV.INVOKE_DELAY == '0') {
+  mode = 'burst'
+  var options_temp = k6_options_burst(__ENV.BURST_SIZE)
+} else if (__ENV.BURST_SIZE == '0') {
+  mode = 'constant'
+  var options_temp = k6_options_inter(__ENV.INVOKE_DELAY)
 }
-*/
 
-export let options = k6_options_burst(__ENV.BURST_SIZE)
-
+export let options = options_temp
 // 1. init code
 
 export default function () {
-  http.get(`${__ENV.BENCHMARK_URL}&id=${exec.scenario.iterationInTest}`)
+  if (mode == 'burst') {
+    http.get(
+      `${__ENV.BENCHMARK_URL}&invokeMode=${mode},invokeInput=${__ENV.BURST_SIZE},id=${exec.scenario.iterationInTest}`
+    )
+  } else {
+    http.get(
+      `${__ENV.BENCHMARK_URL}&invokeMode=${mode},invokeInput=${__ENV.INVOKE_DELAY},id=${exec.scenario.iterationInTest}`
+    )
+  }
 }
