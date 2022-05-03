@@ -1,7 +1,7 @@
 import http from 'k6/http'
 import exec from 'k6/execution'
 
-var total_target_samples = 1000
+var total_target_samples = 1600
 var target_samples_per_burst_size = total_target_samples / 4
 var inter_burst_pauses = 10
 var mode = ''

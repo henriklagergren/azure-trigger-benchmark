@@ -28,7 +28,7 @@ deploy_storage_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting storage benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
+  run_k6
   echo "Storage benchmark finished"
 }
 
@@ -42,7 +42,7 @@ deploy_queue_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting queue benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
+  run_k6
   echo "Queue benchmark finished"
 }
 
@@ -56,7 +56,7 @@ deploy_database_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting database benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
+  run_k6
   echo "Database benchmark finished"
 }
 
@@ -70,7 +70,7 @@ deploy_timer_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting timer benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
+  run_k6
   echo "Timer benchmark finished"
 }
 
@@ -84,7 +84,7 @@ deploy_serviceBus_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting Service bus benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
+  run_k6
   echo "Service bus benchmark finished"
 }
 
@@ -98,7 +98,7 @@ deploy_eventHub_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting Event hub benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
+  run_k6
   echo "Event hub benchmark finished"
 }
 
@@ -112,7 +112,7 @@ deploy_eventGrid_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting Event grid benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
+  run_k6
   echo "Event grid benchmark finished"
 }
 
