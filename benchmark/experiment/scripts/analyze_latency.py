@@ -19,6 +19,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("-t", "--trigger", help="Trigger name")
 parser.add_argument("-r", "--runtime", help="Runtime name")
+parser.add_argument("-test", "--test", help="Test name")
 
 args = parser.parse_args()
 
@@ -28,6 +29,11 @@ trigger_pick = ["all", "http", "storage", "queue",
                 "database", "eventhub", "eventgrid", "servicebustopic"]
 
 runtime_pick = ["all", "node", "dotnet"]
+
+is_test = False
+
+if(str(args.test).lower() != ""):
+    is_test = True
 
 if(str(args.trigger).lower() not in trigger_pick):
     print("Invalid trigger.\nValid entries: ", end="")
@@ -51,12 +57,17 @@ else:
 
 dash = '-' * 119
 
+
 for runtime in runtime_pick:
 
-    all_entries = pd.read_csv("./../data/" + runtime + ".csv")
+    if(is_test):
+        all_entries = pd.read_csv("./../tests/" + str(args.test) + ".csv")
+    else:
+        all_entries = pd.read_csv("./../data/" + runtime + ".csv")
 
-    print('')
-    print('Partitioning groups...')
+    if(not is_test):
+        print('')
+        print('Partitioning groups...')
 
     all_groups = []
     saved_id = None
@@ -64,13 +75,14 @@ for runtime in runtime_pick:
     requestCount = 0
 
     for trigger_type in trigger_pick:
-        print('Analyzes latency for ' + trigger_type)
+        if(not is_test):
+            print('Analyzes latency for ' + trigger_type)
         all_trigger_delays_ms = []
         grouped_entries = all_entries[all_entries['trigger'] == trigger_type].groupby(
             'operation_id')
 
-        grouped_entries.filter(
-            lambda x: (x['type'].value_counts() == 2).any())
+        grouped_entries = grouped_entries.filter(
+            lambda x: (x['type'].value_counts() == 2).any()).groupby('operation_id')
 
         for name, group in grouped_entries:
 
@@ -89,25 +101,31 @@ for runtime in runtime_pick:
                 if(delta.seconds < 500):
                     all_trigger_delays_ms.append(
                         (delta.seconds*1000000 + delta.microseconds) / 1000)
+        if(not is_test):
+            print('')
+            print('## RESULTS ' + trigger_type.upper() + " ##")
+            print('')
+            print(all_trigger_delays_ms)
+            print('')
+            print('Average: ' + str(sum(all_trigger_delays_ms) /
+                                    max(1, len(all_trigger_delays_ms))) + ' ms')
+            print('')
+            print('Number of valid entries: ' +
+                  str(len(all_trigger_delays_ms)))
+            print('')
+            print('')
+            print('')
+            print('')
 
-        print('')
-        print('## RESULTS ' + trigger_type.upper() + " ##")
-        print('')
-        print(all_trigger_delays_ms)
-        print('')
-        print('Average: ' + str(sum(all_trigger_delays_ms) /
-                                max(1, len(all_trigger_delays_ms))) + ' ms')
-        print('')
-        print('Number of valid entries: ' + str(len(all_trigger_delays_ms)))
-        print('')
+        if(is_test):
+            path = "./../tests/results.csv"
+        else:
+            path = "./../results/latency/" + trigger_type + '.csv'
 
-        with open("./../results/latency/" + trigger_type + '.csv', 'w', newline='') as file:
+        with open(path, 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(["trigger_type", "latency"])
             count = 0
             for value in all_trigger_delays_ms:
                 writer.writerow([trigger_type, value])
                 count = count + 1
-        print('')
-        print('')
-        print('')
