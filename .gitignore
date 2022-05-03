@@ -1,5 +1,6 @@
 */bin/
 */.env
+*/.env-e
 */.sb/
 */_pycache_/
 .DS_Store
@@ -9,3 +10,4 @@ benchmark/experiment/results/latency/*
 benchmark/experiment/.sb/
 benchmark/experiment/__pycache__/
 benchmark/experiment/data/*
+benchmark/experiment/tests/results.csv
