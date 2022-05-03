@@ -50,3 +50,6 @@ plotTwo = (p9.ggplot(result_df, p9.aes(x='latency', col='trigger_type', colour='
            + p9.theme(axis_text_x=p9.element_text(angle=45, hjust=1)) + p9.stat_ecdf(geom="step"))
 
 plotTwo.save(filename="./../results/latency/latency_cdf.png")
+
+p9.save_as_pdf_pages([plot], filename="./../results/latency/latency_violin.pdf")
+p9.save_as_pdf_pages([plotTwo], filename="./../results/latency/latency_cdf.pdf")
