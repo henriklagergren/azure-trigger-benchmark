@@ -1,6 +1,8 @@
 TRIGGER_TYPE=''
 RUNTIME=''
 LOCATION=''
+BURST_SIZES=(10 50 100 300)
+INVOKE_DELAYS=(1 5 10 100)
 
 deploy_http_benchmark() {
   echo "Deploying http trigger"
@@ -12,7 +14,7 @@ deploy_http_benchmark() {
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting Http benchmark"
-  k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)  benchmark.js --quiet
+  run_k6
   echo "Http benchmark finished"
 }
 
@@ -125,6 +127,25 @@ deploy_all_benchmarks() {
   deploy_eventGrid_benchmark
 }
 
+
+run_k6() {
+  var=$(grep BURST_SIZE ./../../.env | cut -d '"' -f2)
+  if [ "$var" = "all" ]; then
+    for b in "${BURST_SIZES[@]}"; do
+      echo "Running k6 with all sizes: $b" 
+      k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$b -e INVOKE_DELAY='0' benchmark.js --quiet
+    done
+  else
+    echo "Running k6 with burst size : ${var}"
+    k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=${var} -e INVOKE_DELAY='0' benchmark.js --quiet
+  fi
+
+  for i in "${INVOKE_DELAYS[@]}"; do
+      echo "Running k6 with invoke delay: $i" 
+      k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e INVOKE_DELAY=$i -e BURST_SIZE='0' benchmark.js --quiet
+  done
+}
+
 # Read input flags
 while getopts 't:r:b:' flag; do
   case "${flag}" in
@@ -136,13 +157,23 @@ while getopts 't:r:b:' flag; do
   esac
 done
 
-if [ "$BURST_SIZE" = '10' ] || [ "$BURST_SIZE" = '50' ] || [ "$BURST_SIZE" = '100' ] || [ "$BURST_SIZE" = '300' ]; then
+BURST_SIZE_OLD=''
+
+if [ "$BURST_SIZE" = '10' ] || [ "$BURST_SIZE" = '50' ] || [ "$BURST_SIZE" = '100' ] || [ "$BURST_SIZE" = '300' ] || [ "$BURST_SIZE" = 'all' ]; then
   echo "Burst size valid: $BURST_SIZE"
-  echo "BURST_SIZE=\"$BURST_SIZE\"" >>'./../../.env'
+  BURST_SIZE_OLD=$(sed -n 's/^BURST_SIZE=\(.*\)/\1/p'  < './../../.env')
 else
-  echo 'ERROR: Invalid burst size'
+  echo "ERROR: Invalid burst size: $BURST_SIZE"
   exit
 fi 
+
+# Replace the old value in .env from key BURST_SIZE. If an old one does not exist, add the key-value pair
+if [ $BURST_SIZE_OLD = "\"10\"" ] || [ $BURST_SIZE_OLD = "\"50\"" ] || [ $BURST_SIZE_OLD = "\"100\"" ] || [ $BURST_SIZE_OLD = "\"300\"" ] || [ "$BURST_SIZE_OLD" = "\"all\"" ] ; then
+  sed -i"" -e "s|^BURST_SIZE=.*|BURST_SIZE=\"$BURST_SIZE\"|" './../../.env'
+else
+  echo "BURST_SIZE=\"$BURST_SIZE\"" >>'./../../.env'
+fi
+
 
 if [ "$RUNTIME" = 'node' ] || [ "$RUNTIME" = 'dotnet' ]; then
   echo "Runtime valid: $RUNTIME"
@@ -166,7 +197,8 @@ fi
 
 # Decide which trigger to deploy based on input flag
 if [ "$TRIGGER_TYPE" = 'http' ]; then
-  deploy_http_benchmark
+  #deploy_http_benchmark
+  run_k6
 elif [ "$TRIGGER_TYPE" = 'storage' ]; then
   deploy_storage_benchmark
 elif [ "$TRIGGER_TYPE" = 'queue' ]; then

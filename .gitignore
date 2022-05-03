@@ -11,3 +11,6 @@ benchmark/experiment/.sb/
 benchmark/experiment/__pycache__/
 benchmark/experiment/data/*
 benchmark/experiment/tests/results.csv
+benchmark/*/node_modules/*
+node_modules
+.env-e
