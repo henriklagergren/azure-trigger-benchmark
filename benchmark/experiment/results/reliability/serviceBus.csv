@@ -1,2 +1,0 @@
-trigger_type,original_invokes,original_executes,duplicates_invokes,duplicates_executes,missing_executes,out_of_order,amount_invokes_after,amount_executes_after
-servicebus,200,0,0.0,nan,1.0,0.0,0,0

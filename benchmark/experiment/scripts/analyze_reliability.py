@@ -33,7 +33,7 @@ runtime_pick = ["all", "node", "dotnet"]
 
 is_test = False
 
-if(str(args.test).lower() != ""):
+if(str(args.test).lower() != "none"):
     is_test = True
 
 if(str(args.trigger).lower() not in trigger_pick):
@@ -114,7 +114,8 @@ for runtime in runtime_pick:
         receiver_order_ids = receiver_order_no_duplicates.operation_id.tolist()
 
         for operation_id in missing_executes:
-            invoke_order_ids.remove(operation_id)
+            if(operation_id in invoke_order_ids):
+                invoke_order_ids.remove(operation_id)
 
         count = -1
         out_of_order = 0
@@ -150,7 +151,7 @@ for runtime in runtime_pick:
         if(is_test):
             path = "./../tests/results.csv"
         else:
-            path = "./../results/reliability/" + trigger_type + '.csv'
+            path = "./../results/" + runtime + "/reliability/data/" + trigger_type + '.csv'
 
         with open(path, 'w', newline='') as file:
             writer = csv.writer(file)

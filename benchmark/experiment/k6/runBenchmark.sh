@@ -147,7 +147,7 @@ run_k6() {
 }
 
 # Read input flags
-while getopts 't:r:b:' flag; do
+while getopts 't:r:l:b:' flag; do
   case "${flag}" in
   t) TRIGGER_TYPE="${OPTARG}" ;;
   r) RUNTIME="${OPTARG}" ;; 
@@ -197,8 +197,7 @@ fi
 
 # Decide which trigger to deploy based on input flag
 if [ "$TRIGGER_TYPE" = 'http' ]; then
-  #deploy_http_benchmark
-  run_k6
+  deploy_http_benchmark
 elif [ "$TRIGGER_TYPE" = 'storage' ]; then
   deploy_storage_benchmark
 elif [ "$TRIGGER_TYPE" = 'queue' ]; then

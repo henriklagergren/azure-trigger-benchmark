@@ -11,7 +11,7 @@
       "createLeaseCollectionIfNotExists": true,
       "maxItemsPerInvocation": 1,
       "checkpointDocumentCount": 1,
-      "feedPollDelay": 1
+      "feedPollDelay": 10
     }
   ],
   "scriptFile": "../dist/DatabaseTrigger-node/index.js"
