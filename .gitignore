@@ -5,8 +5,14 @@
 */_pycache_/
 .DS_Store
 
-benchmark/experiment/results/reliability/*
-benchmark/experiment/results/latency/*
+benchmark/experiment/results/reliability/plots/cdf/*
+benchmark/experiment/results/reliability/plots/violin/*
+benchmark/experiment/results/reliability/results.csv
+
+benchmark/experiment/results/latency/plots/cdf/*
+benchmark/experiment/results/latency/plots/violin/*
+benchmark/experiment/results/latency/results.csv
+
 benchmark/experiment/.sb/
 benchmark/experiment/__pycache__/
 benchmark/experiment/data/*
