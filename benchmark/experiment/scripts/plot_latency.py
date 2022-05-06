@@ -31,7 +31,7 @@ latency_runtime_groups = latency_results.groupby('runtime')
 
 for runtime, runtime_group in latency_runtime_groups:
 
-    latency_invoke_type_groups = latency_results.groupby('invoke_type')
+    latency_invoke_type_groups = runtime_group.groupby('invoke_type')
 
     for invoke_type, invoke_type_group in latency_invoke_type_groups:
 

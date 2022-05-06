@@ -13,10 +13,12 @@ from datetime import date
 from datetime import timedelta
 import pandas as pd
 import numpy as np
+import sys
+import threading
 
 load_dotenv('./../../.env')
 
-start_date = str(date.today() + timedelta(days=0))
+start_date = str(date.today() + timedelta(days=-1))
 start_time = "01:00:00"
 
 end_date = str(date.today() + timedelta(days=1))
@@ -34,6 +36,13 @@ api_key = INSIGHTS_API_KEY
 ##
 
 headers = {'x-api-key': api_key, }
+
+
+def print_progress(current, total):
+    sys.stdout.write('\r')
+    sys.stdout.write(str(current) + "/" + str(total))
+    sys.stdout.flush()
+
 
 print('')
 print('Fetching Requests...')
@@ -67,7 +76,12 @@ switch_operation_ids = []
 print('')
 print('Extracting Requests...')
 entries = []
+total_length = len(reqs["tables"][0]["rows"])
+count = -1
 for value in reqs["tables"][0]["rows"]:
+    count = count + 1
+    print_progress(count, total_length)
+
     timestamp = value[0]
     timestamp = timestamp.replace('T', ' ')
     timestamp = timestamp.replace('Z', '')
@@ -100,9 +114,13 @@ all_entries = all_entries.append(entries, ignore_index=True)
 print('')
 print('Extracting Dependencies...')
 entries = []
+total_length = len(dependencies["tables"][0]["rows"])
+count = -1
 for value in dependencies["tables"][0]["rows"]:
-    d = {}
+    count = count + 1
+    print_progress(count, total_length)
 
+    d = {}
     if("Custom operationId" in value[4] and 'http' not in value[4]):
         switch_operation_ids.append([value[5], value[14]])
         d['operation_id'] = value[5].replace('|', '').split('.')[0]
@@ -130,21 +148,18 @@ all_entries = all_entries.append(entries, ignore_index=True)
 print('')
 print('Extracting Traces...')
 entries = []
+total_length = len(traces["tables"][0]["rows"])
+count = -1
+
 for value in traces["tables"][0]["rows"]:
+    count = count + 1
+    print_progress(count, total_length)
     if(value[1].lower() == "invokerendpoint details"):
 
         custom_values = json.loads(value[4])
 
-        all_entries.loc[all_entries['operation_id'] ==
-                        custom_values['operationId'], "trigger"] = custom_values['triggerType'].lower()
-        all_entries.loc[all_entries['operation_id'] ==
-                        custom_values['operationId'], "runtime"] = custom_values['runtime']
-        all_entries.loc[all_entries['operation_id'] ==
-                        custom_values['operationId'], "iteration_id"] = custom_values['iterationId']
-        all_entries.loc[all_entries['operation_id'] ==
-                        custom_values['operationId'], "invoke_mode"] = custom_values['invokeMode']
-        all_entries.loc[all_entries['operation_id'] ==
-                        custom_values['operationId'], "invoke_input"] = custom_values['invokeInput']
+        all_entries.loc[all_entries['operation_id'] == custom_values['operationId'], ['trigger', 'runtime', 'iteration_id', 'invoke_mode', 'invoke_input']] = [
+            custom_values['triggerType'].lower(), custom_values['runtime'], custom_values['iterationId'], custom_values['invokeMode'], custom_values['invokeInput']]
     else:
         d = {}
         d['type'] = 'TRACE'
@@ -158,9 +173,12 @@ all_entries = all_entries.append(entries, ignore_index=True)
 # Switch operation ids if necessary
 print('')
 print('Setting correct operation IDs...')
-
+total_length = len(switch_operation_ids)
+count = -1
 if len(switch_operation_ids) > 0:
     for switch in switch_operation_ids:
+        count = count + 1
+        print_progress(count, total_length)
         all_entries["operation_id"][all_entries["operation_id"] ==
                                     switch[1]] = switch[0].replace('|', '').split('.')[0]
 

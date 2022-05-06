@@ -121,7 +121,6 @@ deploy_all_benchmarks() {
   deploy_storage_benchmark
   deploy_queue_benchmark
   deploy_database_benchmark
-  deploy_timer_benchmark
   deploy_serviceBus_benchmark
   deploy_eventHub_benchmark
   deploy_eventGrid_benchmark
@@ -147,7 +146,7 @@ run_k6() {
 }
 
 # Read input flags
-while getopts 't:r:l:b:' flag; do
+while getopts 't:r:b:' flag; do
   case "${flag}" in
   t) TRIGGER_TYPE="${OPTARG}" ;;
   r) RUNTIME="${OPTARG}" ;; 

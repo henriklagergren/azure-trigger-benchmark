@@ -18,45 +18,25 @@ import numpy as np
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("-t", "--trigger", help="Trigger name")
-parser.add_argument("-r", "--runtime", help="Runtime name")
 parser.add_argument("-test", "--test", help="Test name")
 
 args = parser.parse_args()
 
 load_dotenv('./../../.env')
 
-trigger_pick = ["all", "http", "storage", "queue",
+trigger_pick = ["http", "storage", "queue",
                 "database", "eventhub", "eventgrid", "servicebustopic"]
 
-runtime_pick = ["all", "node", "dotnet"]
+runtime_pick = ["node", "dotnet"]
 
 is_test = False
 
 if(str(args.test).lower() != "none"):
     is_test = True
 
-if(str(args.trigger).lower() not in trigger_pick):
-    print("Invalid trigger.\nValid entries: ", end="")
-    print(*trigger_pick, sep=", ")
-    sys.exit()
+reliability_results = pd.DataFrame(columns=["runtime", "trigger_type", "original_invokes", "original_executes", "duplicates_invokes",
+                                            "duplicates_executes", "missing_executes", "out_of_order", "invoke_type", "invoke_input"])
 
-if(str(args.runtime).lower() not in runtime_pick):
-    print("Invalid runtime.\nValid entries: ", end="")
-    print(*runtime_pick, sep=", ")
-    sys.exit()
-
-if(str(args.runtime).lower() == 'all'):
-    runtime_pick.remove("all")
-else:
-    runtime_pick = [str(args.runtime)]
-
-if(str(args.trigger).lower() == 'all'):
-    trigger_pick.remove("all")
-else:
-    trigger_pick = [str(args.trigger)]
-
-dash = '-' * 119
 for runtime in runtime_pick:
 
     if(is_test):
@@ -66,96 +46,83 @@ for runtime in runtime_pick:
 
     all_entries = all_entries.sort_values(by=['timestamp'])
 
-    for trigger_type in trigger_pick:
+    all_entries = all_entries.groupby('trigger')
 
-        if(trigger_type != "http"):
-            invoke_order = all_entries[all_entries.name ==
-                                       "completiontrack" + trigger_type]
-        else:
-            invoke_order = all_entries[all_entries.name ==
-                                       "get /api/httptrigger-" + runtime]
+    for trigger_type, trigger_type_entries in all_entries:
 
-        receiver_order = all_entries[
-            all_entries.name == 'custom operationid ' + trigger_type]
+        trigger_type_entries = trigger_type_entries.groupby('invoke_mode')
 
-        invoke_amount = len(invoke_order.index)
-        receiver_amount = len(receiver_order.index)
+        for trigger_mode, trigger_mode_entries in trigger_type_entries:
 
-        missing_executes = []
-        for operation_id in invoke_order.operation_id:
-            if(operation_id not in receiver_order['operation_id'].values):
-                missing_executes.append(operation_id)
+            trigger_mode_entries = trigger_mode_entries.groupby(
+                'invoke_input')
 
-        invoke_duplicates_list = list(filter((1).__ne__, invoke_order.groupby(
-            'iteration_id').size().to_list()))
+            for trigger_input, trigger_input_entries in trigger_mode_entries:
 
-        invoke_duplicates_amount = sum(
-            invoke_duplicates_list) - len(invoke_duplicates_list)
+                if(trigger_type != "http"):
+                    invoke_order = trigger_input_entries[trigger_input_entries.name ==
+                                                         "completiontrack" + trigger_type]
+                else:
+                    invoke_order = trigger_input_entries[trigger_input_entries.name ==
+                                                         "get /api/httptrigger-" + runtime]
 
-        receiver_duplicates_list = list(filter((1).__ne__, receiver_order.groupby(
-            'operation_id').size().to_list()))
+                receiver_order = trigger_input_entries[
+                    trigger_input_entries.name == 'custom operationid ' + trigger_type]
 
-        receiver_duplicates_amount = sum(
-            receiver_duplicates_list) - len(receiver_duplicates_list)
+                invoke_amount = len(invoke_order.index)
+                receiver_amount = len(receiver_order.index)
 
-        invoke_order_no_duplicates = invoke_order.drop_duplicates(
-            subset=['name', 'iteration_id'], keep=False)
+                missing_executes = []
+                for operation_id in invoke_order.operation_id:
+                    if(operation_id not in receiver_order['operation_id'].values):
+                        missing_executes.append(operation_id)
 
-        invoke_order_no_duplicates = invoke_order_no_duplicates.drop_duplicates(
-            subset=['name', 'operation_id'], keep=False)
+                invoke_duplicates_amount = len(invoke_order[
+                    'iteration_id'].to_list()) - len(list(set(invoke_order[
+                        'iteration_id'].to_list())))
 
-        receiver_order_no_duplicates = receiver_order.drop_duplicates(
-            subset=['name', 'operation_id'], keep=False)
+                receiver_duplicates_amount = len(receiver_order[
+                    'operation_id'].to_list()) - len(list(set(receiver_order[
+                        'operation_id'].to_list())))
 
-        receiver_order_no_duplicates = receiver_order_no_duplicates.drop_duplicates(
-            subset=['name', 'iteration_id'], keep=False)
+                invoke_order_no_duplicates = invoke_order.drop_duplicates(
+                    subset=['name', 'iteration_id'], keep=False)
 
-        invoke_order_ids = invoke_order_no_duplicates.operation_id.tolist()
-        receiver_order_ids = receiver_order_no_duplicates.operation_id.tolist()
+                invoke_order_no_duplicates = invoke_order_no_duplicates.drop_duplicates(
+                    subset=['name', 'operation_id'], keep=False)
 
-        for operation_id in missing_executes:
-            if(operation_id in invoke_order_ids):
-                invoke_order_ids.remove(operation_id)
+                receiver_order_no_duplicates = receiver_order.drop_duplicates(
+                    subset=['name', 'operation_id'], keep=False)
 
-        count = -1
-        out_of_order = 0
+                receiver_order_no_duplicates = receiver_order_no_duplicates.drop_duplicates(
+                    subset=['name', 'iteration_id'], keep=False)
 
-        for invoke_id in invoke_order_ids:
-            count = count + 1
+                invoke_order_ids = invoke_order_no_duplicates.operation_id.tolist()
+                receiver_order_ids = receiver_order_no_duplicates.operation_id.tolist()
 
-            if invoke_id != receiver_order_ids[count]:
-                out_of_order = out_of_order + 1
-                if invoke_id in receiver_order_ids:
-                    receiver_order_ids.remove(invoke_id)
-                    receiver_order_ids.insert(count, invoke_id)
+                for operation_id in missing_executes:
+                    if(operation_id in invoke_order_ids):
+                        invoke_order_ids.remove(operation_id)
 
-        if(not is_test):
-            print('')
-            print('## Results ' + trigger_type + ' ##')
-            print('')
-            print('Original amount of invokes: ' + str(invoke_amount))
-            print('Original amount of executes: ' + str(receiver_amount))
-            print('')
-            print('Contains Duplicates')
-            print('Invoke: ' + str(invoke_duplicates_amount))
-            print('Execute: ' + str(receiver_duplicates_amount))
-            print('')
-            print('Missing executes: ' + str(len(missing_executes)))
-            print('')
-            print('Out of order: ' + str(out_of_order))
-            print('')
-            print('')
-            print('')
-            print('')
+                count = -1
+                out_of_order = 0
 
-        if(is_test):
-            path = "./../tests/results.csv"
-        else:
-            path = "./../results/" + runtime + "/reliability/data/" + trigger_type + '.csv'
+                for invoke_id in invoke_order_ids:
+                    count = count + 1
 
-        with open(path, 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(["trigger_type", "original_invokes", "original_executes", "duplicates_invokes",
-                            "duplicates_executes", "missing_executes", "out_of_order", "amount_invokes_after", "amount_executes_after"])
-            writer.writerow([trigger_type, invoke_amount, receiver_amount, invoke_duplicates_amount,
-                            receiver_duplicates_amount, len(missing_executes), out_of_order, len(invoke_order_ids), len(receiver_order_ids)])
+                    if invoke_id != receiver_order_ids[count]:
+                        out_of_order = out_of_order + 1
+                        if invoke_id in receiver_order_ids:
+                            receiver_order_ids.remove(invoke_id)
+                            receiver_order_ids.insert(count, invoke_id)
+
+                reliability_results = reliability_results.append({"runtime": runtime, "trigger_type": trigger_type, "original_invokes": invoke_amount, "original_executes": receiver_amount, "duplicates_invokes": invoke_duplicates_amount,
+                                                                  "duplicates_executes": receiver_duplicates_amount, "missing_executes": len(missing_executes), "out_of_order": out_of_order, "invoke_type": trigger_mode, "invoke_input": trigger_input}, ignore_index=True)
+
+
+if(is_test):
+    path = "./../tests/results.csv"
+else:
+    path = "./../results/reliability/results.csv"
+
+reliability_results.to_csv(path, index=False)
