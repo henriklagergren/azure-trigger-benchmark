@@ -5,6 +5,7 @@ var total_target_samples = 1600
 var target_samples_per_burst_size = total_target_samples / 4
 var inter_burst_pauses = 10
 var mode = ''
+var count = 0
 
 function range (size, startAt = 0) {
   return [...Array(size).keys()].map(i => i + startAt)
@@ -14,7 +15,6 @@ function k6_options_burst (burst_size) {
   var num_bursts = range(
     Math.round(target_samples_per_burst_size / parseInt(burst_size))
   )
-
   var options = {
     insecureSkipTLSVerify: true,
     noConnectionReuse: false,
@@ -46,6 +46,7 @@ function k6_options_inter (invoke_delay) {
       vus: 1,
       iterations: 1,
       startTime: `${invoke_delay * i}ms`,
+      tags: { ITERATIONID: `${i}` }
     }
   }
   return options
@@ -64,12 +65,13 @@ export let options = options_temp
 
 export default function () {
   if (mode == 'burst') {
+    exec.vu.tags['ITERATIONID'] = count + 1
     http.get(
-      `${__ENV.BENCHMARK_URL}&invokeMode=${mode}&invokeInput=${__ENV.BURST_SIZE}&id=${exec.scenario.iterationInInstance}`
+      `${__ENV.BENCHMARK_URL}&invokeMode=${mode}&invokeInput=${__ENV.BURST_SIZE}&id=${exec.vu.idInTest}`
     )
   } else {
     http.get(
-      `${__ENV.BENCHMARK_URL}&invokeMode=${mode}&invokeInput=${__ENV.INVOKE_DELAY}&id=${exec.scenario.iterationInInstance}`
+      `${__ENV.BENCHMARK_URL}&invokeMode=${mode}&invokeInput=${__ENV.INVOKE_DELAY}&id=${exec.vu.tags.ITERATIONID}`
     )
   }
 }
