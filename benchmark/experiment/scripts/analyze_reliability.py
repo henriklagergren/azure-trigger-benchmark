@@ -24,9 +24,6 @@ args = parser.parse_args()
 
 load_dotenv('./../../.env')
 
-trigger_pick = ["http", "storage", "queue",
-                "database", "eventhub", "eventgrid", "servicebustopic"]
-
 runtime_pick = ["node", "dotnet"]
 
 is_test = False
@@ -85,17 +82,17 @@ for runtime in runtime_pick:
                     'operation_id'].to_list()) - len(list(set(receiver_order[
                         'operation_id'].to_list())))
 
-                invoke_order_no_duplicates = invoke_order.drop_duplicates(
-                    subset=['name', 'iteration_id'], keep=False)
+                # invoke_order_no_duplicates = invoke_order.drop_duplicates(
+                #    subset=['name', 'iteration_id'], keep=False)
 
-                invoke_order_no_duplicates = invoke_order_no_duplicates.drop_duplicates(
+                invoke_order_no_duplicates = invoke_order.drop_duplicates(
                     subset=['name', 'operation_id'], keep=False)
 
                 receiver_order_no_duplicates = receiver_order.drop_duplicates(
                     subset=['name', 'operation_id'], keep=False)
 
-                receiver_order_no_duplicates = receiver_order_no_duplicates.drop_duplicates(
-                    subset=['name', 'iteration_id'], keep=False)
+                # receiver_order_no_duplicates = receiver_order_no_duplicates.drop_duplicates(
+                #    subset=['name', 'iteration_id'], keep=False)
 
                 invoke_order_ids = invoke_order_no_duplicates.operation_id.tolist()
                 receiver_order_ids = receiver_order_no_duplicates.operation_id.tolist()
@@ -106,7 +103,9 @@ for runtime in runtime_pick:
 
                 count = -1
                 out_of_order = 0
-
+                print(str(trigger_type) + " " +
+                      str(trigger_mode) + " " + str(trigger_input))
+                print(receiver_order_ids)
                 for invoke_id in invoke_order_ids:
                     count = count + 1
 

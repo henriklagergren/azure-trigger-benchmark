@@ -35,8 +35,8 @@ if(str(args.test).lower() != "none"):
     is_test = True
 
 latency_results = pd.DataFrame(
-    columns=["runtime", "trigger_type", "latency",
-             "invoke_type", "invoke_input"])
+    columns=["runtime", "trigger_type",
+             "invoke_type", "invoke_input", "latency"])
 
 for runtime in runtimes:
 
@@ -72,7 +72,7 @@ for runtime in runtimes:
 
                 if(delta.seconds < 500):
                     latency_results = latency_results.append({"runtime": runtime, "trigger_type": trigger_type,
-                                                              "latency": (delta.seconds*1000000 + delta.microseconds) / 1000, "invoke_type": invoker.values[0][8], "invoke_input": invoker.values[0][9]}, ignore_index=True)
+                                                              "invoke_type": invoker.values[0][8], "invoke_input": invoker.values[0][9], "latency": (delta.seconds*1000000 + delta.microseconds) / 1000}, ignore_index=True)
 
 if(is_test):
     path = "./../tests/results.csv"

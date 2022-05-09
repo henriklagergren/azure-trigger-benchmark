@@ -133,6 +133,8 @@ run_k6() {
     for b in "${BURST_SIZES[@]}"; do
       echo "Running k6 with all sizes: $b" 
       k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$b -e INVOKE_DELAY='0' benchmark.js --quiet
+      echo "Waiting 10s" 
+      sleep 10
     done
   else
     echo "Running k6 with burst size : ${var}"
@@ -141,6 +143,8 @@ run_k6() {
 
   for i in "${INVOKE_DELAYS[@]}"; do
       echo "Running k6 with invoke delay: $i" 
+      echo "Waiting 10s" 
+      sleep 10
       k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e INVOKE_DELAY=$i -e BURST_SIZE='0' benchmark.js --quiet
   done
 }

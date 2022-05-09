@@ -45,7 +45,7 @@ function k6_options_inter (invoke_delay) {
       executor: 'per-vu-iterations',
       vus: 1,
       iterations: 1,
-      startTime: `${invoke_delay * i}ms`
+      startTime: `${invoke_delay * i}ms`,
     }
   }
   return options
@@ -65,11 +65,11 @@ export let options = options_temp
 export default function () {
   if (mode == 'burst') {
     http.get(
-      `${__ENV.BENCHMARK_URL}&invokeMode=${mode}&invokeInput=${__ENV.BURST_SIZE}&id=${exec.scenario.iterationInTest}`
+      `${__ENV.BENCHMARK_URL}&invokeMode=${mode}&invokeInput=${__ENV.BURST_SIZE}&id=${exec.scenario.iterationInInstance}`
     )
   } else {
     http.get(
-      `${__ENV.BENCHMARK_URL}&invokeMode=${mode}&invokeInput=${__ENV.INVOKE_DELAY}&id=${exec.scenario.iterationInTest}`
+      `${__ENV.BENCHMARK_URL}&invokeMode=${mode}&invokeInput=${__ENV.INVOKE_DELAY}&id=${exec.scenario.iterationInInstance}`
     )
   }
 }

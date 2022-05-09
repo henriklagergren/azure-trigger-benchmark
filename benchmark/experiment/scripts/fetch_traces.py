@@ -14,11 +14,10 @@ from datetime import timedelta
 import pandas as pd
 import numpy as np
 import sys
-import threading
 
 load_dotenv('./../../.env')
 
-start_date = str(date.today() + timedelta(days=-1))
+start_date = str(date.today() + timedelta(days=-2))
 start_time = "01:00:00"
 
 end_date = str(date.today() + timedelta(days=1))
@@ -54,13 +53,13 @@ reqs = reqs.json()
 print('')
 print('Fetching Dependencies...')
 dependencies = requests.get('https://api.applicationinsights.io/v1/apps/' +
-                            application_ID + '/query?query=dependencies | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
+                            application_ID + '/query?query=dependencies | where name contains "Custom operationId" or name contains "CompletionTrack" or name contains "GET /api/httptrigger" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
 dependencies = dependencies.json()
 
 print('')
 print('Fetching Traces...')
 traces = requests.get('https://api.applicationinsights.io/v1/apps/' +
-                      application_ID + '/query?query=traces | where customDimensions contains "Coldstart" or message contains "InvokerEndpoint details" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
+                      application_ID + '/query?query=traces | where message contains "InvokerEndpoint details" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
 traces = traces.json()
 
 all_entries = pd.DataFrame(
@@ -122,7 +121,8 @@ for value in dependencies["tables"][0]["rows"]:
 
     d = {}
     if("Custom operationId" in value[4] and 'http' not in value[4]):
-        switch_operation_ids.append([value[5], value[14]])
+        switch_operation_ids.append(
+            [value[5].replace('|', '').split('.')[0], value[14]])
         d['operation_id'] = value[5].replace('|', '').split('.')[0]
     else:
         d['operation_id'] = value[14]
@@ -144,6 +144,19 @@ for value in dependencies["tables"][0]["rows"]:
     entries.append(d)
 
 all_entries = all_entries.append(entries, ignore_index=True)
+
+# Switch operation ids if necessary
+print('')
+print('Setting correct operation IDs...')
+total_length = len(switch_operation_ids)
+count = -1
+if len(switch_operation_ids) > 0:
+    for switch in switch_operation_ids:
+        count = count + 1
+        print_progress(count, total_length)
+        all_entries["operation_id"][all_entries["operation_id"] ==
+                                    switch[1]] = switch[0].replace('|', '').split('.')[0]
+
 
 print('')
 print('Extracting Traces...')
@@ -169,19 +182,6 @@ for value in traces["tables"][0]["rows"]:
         entries.append(d)
 
 all_entries = all_entries.append(entries, ignore_index=True)
-
-# Switch operation ids if necessary
-print('')
-print('Setting correct operation IDs...')
-total_length = len(switch_operation_ids)
-count = -1
-if len(switch_operation_ids) > 0:
-    for switch in switch_operation_ids:
-        count = count + 1
-        print_progress(count, total_length)
-        all_entries["operation_id"][all_entries["operation_id"] ==
-                                    switch[1]] = switch[0].replace('|', '').split('.')[0]
-
 
 # Remove entries without operation_id
 # all_entries = all_entries.filter(
