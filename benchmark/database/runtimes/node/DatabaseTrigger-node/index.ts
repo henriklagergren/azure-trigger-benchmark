@@ -4,6 +4,10 @@ import * as dotenv from 'dotenv'
 
 dotenv.config({ path: './../../../../.env' })
 
+const envInstance = process.env['WEBSITE_INSTANCE_ID']
+
+let count = 0
+
 appInsights
   .setup()
   .setAutoDependencyCorrelation(true)
@@ -21,14 +25,19 @@ appInsights.start()
 
 const databaseTrigger: AzureFunction = async function (
   context: Context,
-  documents: any[]
+  documents: any[],
+  invocationId: any
 ): Promise<void> {
-  context.res = {
-    status: 200,
-    headers: {
-      'content-type': 'text/plain'
+  count += 1
+
+  appInsights.defaultClient.trackTrace({
+    message: 'Coldstart details',
+    properties: {
+      iteration_id: count,
+      instance_id: envInstance,
+      operation_id: invocationId
     }
-  }
+  })
 }
 
 export default async function contextPropagatingDatabaseTrigger (context, req) {
@@ -51,6 +60,6 @@ export default async function contextPropagatingDatabaseTrigger (context, req) {
     })
 
     appInsights.defaultClient.flush()
-    return await databaseTrigger(context, req)
+    return await databaseTrigger(context, req, invocationId)
   }, correlationContext)()
 }

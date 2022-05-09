@@ -16,15 +16,23 @@ appInsights
 appInsights.defaultClient.setAutoPopulateAzureProperties(true)
 appInsights.start()
 
+const envInstance = process.env['WEBSITE_INSTANCE_ID']
+let count = 0
+
 const queueTrigger: AzureFunction = async function (
-  context: Context
+  context: Context,
+  invocationId: any
 ): Promise<void> {
-  context.res = {
-    status: 200,
-    headers: {
-      'content-type': 'text/plain'
+  count += 1
+
+  appInsights.defaultClient.trackTrace({
+    message: 'Coldstart details',
+    properties: {
+      iteration_id: count,
+      instance_id: envInstance,
+      operation_id: invocationId
     }
-  }
+  })
 }
 
 export default async function contextPropagatingQueueTrigger (
@@ -35,9 +43,6 @@ export default async function contextPropagatingQueueTrigger (
     context,
     'correlationContextQueue'
   )
-
-  console.log(JSON.stringify(queueItem))
-  console.log(JSON.stringify(context))
 
   return appInsights.wrapWithCorrelationContext(async () => {
     const startTime = Date.now()
@@ -55,6 +60,6 @@ export default async function contextPropagatingQueueTrigger (
     })
 
     appInsights.defaultClient.flush()
-    return await queueTrigger(context)
+    return await queueTrigger(context, invocationId)
   }, correlationContext)()
 }
