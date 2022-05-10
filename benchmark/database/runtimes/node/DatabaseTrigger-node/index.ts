@@ -4,10 +4,6 @@ import * as dotenv from 'dotenv'
 
 dotenv.config({ path: './../../../../.env' })
 
-const envInstance = process.env['WEBSITE_INSTANCE_ID']
-
-let count = 0
-
 appInsights
   .setup()
   .setAutoDependencyCorrelation(true)
@@ -22,6 +18,10 @@ appInsights
   .setDistributedTracingMode(appInsights.DistributedTracingModes.AI_AND_W3C)
 appInsights.defaultClient.setAutoPopulateAzureProperties(true)
 appInsights.start()
+
+const envInstance = process.env['WEBSITE_INSTANCE_ID']
+
+let count = 0
 
 const databaseTrigger: AzureFunction = async function (
   context: Context,

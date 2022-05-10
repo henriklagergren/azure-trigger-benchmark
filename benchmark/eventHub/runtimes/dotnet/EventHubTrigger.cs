@@ -15,6 +15,8 @@ namespace dotnet
   {
     private readonly TelemetryClient telemetryClient;
 
+    private static int count;
+
     /// Using dependency injection will guarantee that you use the same configuration for telemetry collected automatically and manually.
     public EventHubTrigger(TelemetryConfiguration telemetryConfiguration)
     {
@@ -32,7 +34,19 @@ namespace dotnet
         // Replace these two lines with your processing logic.
         log.LogInformation($"C# Event Hub trigger function processed a message: {messageBody}");
 
-        var innvocationId = messageBody.Replace("\"", "");
+        var invocationId = messageBody.Replace("\"", "");
+        var envInstance = Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID");
+
+        count++;
+
+        this.telemetryClient.TrackTrace(
+            message: "Coldstart details",
+            properties: new Dictionary<string, string> {
+            {"iteration_id", count.ToString()},
+            {"instance_id", envInstance},
+            {"operation_id", invocationId}
+            }
+      );
 
         this.telemetryClient.TrackDependency(
         target: "http://",
@@ -41,7 +55,7 @@ namespace dotnet
         resultCode: "200",
         success: true,
         startTime: DateTime.Now,
-        data: innvocationId,
+        data: invocationId,
         duration: TimeSpan.FromMilliseconds(10)
         );
       }
