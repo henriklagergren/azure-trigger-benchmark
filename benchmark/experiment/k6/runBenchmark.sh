@@ -2,7 +2,8 @@ TRIGGER_TYPE=''
 RUNTIME=''
 LOCATION=''
 BURST_SIZES=(10 50 100 300)
-INVOKE_DELAYS=(1 5 10 100)
+INVOKE_DELAYS=(1 10 25 50 100 150)
+INVOKE_DELAYS_ONE_VU=(500 750 1000 1500 2000)
 
 deploy_http_benchmark() {
   echo "Deploying http trigger"
@@ -132,20 +133,27 @@ run_k6() {
   if [ "$var" = "all" ]; then
     for b in "${BURST_SIZES[@]}"; do
       echo "Running k6 with all sizes: $b" 
-      k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$b -e INVOKE_DELAY='0' benchmark.js --quiet
+      k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=$b -e MODE='BURST' benchmark.js --quiet
       echo "Waiting 10s" 
       sleep 10
     done
   else
     echo "Running k6 with burst size : ${var}"
-    k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=${var} -e INVOKE_DELAY='0' benchmark.js --quiet
+    k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e BURST_SIZE=${var} -e MODE='BURST' benchmark.js --quiet
   fi
 
   for i in "${INVOKE_DELAYS[@]}"; do
       echo "Running k6 with invoke delay: $i" 
       echo "Waiting 10s" 
       sleep 10
-      k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e INVOKE_DELAY=$i -e BURST_SIZE='0' benchmark.js --quiet
+      k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e INVOKE_DELAY=$i -e MODE='CONSTANT' benchmark.js --quiet
+  done
+
+  for i in "${INVOKE_DELAYS_ONE_VU[@]}"; do
+      echo "Running k6 with invoke delay: $i" 
+      echo "Waiting 10s" 
+      sleep 10
+      k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e INVOKE_DELAY=$i -e MODE='CONSTANT_ONE_VU' benchmark.js --quiet
   done
 }
 

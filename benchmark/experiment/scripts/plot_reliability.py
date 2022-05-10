@@ -30,10 +30,12 @@ reliability_results = pd.read_csv(
 reliability_runtime_groups = reliability_results.groupby('runtime')
 
 for runtime, runtime_group in reliability_runtime_groups:
+    print(str(runtime))
 
-    reliability_invoke_type_groups = reliability_results.groupby('invoke_type')
+    reliability_invoke_type_groups = runtime_group.groupby('invoke_type')
 
     for invoke_type, invoke_type_group in reliability_invoke_type_groups:
+        print(str(invoke_type))
 
         test = pd.DataFrame(pd.DataFrame(columns=["runtime", "trigger_type", "original_invokes", "original_executes", "duplicates_invokes",
                                                   "duplicates_executes", "missing_executes", "out_of_order", "invoke_type", "invoke_input"]))
@@ -47,6 +49,7 @@ for runtime, runtime_group in reliability_runtime_groups:
             legend_title = "Iteration delay"
 
         for invoke_input, invoke_input_group in reliability_invoke_input_groups:
+            print(str(invoke_input))
             invoke_input_group['missing_executes'] = invoke_input_group['missing_executes'] / \
                 invoke_input_group['original_invokes']
 

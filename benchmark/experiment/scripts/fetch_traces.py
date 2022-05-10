@@ -23,7 +23,7 @@ pd.set_option('display.width', None)
 load_dotenv('./../../.env')
 
 start_date = str(date.today() + timedelta(days=0))
-start_time = "19:40:00"
+start_time = "14:00:00"
 
 end_date = str(date.today() + timedelta(days=1))
 end_time = "01:00:00"
@@ -76,6 +76,9 @@ trigger_pick = ["http", "storage", "queue",
 runtime_pick = ["node", "dotnet"]
 
 switch_operation_ids = []
+
+# switch_operation_ids = pd.DataFrame(
+#    columns=['operation_id', 'new_operation_id'])
 
 print('')
 print('Extracting Requests...')
@@ -159,8 +162,8 @@ if len(switch_operation_ids) > 0:
     for switch in switch_operation_ids:
         count = count + 1
         print_progress(count, total_length)
-        all_entries["operation_id"][all_entries["operation_id"] ==
-                                    switch[1]] = switch[0].replace('|', '').split('.')[0]
+        all_entries["operation_id"].replace(
+            switch[1], switch[0].replace('|', '').split('.')[0], inplace=True)
 
 print('')
 print('Extracting Traces...')

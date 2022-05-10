@@ -103,17 +103,18 @@ for runtime in runtime_pick:
 
                 count = -1
                 out_of_order = 0
-                print(receiver_order_ids)
+                print(str(len(invoke_order_ids)) +
+                      " " + str(len(receiver_order_ids)))
+
                 for invoke_id in invoke_order_ids:
                     count = count + 1
+                    if count < len(receiver_order_ids):
+                        if invoke_id != receiver_order_ids[count]:
+                            out_of_order = out_of_order + 1
+                            if invoke_id in receiver_order_ids:
+                                receiver_order_ids.remove(invoke_id)
+                                receiver_order_ids.insert(count, invoke_id)
 
-                    if invoke_id != receiver_order_ids[count]:
-                        out_of_order = out_of_order + 1
-                        if invoke_id in receiver_order_ids:
-                            receiver_order_ids.remove(invoke_id)
-                            receiver_order_ids.insert(count, invoke_id)
-
-                print(receiver_order_ids)
                 reliability_results = reliability_results.append({"runtime": runtime, "trigger_type": trigger_type, "original_invokes": invoke_amount, "original_executes": receiver_amount, "duplicates_invokes": invoke_duplicates_amount,
                                                                   "duplicates_executes": receiver_duplicates_amount, "missing_executes": len(missing_executes), "out_of_order": out_of_order, "invoke_type": trigger_mode, "invoke_input": trigger_input}, ignore_index=True)
 

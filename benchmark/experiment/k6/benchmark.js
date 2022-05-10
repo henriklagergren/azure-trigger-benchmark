@@ -1,7 +1,7 @@
 import http from 'k6/http'
 import exec from 'k6/execution'
 
-var total_target_samples = 1600
+var total_target_samples = 3000
 var target_samples_per_burst_size = total_target_samples / 4
 var inter_burst_pauses = 10
 var mode = ''
@@ -13,7 +13,7 @@ function range (size, startAt = 0) {
 
 function k6_options_burst (burst_size) {
   var num_bursts = range(
-    Math.round(target_samples_per_burst_size / parseInt(burst_size))
+    Math.ceil(target_samples_per_burst_size / parseInt(burst_size))
   )
   var options = {
     insecureSkipTLSVerify: true,
@@ -33,14 +33,14 @@ function k6_options_burst (burst_size) {
   return options
 }
 
-function k6_options_inter (invoke_delay) {
+function k6_options_constant (invoke_delay) {
   var options = {
     insecureSkipTLSVerify: true,
     noConnectionReuse: false,
     scenarios: {}
   }
 
-  for (let i = 0; i < 600; i++) {
+  for (let i = 0; i < 500; i++) {
     options.scenarios[`inter_${i + 1}`] = {
       executor: 'per-vu-iterations',
       vus: 1,
@@ -52,26 +52,50 @@ function k6_options_inter (invoke_delay) {
   return options
 }
 
-if (__ENV.INVOKE_DELAY == '0') {
-  mode = 'burst'
+function k6_options_constant_one_vu (invoke_delay) {
+  var options = {
+    insecureSkipTLSVerify: true,
+    noConnectionReuse: false,
+    scenarios: {
+      one_vu: {
+        executor: 'constant-arrival-rate',
+        maxVUs: 1,
+        duration: `${invoke_delay*500}ms`,
+        rate: 1,
+        timeUnit: `${invoke_delay}ms`,
+        preAllocatedVUs: 1
+    },
+  },
+}
+  return options
+}
+
+if (__ENV.MODE == 'BURST') {
   var options_temp = k6_options_burst(__ENV.BURST_SIZE)
-} else if (__ENV.BURST_SIZE == '0') {
-  mode = 'constant'
-  var options_temp = k6_options_inter(__ENV.INVOKE_DELAY)
+  var mode = "burst"
+} else if (__ENV.MODE == 'CONSTANT') {
+  var options_temp = k6_options_constant(__ENV.INVOKE_DELAY)
+  var mode = "constant"
+} else if (__ENV.MODE == 'CONSTANT_ONE_VU') {
+  var options_temp = k6_options_constant_one_vu(__ENV.INVOKE_DELAY)
+  var mode = "constant_one_vu"
 }
 
 export let options = options_temp
-// 1. init code
 
 export default function () {
-  if (mode == 'burst') {
+  if (__ENV.MODE == 'BURST') {
     exec.vu.tags['ITERATIONID'] = count + 1
     http.get(
       `${__ENV.BENCHMARK_URL}&invokeMode=${mode}&invokeInput=${__ENV.BURST_SIZE}&id=${exec.vu.idInTest}`
     )
-  } else {
+  } else if (__ENV.MODE == 'CONSTANT') {
     http.get(
       `${__ENV.BENCHMARK_URL}&invokeMode=${mode}&invokeInput=${__ENV.INVOKE_DELAY}&id=${exec.vu.tags.ITERATIONID}`
+    )
+  } else if (__ENV.MODE == 'CONSTANT_ONE_VU'){
+    http.get(
+      `${__ENV.BENCHMARK_URL}&invokeMode=${mode}&invokeInput=${__ENV.INVOKE_DELAY}&id=${exec.scenario.iterationInTest}`
     )
   }
 }
