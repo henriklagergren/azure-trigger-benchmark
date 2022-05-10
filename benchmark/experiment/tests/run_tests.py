@@ -3,12 +3,12 @@ import pandas as pd
 
 # First test reliability
 os.system(
-    "python3 ./../scripts/analyze_reliability.py -t database -r dotnet -test firstTest")
+    "python3 ./../scripts/analyze_reliability.py -test firstTest")
 
 result = pd.read_csv("results.csv")
 
 is_test_ok = result["original_invokes"].values[0] == 5 and result["original_executes"].values[0] == 5 and result["duplicates_invokes"].values[0] == 0 and result["duplicates_executes"].values[0] == 0 and result[
-    "missing_executes"].values[0] == 0 and result["out_of_order"].values[0] == 0 and result["amount_invokes_after"].values[0] == 5 and result["amount_executes_after"].values[0] == 5
+    "missing_executes"].values[0] == 0 and result["out_of_order"].values[0] == 0
 
 if(is_test_ok):
     print("Test one reliability OK")
@@ -18,7 +18,7 @@ else:
 # First test latency
 
 os.system(
-    "python3 ./../scripts/analyze_latency.py -t database -r dotnet -test firstTest")
+    "python3 ./../scripts/analyze_latency.py -test firstTest")
 
 result = pd.read_csv("results.csv")
 
@@ -32,12 +32,12 @@ else:
 
 # Second test reliability
 os.system(
-    "python3 ./../scripts/analyze_reliability.py -t database -r dotnet -test secondTest")
+    "python3 ./../scripts/analyze_reliability.py -test secondTest")
 
 result = pd.read_csv("results.csv")
 
 is_test_ok = result["original_invokes"].values[0] == 6 and result["original_executes"].values[0] == 6 and result["duplicates_invokes"].values[0] == 0 and result["duplicates_executes"].values[0] == 0 and result[
-    "missing_executes"].values[0] == 0 and result["out_of_order"].values[0] == 3 and result["amount_invokes_after"].values[0] == 6 and result["amount_executes_after"].values[0] == 6
+    "missing_executes"].values[0] == 0 and result["out_of_order"].values[0] == 3
 
 if(is_test_ok):
     print("Test two reliability OK")
@@ -47,7 +47,7 @@ else:
 # Second test latency
 
 os.system(
-    "python3 ./../scripts/analyze_latency.py -t database -r dotnet -test secondTest")
+    "python3 ./../scripts/analyze_latency.py -test secondTest")
 
 result = pd.read_csv("results.csv")
 
@@ -61,12 +61,12 @@ else:
 
 # Third test
 os.system(
-    "python3 ./../scripts/analyze_reliability.py -t database -r dotnet -test thirdTest")
+    "python3 ./../scripts/analyze_reliability.py -test thirdTest")
 
 result = pd.read_csv("results.csv")
 
 is_test_ok = result["original_invokes"].values[0] == 8 and result["original_executes"].values[0] == 7 and result["duplicates_invokes"].values[0] == 1 and result["duplicates_executes"].values[0] == 2 and result[
-    "missing_executes"].values[0] == 1 and result["out_of_order"].values[0] == 0 and result["amount_invokes_after"].values[0] == 2 and result["amount_executes_after"].values[0] == 2
+    "missing_executes"].values[0] == 1 and result["out_of_order"].values[0] == 0
 
 if(is_test_ok):
     print("Test third reliability OK")
@@ -74,7 +74,7 @@ else:
     print("Test third reliability FAILED")
 
 os.system(
-    "python3 ./../scripts/analyze_latency.py -t database -r dotnet -test thirdTest")
+    "python3 ./../scripts/analyze_latency.py -test thirdTest")
 
 result = pd.read_csv("results.csv")
 
@@ -84,3 +84,18 @@ if(is_test_ok):
     print("Test third latency OK")
 else:
     print("Test third latency FAILED")
+
+
+# Fourth test
+os.system(
+    "python3 ./../scripts/analyze_reliability.py -test fourthTest")
+
+result = pd.read_csv("results.csv")
+
+is_test_ok = result["original_invokes"].values[0] == 8 and result["original_executes"].values[0] == 7 and result["duplicates_invokes"].values[0] == 1 and result["duplicates_executes"].values[0] == 2 and result[
+    "missing_executes"].values[0] == 1 and result["out_of_order"].values[0] == 0
+
+if(is_test_ok):
+    print("Test third reliability OK")
+else:
+    print("Test third reliability FAILED")

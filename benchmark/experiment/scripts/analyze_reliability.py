@@ -82,17 +82,17 @@ for runtime in runtime_pick:
                     'operation_id'].to_list()) - len(list(set(receiver_order[
                         'operation_id'].to_list())))
 
-                # invoke_order_no_duplicates = invoke_order.drop_duplicates(
-                #    subset=['name', 'iteration_id'], keep=False)
-
                 invoke_order_no_duplicates = invoke_order.drop_duplicates(
+                    subset=['name', 'iteration_id'], keep=False)
+
+                invoke_order_no_duplicates = invoke_order_no_duplicates.drop_duplicates(
                     subset=['name', 'operation_id'], keep=False)
 
                 receiver_order_no_duplicates = receiver_order.drop_duplicates(
                     subset=['name', 'operation_id'], keep=False)
 
-                # receiver_order_no_duplicates = receiver_order_no_duplicates.drop_duplicates(
-                #    subset=['name', 'iteration_id'], keep=False)
+                receiver_order_no_duplicates = receiver_order_no_duplicates.drop_duplicates(
+                    subset=['name', 'iteration_id'], keep=False)
 
                 invoke_order_ids = invoke_order_no_duplicates.operation_id.tolist()
                 receiver_order_ids = receiver_order_no_duplicates.operation_id.tolist()
@@ -103,8 +103,6 @@ for runtime in runtime_pick:
 
                 count = -1
                 out_of_order = 0
-                print(str(trigger_type) + " " +
-                      str(trigger_mode) + " " + str(trigger_input))
                 print(receiver_order_ids)
                 for invoke_id in invoke_order_ids:
                     count = count + 1
@@ -115,6 +113,7 @@ for runtime in runtime_pick:
                             receiver_order_ids.remove(invoke_id)
                             receiver_order_ids.insert(count, invoke_id)
 
+                print(receiver_order_ids)
                 reliability_results = reliability_results.append({"runtime": runtime, "trigger_type": trigger_type, "original_invokes": invoke_amount, "original_executes": receiver_amount, "duplicates_invokes": invoke_duplicates_amount,
                                                                   "duplicates_executes": receiver_duplicates_amount, "missing_executes": len(missing_executes), "out_of_order": out_of_order, "invoke_type": trigger_mode, "invoke_input": trigger_input}, ignore_index=True)
 
