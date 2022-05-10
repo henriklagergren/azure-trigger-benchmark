@@ -15,10 +15,15 @@ import pandas as pd
 import numpy as np
 import sys
 
+# Set it None to display all rows in the dataframe
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
+
 load_dotenv('./../../.env')
 
-start_date = str(date.today() + timedelta(days=-2))
-start_time = "01:00:00"
+start_date = str(date.today() + timedelta(days=0))
+start_time = "19:40:00"
 
 end_date = str(date.today() + timedelta(days=1))
 end_time = "01:00:00"
@@ -59,7 +64,7 @@ dependencies = dependencies.json()
 print('')
 print('Fetching Traces...')
 traces = requests.get('https://api.applicationinsights.io/v1/apps/' +
-                      application_ID + '/query?query=traces | where message contains "InvokerEndpoint details" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
+                      application_ID + '/query?query=traces | where message contains "InvokerEndpoint details" or message contains "Coldstart details" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
 traces = traces.json()
 
 all_entries = pd.DataFrame(
@@ -157,7 +162,6 @@ if len(switch_operation_ids) > 0:
         all_entries["operation_id"][all_entries["operation_id"] ==
                                     switch[1]] = switch[0].replace('|', '').split('.')[0]
 
-
 print('')
 print('Extracting Traces...')
 entries = []
@@ -167,10 +171,16 @@ count = -1
 for value in traces["tables"][0]["rows"]:
     count = count + 1
     print_progress(count, total_length)
-    if(value[1].lower() == "invokerendpoint details"):
 
+    if(value[1].lower() == "coldstart details"):
         custom_values = json.loads(value[4])
-
+        if(custom_values['iteration_id'] == '1'):
+            print('\nDeleted first invocation')
+            print(custom_values)
+            all_entries.drop(all_entries[all_entries['operation_id']
+                             == custom_values['operation_id']].index, inplace=True)
+    elif(value[1].lower() == "invokerendpoint details"):
+        custom_values = json.loads(value[4])
         all_entries.loc[all_entries['operation_id'] == custom_values['operationId'], ['trigger', 'runtime', 'iteration_id', 'invoke_mode', 'invoke_input']] = [
             custom_values['triggerType'].lower(), custom_values['runtime'], custom_values['iterationId'], custom_values['invokeMode'], custom_values['invokeInput']]
     else:
@@ -180,7 +190,6 @@ for value in traces["tables"][0]["rows"]:
         d['timestamp'] = timestamp
         d['operation_id'] = value[7]
         entries.append(d)
-
 all_entries = all_entries.append(entries, ignore_index=True)
 
 # Remove entries without operation_id

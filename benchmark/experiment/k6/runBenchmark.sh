@@ -150,7 +150,7 @@ run_k6() {
 }
 
 # Read input flags
-while getopts 't:r:b:' flag; do
+while getopts 't:r:l:b:' flag; do
   case "${flag}" in
   t) TRIGGER_TYPE="${OPTARG}" ;;
   r) RUNTIME="${OPTARG}" ;; 

@@ -15,10 +15,25 @@ appInsights
 appInsights.defaultClient.setAutoPopulateAzureProperties(true)
 appInsights.start()
 
+const envInstance = process.env['WEBSITE_INSTANCE_ID']
+let count = 0
+
 const eventGridTrigger: AzureFunction = async function (
   context: Context,
-  eventGridEvent: any
-): Promise<void> {}
+  eventGridEvent: any,
+  invocationId: any
+): Promise<void> {
+  count += 1
+
+  appInsights.defaultClient.trackTrace({
+    message: 'Coldstart details',
+    properties: {
+      iteration_id: count,
+      instance_id: envInstance,
+      operation_id: invocationId
+    }
+  })
+}
 
 export default async function contextPropagatingEventGridTrigger (
   context,
@@ -44,6 +59,6 @@ export default async function contextPropagatingEventGridTrigger (
     })
 
     appInsights.defaultClient.flush()
-    return await eventGridTrigger(context, req)
+    return await eventGridTrigger(context, req, invocationId)
   }, correlationContext)()
 }

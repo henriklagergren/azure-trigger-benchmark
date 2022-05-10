@@ -15,18 +15,26 @@ appInsights
 appInsights.defaultClient.setAutoPopulateAzureProperties(true)
 appInsights.start()
 
+const envInstance = process.env['WEBSITE_INSTANCE_ID']
+let count = 0
+
 const httpTrigger: AzureFunction = async function (
   context: Context,
-  req: HttpRequest
+  req: HttpRequest,
+  invocationId: any
 ): Promise<void> {
   context.log('HTTP trigger function processed a request.')
 
-  context.res = {
-    status: 200,
-    headers: {
-      'content-type': 'text/plain'
+  count += 1
+
+  appInsights.defaultClient.trackTrace({
+    message: 'Coldstart details',
+    properties: {
+      iteration_id: count,
+      instance_id: envInstance,
+      operation_id: invocationId
     }
-  }
+  })
 }
 
 export default async function contextPropagatingHttpTrigger (context, req) {
@@ -48,6 +56,6 @@ export default async function contextPropagatingHttpTrigger (context, req) {
     })
 
     appInsights.defaultClient.flush()
-    return await httpTrigger(context, req)
+    return await httpTrigger(context, req, correlationContext!.operation.id)
   }, correlationContext)()
 }

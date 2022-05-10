@@ -15,16 +15,22 @@ appInsights
 appInsights.defaultClient.setAutoPopulateAzureProperties(true)
 appInsights.start()
 
+const envInstance = process.env['WEBSITE_INSTANCE_ID']
+let count = 0
+
 const eventHubTrigger: AzureFunction = async function (
   context: Context,
   eventHubMessages: any[]
 ): Promise<void> {
-  context.log(
-    `Eventhub trigger function called for message array ${eventHubMessages}`
-  )
+  count += 1
 
-  eventHubMessages.forEach((message, index) => {
-    context.log(`Processed message ${message}`)
+  appInsights.defaultClient.trackTrace({
+    message: 'Coldstart details',
+    properties: {
+      iteration_id: count,
+      instance_id: envInstance,
+      operation_id: eventHubMessages[0]
+    }
   })
 }
 

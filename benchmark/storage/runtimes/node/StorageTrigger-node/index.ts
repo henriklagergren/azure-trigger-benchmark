@@ -16,16 +16,24 @@ appInsights
 appInsights.defaultClient.setAutoPopulateAzureProperties(true)
 appInsights.start()
 
+const envInstance = process.env['WEBSITE_INSTANCE_ID']
+let count = 0
+
 const storageTrigger: AzureFunction = async function (
   context: Context,
-  documents: any[]
+  documents: any[],
+  invocationId: any
 ): Promise<void> {
-  context.res = {
-    status: 200,
-    headers: {
-      'content-type': 'text/plain'
+  count += 1
+
+  appInsights.defaultClient.trackTrace({
+    message: 'Coldstart details',
+    properties: {
+      iteration_id: count,
+      instance_id: envInstance,
+      operation_id: invocationId
     }
-  }
+  })
 }
 
 export default async function contextPropagatingStorageTrigger (context, req) {
@@ -39,8 +47,6 @@ export default async function contextPropagatingStorageTrigger (context, req) {
       .replace('|', '')
       .split('.')[0]
 
-    //console.log(JSON.stringify(context))
-
     appInsights.defaultClient.trackDependency({
       target: `http://`,
       name: 'Custom operationId storage',
@@ -53,6 +59,6 @@ export default async function contextPropagatingStorageTrigger (context, req) {
 
     appInsights.defaultClient.flush()
 
-    return await storageTrigger(context, req)
+    return await storageTrigger(context, req, invocationId)
   }, correlationContext)()
 }
