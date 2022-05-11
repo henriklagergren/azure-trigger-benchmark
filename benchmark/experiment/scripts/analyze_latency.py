@@ -72,7 +72,7 @@ for runtime in runtimes:
 
                 if(delta.seconds < 500):
                     latency_results = latency_results.append({"runtime": runtime, "trigger_type": trigger_type,
-                                                              "invoke_type": invoker.values[0][8], "invoke_input": invoker.values[0][9], "latency": (delta.seconds*1000000 + delta.microseconds) / 1000}, ignore_index=True)
+                                                              "invoke_type": invoker.values[0][8], "invoke_input": int(float(invoker.values[0][9])), "latency": (delta.seconds*1000000 + delta.microseconds) / 1000}, ignore_index=True)
 
 if(is_test):
     path = "./../tests/results.csv"

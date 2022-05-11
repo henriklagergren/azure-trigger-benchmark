@@ -3,7 +3,7 @@ RUNTIME=''
 LOCATION=''
 BURST_SIZES=(10 50 100 300)
 INVOKE_DELAYS=(1 10 25 50 100 150)
-INVOKE_DELAYS_ONE_VU=(500 750 1000 1500 2000)
+INVOKE_DELAYS_ONE_VU=(500 750 1000)
 
 deploy_http_benchmark() {
   echo "Deploying http trigger"
@@ -119,12 +119,6 @@ deploy_eventGrid_benchmark() {
 
 deploy_all_benchmarks() {
   deploy_http_benchmark
-  deploy_storage_benchmark
-  deploy_queue_benchmark
-  deploy_database_benchmark
-  deploy_serviceBus_benchmark
-  deploy_eventHub_benchmark
-  deploy_eventGrid_benchmark
 }
 
 

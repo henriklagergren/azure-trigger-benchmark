@@ -23,7 +23,7 @@ pd.set_option('display.width', None)
 load_dotenv('./../../.env')
 
 start_date = str(date.today() + timedelta(days=0))
-start_time = "14:00:00"
+start_time = "01:00:00"
 
 end_date = str(date.today() + timedelta(days=1))
 end_time = "01:00:00"

@@ -60,7 +60,7 @@ function k6_options_constant_one_vu (invoke_delay) {
       one_vu: {
         executor: 'constant-arrival-rate',
         maxVUs: 1,
-        duration: `${invoke_delay*500}ms`,
+        duration: `${invoke_delay*300}ms`,
         rate: 1,
         timeUnit: `${invoke_delay}ms`,
         preAllocatedVUs: 1
