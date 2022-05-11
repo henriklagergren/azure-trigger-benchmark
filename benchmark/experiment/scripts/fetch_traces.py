@@ -1,6 +1,7 @@
 from cgitb import reset
 from cmath import nan
 from tracemalloc import start
+from jinja2 import Undefined
 import requests
 import json
 from itertools import groupby
@@ -25,7 +26,7 @@ load_dotenv('./../../.env')
 start_date = str(date.today() + timedelta(days=0))
 start_time = "01:00:00"
 
-end_date = str(date.today() + timedelta(days=1))
+end_date = str(date.today() + timedelta(days=2))
 end_time = "01:00:00"
 
 
@@ -179,9 +180,8 @@ for value in traces["tables"][0]["rows"]:
         custom_values = json.loads(value[4])
         if(custom_values['iteration_id'] == '1'):
             print('\nDeleted first invocation')
-            print(custom_values)
             all_entries.drop(all_entries[all_entries['operation_id']
-                             == custom_values['operation_id']].index, inplace=True)
+                                         == custom_values['operation_id']].index, inplace=True)
     elif(value[1].lower() == "invokerendpoint details"):
         custom_values = json.loads(value[4])
         all_entries.loc[all_entries['operation_id'] == custom_values['operationId'], ['trigger', 'runtime', 'iteration_id', 'invoke_mode', 'invoke_input']] = [

@@ -28,7 +28,6 @@ namespace dotnet
           [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
           ILogger log)
     {
-
       var envInstance = Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID");
 
       count++;
@@ -38,7 +37,7 @@ namespace dotnet
           properties: new Dictionary<string, string> {
             {"iteration_id", count.ToString()},
             {"instance_id", envInstance},
-            {"operation_id", ""}
+            {"operation_id", System.Diagnostics.Activity.Current.RootId}
           }
     );
 
