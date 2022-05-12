@@ -65,7 +65,7 @@ dependencies = dependencies.json()
 print('')
 print('Fetching Traces...')
 traces = requests.get('https://api.applicationinsights.io/v1/apps/' +
-                      application_ID + '/query?query=traces | where message contains "InvokerEndpoint details" or message contains "Coldstart details" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
+                      application_ID + '/query?query=traces     | where message contains "InvokerEndpoint details" or message contains "Coldstart details" | extend iteration_id = tostring(customDimensions.["iteration_id"]) | where iteration_id == "1" or iteration_id == "" | where timestamp between(datetime("' + start_date + " " + start_time + '") .. datetime("' + end_date + " " + end_time + '"))', headers=headers)
 traces = traces.json()
 
 all_entries = pd.DataFrame(

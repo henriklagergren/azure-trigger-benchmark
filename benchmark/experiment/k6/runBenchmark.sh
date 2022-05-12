@@ -2,8 +2,7 @@ TRIGGER_TYPE=''
 RUNTIME=''
 LOCATION=''
 BURST_SIZES=(10 50 100 300)
-INVOKE_DELAYS=(1 10 25 50 100 150)
-INVOKE_DELAYS_ONE_VU=(500 750 1000)
+INVOKE_DELAYS=(1 10 25 50 100 150 250)
 
 deploy_http_benchmark() {
   echo "Deploying http trigger"
@@ -119,6 +118,12 @@ deploy_eventGrid_benchmark() {
 
 deploy_all_benchmarks() {
   deploy_http_benchmark
+  deploy_storage_benchmark
+  deploy_queue_benchmark
+  deploy_database_benchmark
+  deploy_serviceBus_benchmark
+  deploy_eventHub_benchmark
+  deploy_eventGrid_benchmark
 }
 
 
@@ -141,13 +146,6 @@ run_k6() {
       echo "Waiting 10s" 
       sleep 10
       k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e INVOKE_DELAY=$i -e MODE='CONSTANT' benchmark.js --quiet
-  done
-
-  for i in "${INVOKE_DELAYS_ONE_VU[@]}"; do
-      echo "Running k6 with invoke delay: $i" 
-      echo "Waiting 10s" 
-      sleep 10
-      k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../../.env | cut -d '"' -f2) -e INVOKE_DELAY=$i -e MODE='CONSTANT_ONE_VU' benchmark.js --quiet
   done
 }
 
