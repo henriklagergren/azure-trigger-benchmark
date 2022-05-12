@@ -20,7 +20,8 @@ let count = 0
 
 const eventHubTrigger: AzureFunction = async function (
   context: Context,
-  eventHubMessages: any[]
+  eventHubMessages: any[],
+  invocationId: any
 ): Promise<void> {
   count += 1
 
@@ -29,7 +30,7 @@ const eventHubTrigger: AzureFunction = async function (
     properties: {
       iteration_id: count,
       instance_id: envInstance,
-      operation_id: eventHubMessages[0]
+      operation_id: invocationId
     }
   })
 }
@@ -37,18 +38,20 @@ const eventHubTrigger: AzureFunction = async function (
 export default async function contextPropagatingEventHubTrigger (context, req) {
   const correlationContext = appInsights.startOperation(context, req)
 
-  return appInsights.wrapWithCorrelationContext(async () => {
-    appInsights.defaultClient.trackDependency({
-      target: 'http://',
-      name: 'Custom operationId eventHub',
-      dependencyTypeName: 'HTTP',
-      resultCode: 200,
-      success: true,
-      data: req[0],
-      duration: 10
-    })
+  req.forEach(eventData => {
+    return appInsights.wrapWithCorrelationContext(async () => {
+      appInsights.defaultClient.trackDependency({
+        target: 'http://',
+        name: 'Custom operationId eventHub',
+        dependencyTypeName: 'HTTP',
+        resultCode: 200,
+        success: true,
+        data: eventData,
+        duration: 10
+      })
 
-    appInsights.defaultClient.flush()
-    return await eventHubTrigger(context, req)
-  }, correlationContext)()
+      appInsights.defaultClient.flush()
+      return await eventHubTrigger(context, req, eventData)
+    }, correlationContext)()
+  })
 }

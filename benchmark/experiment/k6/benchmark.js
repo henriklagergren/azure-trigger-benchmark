@@ -52,33 +52,12 @@ function k6_options_constant (invoke_delay) {
   return options
 }
 
-function k6_options_constant_one_vu (invoke_delay) {
-  var options = {
-    insecureSkipTLSVerify: true,
-    noConnectionReuse: false,
-    scenarios: {
-      one_vu: {
-        executor: 'constant-arrival-rate',
-        maxVUs: 1,
-        duration: `${invoke_delay * 300}ms`,
-        rate: 1,
-        timeUnit: `${invoke_delay}ms`,
-        preAllocatedVUs: 1
-      }
-    }
-  }
-  return options
-}
-
 if (__ENV.MODE == 'BURST') {
   var options_temp = k6_options_burst(__ENV.BURST_SIZE)
   var mode = 'burst'
 } else if (__ENV.MODE == 'CONSTANT') {
   var options_temp = k6_options_constant(__ENV.INVOKE_DELAY)
   var mode = 'constant'
-} else if (__ENV.MODE == 'CONSTANT_ONE_VU') {
-  var options_temp = k6_options_constant_one_vu(__ENV.INVOKE_DELAY)
-  var mode = 'constant_one_vu'
 }
 
 export let options = options_temp
@@ -92,10 +71,6 @@ export default function () {
   } else if (__ENV.MODE == 'CONSTANT') {
     http.get(
       `${__ENV.BENCHMARK_URL}&invokeMode=${mode}&invokeInput=${__ENV.INVOKE_DELAY}&id=${exec.vu.tags.ITERATIONID}`
-    )
-  } else if (__ENV.MODE == 'CONSTANT_ONE_VU') {
-    http.get(
-      `${__ENV.BENCHMARK_URL}&invokeMode=${mode}&invokeInput=${__ENV.INVOKE_DELAY}&id=${exec.scenario.iterationInTest}`
     )
   }
 }
