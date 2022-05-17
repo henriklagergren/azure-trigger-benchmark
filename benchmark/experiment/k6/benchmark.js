@@ -2,7 +2,7 @@ import http from 'k6/http'
 import exec from 'k6/execution'
 
 var total_target_samples = 3000
-var target_samples_per_burst_size = total_target_samples / 4
+var target_samples_per_burst_size = total_target_samples/4
 var inter_burst_pauses = 10
 var mode = ''
 var count = 0
@@ -12,6 +12,11 @@ function range (size, startAt = 0) {
 }
 
 function k6_options_burst (burst_size) {
+  
+  if(burst_size == 1){
+    target_samples_per_burst_size = 50;
+    inter_burst_pauses = 3
+  }
   var num_bursts = range(
     Math.ceil(target_samples_per_burst_size / parseInt(burst_size))
   )

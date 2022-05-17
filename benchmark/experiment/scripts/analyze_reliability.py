@@ -117,17 +117,18 @@ for runtime in runtime_pick:
                                     receiver_order_ids.remove(invoke_id)
                                     receiver_order_ids.insert(count, invoke_id)
 
-                    if(c < 2 or int(float(trigger_input)) == 250):
+                    row = reliability_results.loc[(reliability_results['runtime'] == runtime) & (reliability_results['trigger_type'] == trigger_type) &
+                                                  (reliability_results['invoke_type'] == trigger_mode) & (reliability_results['invoke_input'] == int(float(trigger_input)))]
+
+                    if(len(row.values) == 0):
                         reliability_results = reliability_results.append({"runtime": runtime, "trigger_type": trigger_type, "original_invokes": invoke_amount, "original_executes": receiver_amount, "duplicates_invokes": invoke_duplicates_amount,
                                                                           "duplicates_executes": receiver_duplicates_amount, "missing_executes": len(missing_executes), "out_of_order": out_of_order, "invoke_type": trigger_mode, "invoke_input": int(float(trigger_input))}, ignore_index=True)
                     else:
-                        print(str(runtime) + " " +
-                              str(trigger_type) + " " + str(trigger_mode) + " " + str(trigger_input))
-                        row = reliability_results.loc[(reliability_results['runtime'] == runtime) & (reliability_results['trigger_type'] == trigger_type) &
-                                                      (reliability_results['invoke_type'] == trigger_mode) & (reliability_results['invoke_input'] == int(float(trigger_input)))].values[0]
+                        row = row.values[0]
                         reliability_results.loc[(reliability_results['runtime'] == runtime) & (reliability_results['trigger_type'] == trigger_type) & (reliability_results['invoke_type'] == trigger_mode) & (reliability_results['invoke_input'] == int(float(trigger_input))), ["original_invokes", "original_executes", "duplicates_invokes", "duplicates_executes", "missing_executes", "out_of_order"]] = [(
                             row[2] + invoke_amount), (row[3] + receiver_amount), (row[4] + invoke_duplicates_amount), (row[5] + receiver_duplicates_amount), (row[6] + len(missing_executes)), (row[7] + out_of_order)]
 
+reliability_results.drop(["duplicates_invokes"], axis=1, inplace=True)
 
 if(is_test):
     path = "./../tests/results.csv"

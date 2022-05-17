@@ -39,7 +39,7 @@ latency_results = pd.DataFrame(
              "invoke_type", "invoke_input", "latency"])
 
 for runtime in runtimes:
-    for c in [1, 2]:
+    for c in [1, 2, 3]:
 
         if(is_test):
             all_entries = pd.read_csv("./../tests/" + str(args.test) + ".csv")

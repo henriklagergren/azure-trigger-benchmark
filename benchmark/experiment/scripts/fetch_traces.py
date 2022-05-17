@@ -24,10 +24,10 @@ pd.set_option('display.width', None)
 load_dotenv('./../../.env')
 
 start_date = str(date.today() + timedelta(days=0))
-start_time = "01:00:00"
+start_time = "11:00:00"
 
-end_date = str(date.today() + timedelta(days=2))
-end_time = "01:00:00"
+end_date = str(date.today() + timedelta(days=0))
+end_time = "18:50:00"
 
 
 INSIGHTS_API_KEY = os.getenv('INSIGHTS_API_KEY')
@@ -199,7 +199,7 @@ all_entries = all_entries.append(entries, ignore_index=True)
 # all_entries = all_entries.filter(
 #    all_entries["operation_id"][all_entries["operation_id"] == ""])
 
-all_entries = all_entries.sort_values(by=['operation_id'])
+all_entries = all_entries.sort_values(by=['timestamp'])
 print('')
 print("Writing data to CSV-files...")
 for runtime_type in runtime_pick:

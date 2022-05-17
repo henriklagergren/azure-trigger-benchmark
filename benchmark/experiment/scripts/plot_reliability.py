@@ -7,8 +7,14 @@ import os.path as os
 def format_label_name(breaks):
     new_breaks = []
     for name in breaks:
-        if(name == "http" or name == "storage" or name == "queue" or name == "database"):
-            new_breaks.append(name.capitalize())
+        if(name == "http"):
+            new_breaks.append("HTTP")
+        elif(name == "storage"):
+            new_breaks.append("Blob Storage")
+        elif(name == "queue"):
+            new_breaks.append("Queue Storage")
+        elif(name == "database"):
+            new_breaks.append("Cosmos DB")
         elif(name == "servicebustopic"):
             new_breaks.append("Service Bus Topic")
         elif(name == "eventhub"):
@@ -57,7 +63,7 @@ for runtime, runtime_group in reliability_runtime_groups:
 
             invoke_input_group['out_of_order'] = invoke_input_group['out_of_order'] / \
                 (invoke_input_group['original_executes'] -
-                 invoke_input_group['duplicates_executes'])
+                 invoke_input_group['duplicates_executes'] - invoke_input_group['missing_executes'])
 
             current_row = pd.concat([current_row, invoke_input_group],
                                     ignore_index=True, axis=0)
@@ -66,23 +72,23 @@ for runtime, runtime_group in reliability_runtime_groups:
             {"invoke_input": 'category'}, errors='raise')
 
         plot = (p9.ggplot(current_row, p9.aes(fill="invoke_input",
-                                              x="trigger_type", y="missing_executes")) + p9.ylim(0, 1) + p9.labs(title="", x="Trigger type", y="")
-                + p9.theme(axis_text_x=p9.element_text(angle=45, hjust=1), legend_position="top") + p9.geom_col(position="dodge") + p9.scale_x_discrete(labels=format_label_name) + p9.labs(fill=legend_title) + p9.scale_fill_brewer(type="seq",  palette="YlGnBu", direction=-1, labels=format_labels))
+                                              x="trigger_type", y="missing_executes")) + p9.ylim(0, 1) + p9.labs(title="", x="Trigger type", y="Probability")
+                + p9.theme(axis_text_x=p9.element_text(angle=45, hjust=1), axis_title_y=p9.element_text(size=15), axis_title_x=p9.element_text(size=15), axis_text=p9.element_text(size=14), legend_position="top") + p9.geom_col(position="dodge") + p9.scale_x_discrete(labels=format_label_name) + p9.labs(fill=legend_title) + p9.scale_fill_brewer(type="seq",  palette="YlGnBu", direction=-1, labels=format_labels))
 
         p9.save_as_pdf_pages(
             [plot], filename="./../results/reliability/plots/reliability_missing_executes_" + str(runtime) + "_" +
             str(invoke_type) + ".pdf")
 
         plot = (p9.ggplot(current_row, p9.aes(fill="invoke_input",
-                                              x="trigger_type", y="duplicates_executes")) + p9.ylim(0, 1) + p9.labs(title="", x="Trigger type", y="")
-                + p9.theme(axis_text_x=p9.element_text(angle=45, hjust=1), legend_position="top") + p9.geom_col(position="dodge") + p9.scale_x_discrete(labels=format_label_name) + p9.labs(fill=legend_title) + p9.scale_fill_brewer(type="seq",  palette="YlGnBu", direction=-1, labels=format_labels))
+                                              x="trigger_type", y="duplicates_executes")) + p9.ylim(0, 1) + p9.labs(title="", x="Trigger type", y="Probability")
+                + p9.theme(axis_text_x=p9.element_text(angle=45, hjust=1), axis_title_y=p9.element_text(size=15), axis_title_x=p9.element_text(size=15), axis_text=p9.element_text(size=14), legend_position="top") + p9.geom_col(position="dodge") + p9.scale_x_discrete(labels=format_label_name) + p9.labs(fill=legend_title) + p9.scale_fill_brewer(type="seq",  palette="YlGnBu", direction=-1, labels=format_labels))
 
         p9.save_as_pdf_pages(
             [plot], filename="./../results/reliability/plots/reliability_duplicates_executes_" + str(runtime) + "_" +
             str(invoke_type) + ".pdf")
 
-        plot = (p9.ggplot(current_row, p9.aes(fill="invoke_input", x="trigger_type", y="out_of_order")) + p9.ylim(0, 1) + p9.labs(title="", x="Trigger type", y="", color="Trigger Type")
-                + p9.theme(axis_text_x=p9.element_text(angle=45, hjust=1), legend_position="top") + p9.geom_col(position=p9.position_dodge(0.8), width=0.8) + p9.scale_x_discrete(labels=format_label_name) + p9.labs(fill=legend_title) + p9.scale_fill_brewer(type="seq",  palette="YlGnBu", direction=-1, labels=format_labels))
+        plot = (p9.ggplot(current_row, p9.aes(fill="invoke_input", x="trigger_type", y="out_of_order")) + p9.ylim(0, 1) + p9.labs(title="", x="Trigger type", y="Probability", color="Trigger Type")
+                + p9.theme(axis_text_x=p9.element_text(angle=45, hjust=1), axis_title_y=p9.element_text(size=15), axis_title_x=p9.element_text(size=15), axis_text=p9.element_text(size=14), legend_position="top") + p9.geom_col(position=p9.position_dodge(0.8), width=0.8) + p9.scale_x_discrete(labels=format_label_name) + p9.labs(fill=legend_title) + p9.scale_fill_brewer(type="seq",  palette="YlGnBu", direction=-1, labels=format_labels))
 
         p9.save_as_pdf_pages(
             [plot], filename="./../results/reliability/plots/reliability_out_of_order_" + str(runtime) + "_" +
