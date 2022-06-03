@@ -25,8 +25,68 @@ def format_label_name(breaks):
     return new_breaks
 
 
+def format_label_name_all(breaks):
+    print(breaks)
+    if(breaks == "http"):
+        return "HTTP"
+    elif(breaks == "storage"):
+        return "Blob Storage"
+    elif(breaks == "queue"):
+        return "Queue Storage"
+    elif(breaks == "database"):
+        return "Cosmos DB"
+    elif(breaks == "servicebustopic"):
+        return "Service Bus Topic"
+    elif(breaks == "eventhub"):
+        return "Event Hub"
+    elif(breaks == "eventgrid"):
+        return "Event Grid"
+
+
+def format_runtime(breaks):
+    if(breaks == "dotnet"):
+        return ".NET"
+    elif(breaks == "node"):
+        return "Node.js"
+
+
 reliability_results = pd.read_csv(
     './../results/reliability/results.csv', delimiter=",")
+
+reliability_results_concat = reliability_results[reliability_results['invoke_type'] == 'constant']
+
+reliability_results_concat['out_of_order'] = (reliability_results_concat['out_of_order'] /
+                                              (reliability_results_concat['original_executes']
+                                               ))
+
+reliability_results_concat = reliability_results_concat.astype(
+    {"invoke_input": 'category'}, errors='raise')
+
+print(
+    reliability_results_concat[reliability_results_concat["trigger_type"] == "database"])
+
+
+def format_labels(breaks):
+    return [str(l) + " ms" for l in breaks]
+
+
+plot = (p9.ggplot(reliability_results_concat, p9.aes(fill="invoke_input", x="trigger_type", y="out_of_order"))
+        + p9.ylim(0, 1) + p9.labs(title="", x="Trigger type",
+                                  y="Probability", color="Trigger Type")
+        + p9.theme(axis_text_x=p9.element_text(angle=45, hjust=1),
+                   legend_position="top", plot_margin=0)
+        + p9.geom_col(position=p9.position_dodge(0.8), width=0.8)
+        + p9.scale_x_discrete(labels=format_label_name)
+        + p9.labs(fill="Inter-arrival time")
+        + p9.scale_fill_brewer(type="seq",  palette="YlGnBu",
+                               direction=-1, labels=format_labels)
+        + p9.facet_wrap('runtime', nrow=1, labeller=format_runtime
+                        )
+        )
+
+p9.save_as_pdf_pages(
+    [plot], filename="./../results/reliability/plots/reliability_out_of_order_concat.pdf")
+
 
 reliability_runtime_groups = reliability_results.groupby('runtime')
 

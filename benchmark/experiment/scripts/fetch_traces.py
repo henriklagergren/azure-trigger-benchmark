@@ -24,10 +24,10 @@ pd.set_option('display.width', None)
 load_dotenv('./../../.env')
 
 start_date = str(date.today() + timedelta(days=0))
-start_time = "11:00:00"
+start_time = "08:23:00"
 
 end_date = str(date.today() + timedelta(days=0))
-end_time = "18:50:00"
+end_time = "10:00:00"
 
 
 INSIGHTS_API_KEY = os.getenv('INSIGHTS_API_KEY')
