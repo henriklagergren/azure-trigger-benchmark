@@ -3,7 +3,7 @@ import * as pulumi from '@pulumi/pulumi'
 import * as automation from '@pulumi/pulumi/automation'
 import * as dotenv from 'dotenv'
 
-dotenv.config({ path: './../.env' })
+dotenv.config({ path: './../../.env' })
 
 const geteventGridResources = async () => {
   const user = await automation.LocalWorkspace.create({}).then(ws =>

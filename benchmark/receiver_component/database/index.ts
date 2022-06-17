@@ -1,7 +1,7 @@
 import * as cosmosdb from '@pulumi/azure/cosmosdb'
 import * as dotenv from 'dotenv'
 
-dotenv.config({ path: './../.env' })
+dotenv.config({ path: './../../.env' })
 
 // CODE WILL LATER BE REFACTORED AND THIS FILE WILL NOT BE NECESSARY ANYMORE
 const getDatabaseResources = async () => {

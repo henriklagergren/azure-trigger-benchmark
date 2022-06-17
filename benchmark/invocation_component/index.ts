@@ -201,49 +201,6 @@ const getDatabaseFunction = (
       )
   })
 
-const getTimerFunction = (url: string, operationId: any, appInsights: any) =>
-  new Promise<Response>(resolve => {
-    // Track dependency on completion
-    appInsights.defaultClient.trackDependency({
-      name: 'CompletionTrackTimer',
-      dependencyTypeName: 'HTTP',
-      resultCode: "200",
-      success: true,
-      duration: "10",
-      id: operationId,
-      data: ''
-    })
-    axios
-      .post(
-        url,
-        { input: operationId },
-        {
-          headers: {
-            'x-functions-key': process.env['AZURE_TIMER_MASTERKEY']!,
-            'Content-type': 'application/json'
-          }
-        }
-      )
-      .then(() =>
-        resolve({
-          status: 200,
-          headers: {
-            'content-type': 'text/plain'
-          },
-          body: 'AZURE - Timer trigger successfully started'
-        })
-      )
-      .catch(e =>
-        resolve({
-          status: 200,
-          headers: {
-            'content-type': 'text/plain'
-          },
-          body: `AZURE - Timer trigger failed to start\n\nError: ${e.message}`
-        })
-      )
-  })
-
 const getServiceBusResources = (
   serviceBusName: string,
   topicName: string,
@@ -439,7 +396,6 @@ const handler = async (context: any, req: any) => {
       triggerType === 'storage' ||
       triggerType === 'queue' ||
       triggerType === 'database' ||
-      triggerType === 'timer' ||
       triggerType === 'eventHub' ||
       triggerType === 'eventGrid' ||
       triggerType === 'serviceBusTopic')
@@ -527,19 +483,6 @@ const handler = async (context: any, req: any) => {
       }
     }
 
-    if (triggerType == 'timer') {
-      return appInsights.wrapWithCorrelationContext(async () => {
-        const startTime = Date.now() // Start trackRequest timer
-        const response = await getTimerFunction(
-          triggerInput,
-          correlationContext.operation.parentId,
-          appInsights
-        )
-
-        appInsights.defaultClient.flush()
-        return response
-      }, correlationContext)()
-    }
     if (triggerType === 'serviceBusTopic') {
       const serviceBusInputs = triggerInput.split(',')
       return appInsights.wrapWithCorrelationContext(async () => {

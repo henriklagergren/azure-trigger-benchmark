@@ -9,8 +9,8 @@ while getopts 't:' flag; do
 done
 
 # Decide which trigger to destroy based on input flag
-    cd $TRIGGER_TYPE/ && pulumi destroy -f -y
+    cd receiver_component/$TRIGGER_TYPE/ && pulumi destroy -f -y
     cd ..
-    cd infra/ && pulumi destroy -f -y
+    cd invocation_component/ && pulumi destroy -f -y
     cd ..
-    cd shared/ && pulumi destroy -f -y
+    cd shared_resources/ && pulumi destroy -f -y

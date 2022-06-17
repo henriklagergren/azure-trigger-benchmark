@@ -1,20 +1,20 @@
 # Init Shared
-cd shared/ && npm install
+cd shared_resources/ && npm install
 
 cd ..
 
 # Init Infra
-cd infra/ && npm install
+cd invocation_component/ && npm install
 
 cd ..
 
 # Init HTTP Trigger
-cd http/ && npm install
+cd receiver_component/http/ && npm install
 
 cd ..
 
 # Init Storage Trigger
-cd storage/ && npm install
+cd blob_storage/ && npm install
 
 cd ..
 
@@ -24,27 +24,22 @@ cd database/ && npm install
 cd ..
 
 # Init Event Grid Trigger
-cd eventGrid/ && npm install
+cd event_grid/ && npm install
 
 cd ..
 
 # Init Event Hub Trigger
-cd eventHub/ && npm install
+cd event_hub/ && npm install
 
 cd ..
 
 # Init Service Bus Trigger
-cd serviceBus/ && npm install
+cd service_bus_topic/ && npm install
 
 cd ..
 
 # Init Queue Trigger
-cd queue/ && npm install
-
-cd ..
-
-# Init Timer Trigger
-cd timer/ && npm install
+cd queue_storage/ && npm install
 
 cd ..
 
@@ -57,7 +52,7 @@ dotnet build
 cd ../../..
 
 # Init Storage Trigger
-cd storage/runtimes/node && npm install
+cd blob_storage/runtimes/node && npm install
 npm run build && func extensions install
 cd ..
 cd dotnet
@@ -65,7 +60,7 @@ dotnet build
 cd ../../..
 
 # Init Queue Trigger
-cd queue/runtimes/node && npm install
+cd queue_storage/runtimes/node && npm install
 npm run build && func extensions install
 cd ..
 cd dotnet
@@ -81,7 +76,7 @@ dotnet build
 cd ../../..
 
 # Init Event Grid Trigger
-cd eventGrid/runtimes/node && npm install
+cd event_grid/runtimes/node && npm install
 npm run build && func extensions install
 cd ..
 cd dotnet
@@ -89,7 +84,7 @@ dotnet build
 cd ../../..
 
 # Init Event Hub Trigger
-cd eventHub/runtimes/node && npm install
+cd event_hub/runtimes/node && npm install
 npm run build && func extensions install
 cd ..
 cd dotnet
@@ -97,7 +92,7 @@ dotnet build
 cd ../../..
 
 # Init Service Bus Topic Trigger
-cd serviceBus/runtimes/node && npm install
+cd service_bus_topic/runtimes/node && npm install
 npm run build && func extensions install
 cd ..
 cd dotnet

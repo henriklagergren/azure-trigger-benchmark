@@ -22,7 +22,7 @@ export class FunctionApp extends pulumi.ComponentResource {
   public functionAppId: pulumi.Output<string>
 
   constructor (name: string, options: FunctionAppOptions) {
-    super('henriktao:azure:MyFunctionApp', `${name}`)
+    super('azure:FunctionApp', `${name}`)
 
     const resourceGroupArgs = {
       resourceGroupName: options.resourceGroup.name,

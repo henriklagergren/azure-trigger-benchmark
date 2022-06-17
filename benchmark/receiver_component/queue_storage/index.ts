@@ -1,10 +1,9 @@
-/* eslint-disable no-restricted-syntax */
 import * as azure from '@pulumi/azure'
 import * as pulumi from '@pulumi/pulumi'
 import * as automation from '@pulumi/pulumi/automation'
 import * as dotenv from 'dotenv'
 
-dotenv.config({ path: './../.env' })
+dotenv.config({ path: './../../.env' })
 
 const getStorageResources = async () => {
   // Import shared resources
@@ -20,6 +19,8 @@ const getStorageResources = async () => {
     'ResourceGroup',
     resourceGroupId
   )
+  const insightsId = shared.requireOutput('insightsId')
+  const insights = azure.appinsights.Insights.get('Insights', insightsId)
 
   const storageAccount = new azure.storage.Account('account', {
     resourceGroupName: resourceGroup.name,
@@ -29,15 +30,14 @@ const getStorageResources = async () => {
     accountReplicationType: 'LRS'
   })
 
-  const container = new azure.storage.Container('container', {
-    storageAccountName: storageAccount.name,
-    containerAccessType: 'private'
+  const queue = new azure.storage.Queue('queue', {
+    storageAccountName: storageAccount.name
   })
 
   return {
     storageAccountName: storageAccount.name,
-    containerName: container.name,
-    storageConnectionString: pulumi.unsecret(storageAccount.primaryConnectionString)
+    queueName: queue.name,
+    queueConnectionString: pulumi.unsecret(storageAccount.primaryConnectionString)
   }
 }
 

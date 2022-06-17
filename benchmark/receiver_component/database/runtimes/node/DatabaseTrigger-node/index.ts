@@ -2,7 +2,7 @@ import * as appInsights from 'applicationinsights'
 import { AzureFunction, Context } from '@azure/functions'
 import * as dotenv from 'dotenv'
 
-dotenv.config({ path: './../../../../.env' })
+dotenv.config({ path: './../../../../../.env' })
 
 appInsights
   .setup()

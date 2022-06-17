@@ -13,19 +13,17 @@
     "forceConsistentCasingInFileNames": true
   },
   "files": [
-    "workloads/workload.ts",
-    "http/index.ts",
-    "shared/index.ts",
-    "infra/index.ts",
-    "storage/index.ts",
-    "queue/index.ts",
-    "database/index.ts",
-    "serviceBus/index.ts",
-    "timer/index.ts",
-    "eventHub/index.ts",
-    "eventGrid/index.ts",
-    "http/runtimes/node/HttpTrigger-node/index.ts",
-    "database/runtimes/node/DatabaseTrigger-node/index.ts",
-    "storage/runtimes/node/StorageTrigger-node/index.ts"
+    "receiver_component/http/index.ts",
+    "shared_resources/index.ts",
+    "invocation_component/index.ts",
+    "receiver_component/blob_storage/index.ts",
+    "receiver_component/queue_storage/index.ts",
+    "receiver_component/database/index.ts",
+    "receiver_component/service_bus_topic/index.ts",
+    "receiver_component/event_hub/index.ts",
+    "receiver_component/event_grid/index.ts",
+    "receiver_component/http/runtimes/node/HttpTrigger-node/index.ts",
+    "receiver_component/database/runtimes/node/DatabaseTrigger-node/index.ts",
+    "receiver_component/blob_storage/runtimes/node/StorageTrigger-node/index.ts"
   ]
 }

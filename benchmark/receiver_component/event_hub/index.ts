@@ -1,11 +1,10 @@
 import * as appInsights from 'applicationinsights'
 import * as azure from '@pulumi/azure'
 import * as pulumi from '@pulumi/pulumi'
-import workload from '../workloads/workload'
 import * as automation from '@pulumi/pulumi/automation'
 import * as dotenv from 'dotenv'
 
-dotenv.config({ path: './../.env' })
+dotenv.config({ path: './../../.env' })
 
 const getEventHubResources = async () => {
   const user = await automation.LocalWorkspace.create({}).then(ws =>

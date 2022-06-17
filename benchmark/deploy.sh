@@ -15,7 +15,7 @@ deploy_shared_resources() {
   echo "BENCHMARK_URL=" >> './.env'
   echo "BURST_SIZE=$BURST_SIZE" >> './.env'
   
-  cd shared/ && pulumi stack select shared -c && pulumi up -f -y
+  cd shared_resources/ && pulumi stack select shared -c && pulumi up -f -y
 
   # Get Resource group name
   RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
@@ -32,7 +32,7 @@ deploy_http_trigger() {
   checkIfSharedNeedDeploy
 
   # Deploy HTTP trigger
-  cd http/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd receiver_component/http/ && pulumi stack select trigger -c && pulumi up -f -y
 
   # Correct runtime
   if [ "$RUNTIME" = 'dotnet' ]; then
@@ -46,10 +46,10 @@ deploy_http_trigger() {
 
   FUNCTION_URL=$(echo "$FUNCTION_URL"|grep -Eo "https://[^ >]+"|head -1)
 
-  cd ../../..
+  cd ../../../..
 
   # Deploy infrastructure
-  cd infra/ && pulumi stack select infra -c && pulumi up -f -y
+  cd invocation_component/ && pulumi stack select infra -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
@@ -65,7 +65,7 @@ deploy_storage_trigger() {
   checkIfSharedNeedDeploy
 
   # Deploy storage trigger
-  cd storage/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd receiver_component/blob_storage/ && pulumi stack select trigger -c && pulumi up -f -y
 
   STORAGE_CONNECTION_STRING=$(pulumi stack output storageConnectionString)
   STORAGE_ACCOUNT_NAME=$(pulumi stack output storageAccountName)
@@ -85,10 +85,10 @@ deploy_storage_trigger() {
   
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
-  cd ../../..
+  cd ../../../..
 
   # Deploy infrastructure
-  cd infra/ && pulumi stack select infra -c && pulumi up -f -y
+  cd invocation_component/ && pulumi stack select infra -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
@@ -109,7 +109,7 @@ deploy_queue_trigger() {
   checkIfSharedNeedDeploy
 
   # Deploy queue trigger
-  cd queue/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd receiver_component/queue_storage/ && pulumi stack select trigger -c && pulumi up -f -y
 
   # Get storage account name and queue name
   QUEUE_CONNECTION_STRING=$(pulumi stack output queueConnectionString)
@@ -124,10 +124,10 @@ deploy_queue_trigger() {
 
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
-  cd ../../..
+  cd ../../../..
 
   # Deploy infrastructure
-  cd infra/ && pulumi stack select infra -c && pulumi up -f -y
+  cd invocation_component/ && pulumi stack select infra -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
@@ -147,7 +147,7 @@ deploy_database_trigger() {
   checkIfSharedNeedDeploy
 
   # Deploy database trigger
-  cd database/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd receiver_component/database/ && pulumi stack select trigger -c && pulumi up -f -y
 
   # Get storage account name and database name
   CONTAINER_NAME=$(pulumi stack output containerName)
@@ -157,10 +157,10 @@ deploy_database_trigger() {
   
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
-  cd ../../..
+  cd ../../../..
 
   # Deploy infrastructure
-  cd infra/ && pulumi stack select infra -c && pulumi up -f -y
+  cd invocation_component/ && pulumi stack select infra -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
@@ -176,39 +176,11 @@ deploy_database_trigger() {
   echo "$BENCHMARK_URL?trigger=database&input=$DATABASE_NAME,$CONTAINER_NAME"
 }
 
-deploy_timer_trigger() {
-  checkIfSharedNeedDeploy
-
-  # Deploy database trigger
-  cd timer/ && pulumi stack select trigger -c && pulumi up -f -y
-
-  # Get timer function app name and trigger name
-  TIMER_FUNCTION_APP_NAME=$(pulumi stack output timerFunctionAppName)
-  TIMER_TRIGGER_NAME=$(pulumi stack output timerTriggerAppName)
-
-  cd ..
-
-  # Deploy infrastructure
-  cd infra/ && pulumi stack select infra -c && pulumi up -f -y
-
-  # Get url to benchmark gateway
-  BENCHMARK_URL=$(pulumi stack output url)
-
-  echo "Write URL to .env"
-
-  sed -i"" -e "s|^BENCHMARK_URL=.*|BENCHMARK_URL=\"$BENCHMARK_URL\?trigger=timer\&input=https://$TIMER_FUNCTION_APP_NAME/admin/functions/$TIMER_TRIGGER_NAME\"|" $FILE_NAME
-
-  #echo "BENCHMARK_URL=\"$BENCHMARK_URL?trigger=timer&input=https://$TIMER_FUNCTION_APP_NAME/admin/functions/$TIMER_TRIGGER_NAME\"" >>$FILE_NAME
-
-  echo "Start timer trigger benchmark:"
-  echo "$BENCHMARK_URL?trigger=timer&input=https://$TIMER_FUNCTION_APP_NAME/admin/functions/$TIMER_TRIGGER_NAME"
-}
-
 deploy_serviceBus_trigger() {
   checkIfSharedNeedDeploy
 
   # Deploy serviceBus trigger
-  cd serviceBus/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd receiver_component/service_bus_topic/ && pulumi stack select trigger -c && pulumi up -f -y
 
   # Get storage account name and serviceBus name
   SERVICE_BUS_NAMESPACE=$(pulumi stack output serviceBusNamespace)
@@ -224,10 +196,10 @@ deploy_serviceBus_trigger() {
   
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
-  cd ../../..
+  cd ../../../..
 
   # Deploy infrastructure
-  cd infra/ && pulumi stack select infra -c && pulumi up -f -y
+  cd invocation_component/ && pulumi stack select infra -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
@@ -247,9 +219,9 @@ deploy_eventHub_trigger() {
   checkIfSharedNeedDeploy
 
   # Deploy database trigger
-  cd eventHub/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd receiver_component/event_hub/ && pulumi stack select trigger -c && pulumi up -f -y
 
-  # Get timer function app name and trigger name
+  # Get event hub function app details
   EVENT_HUB_NAME=$(pulumi stack output eventHubName)
   EVENT_HUB_NAMESPACE=$(pulumi stack output eventHubNamespace)
   EVENT_HUB_CONNTECTION_STRING=$(pulumi stack output eventHubConnectionString)
@@ -262,10 +234,10 @@ deploy_eventHub_trigger() {
 
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
-  cd ../../..
+  cd ../../../..
 
   # Deploy infrastructure
-  cd infra/ && pulumi stack select infra -c && pulumi up -f -y
+  cd invocation_component/ && pulumi stack select infra -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
@@ -286,23 +258,23 @@ deploy_eventGrid_trigger() {
   
   # In the case of eventGrid, the trigger has to be published before a subscription resource associated to the trigger can be created.
 
-  cd eventGrid/runtimes/$RUNTIME
+  cd receiver_component/event_grid/runtimes/$RUNTIME
 
   func azure functionapp publish $FUNCTIONAPP_NAME --$RUNTIME --force
 
-  cd ../../..
+  cd ../../../..
 
   # Deploy eventGrid trigger
-  cd eventGrid/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd receiver_component/event_grid/ && pulumi stack select trigger -c && pulumi up -f -y
 
-  # Get timer function app name and trigger name
+  # Get event grid storage and container name
   EVENT_GRID_STORAGE_NAME=$(pulumi stack output eventGridStorageAccountName)
   EVENT_GRID_CONTAINER_NAME=$(pulumi stack output eventGridStorageContainerName)
 
-  cd ..
+  cd ../..
 
   # Deploy infrastructure
-  cd infra/ && pulumi stack select infra -c && pulumi up -f -y
+  cd invocation_component/ && pulumi stack select infra -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
@@ -338,7 +310,7 @@ if [ "$TEMP_RUNTIME" = "" ] || [ "$TEMP_RUNTIME" != "RUNTIME=\"$RUNTIME\"" ] || 
 else 
   echo No change of runtime nor location. Skipping update of shared resources.
   sed -i"" -e "s|^BURST_SIZE=.*|BURST_SIZE=$BURST_SIZE|" "./.env"
-  cd shared
+  cd shared_resources
   # Get Resource group name
   RESOURCE_GROUP=$(pulumi stack output resourceGroupName)
   # Get Function app name
@@ -387,8 +359,6 @@ elif [ "$TRIGGER_TYPE" = 'queue' ]; then
   deploy_queue_trigger
 elif [ "$TRIGGER_TYPE" = 'database' ]; then
   deploy_database_trigger
-elif [ "$TRIGGER_TYPE" = 'timer' ]; then
-  deploy_timer_trigger
 elif [ "$TRIGGER_TYPE" = 'serviceBus' ]; then
   deploy_serviceBus_trigger
 elif [ "$TRIGGER_TYPE" = 'eventHub' ]; then
