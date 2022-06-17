@@ -3,7 +3,7 @@ import pandas as pd
 
 # First test reliability
 os.system(
-    "python3 ./../scripts/analyze_reliability.py -test firstTest")
+    "python3 ./../scripts/analyze_reliability.py -test 1")
 
 result = pd.read_csv("results.csv")
 
@@ -18,7 +18,7 @@ else:
 # First test latency
 
 os.system(
-    "python3 ./../scripts/analyze_latency.py -test firstTest")
+    "python3 ./../scripts/analyze_latency.py -test 1")
 
 result = pd.read_csv("results.csv")
 
@@ -32,7 +32,7 @@ else:
 
 # Second test reliability
 os.system(
-    "python3 ./../scripts/analyze_reliability.py -test secondTest")
+    "python3 ./../scripts/analyze_reliability.py -test 2")
 
 result = pd.read_csv("results.csv")
 
@@ -47,7 +47,7 @@ else:
 # Second test latency
 
 os.system(
-    "python3 ./../scripts/analyze_latency.py -test secondTest")
+    "python3 ./../scripts/analyze_latency.py -test 2")
 
 result = pd.read_csv("results.csv")
 
@@ -61,7 +61,7 @@ else:
 
 # Third test
 os.system(
-    "python3 ./../scripts/analyze_reliability.py -test thirdTest")
+    "python3 ./../scripts/analyze_reliability.py -test 3")
 
 result = pd.read_csv("results.csv")
 
@@ -74,7 +74,7 @@ else:
     print("Test third reliability FAILED")
 
 os.system(
-    "python3 ./../scripts/analyze_latency.py -test thirdTest")
+    "python3 ./../scripts/analyze_latency.py -test 3")
 
 result = pd.read_csv("results.csv")
 
@@ -88,7 +88,7 @@ else:
 
 # Fourth test
 os.system(
-    "python3 ./../scripts/analyze_reliability.py -test fourthTest")
+    "python3 ./../scripts/analyze_reliability.py -test 4")
 
 result = pd.read_csv("results.csv")
 

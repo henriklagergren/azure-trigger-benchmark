@@ -1,0 +1,18 @@
+type,name,timestamp,operation_id,runtime,trigger,duration,iteration_id,invoke_mode,invoke_input
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:00.000,1,dotnet,database,10,1,constant,10
+DEPENDENCY,custom operationid database,2022-04-28 07:14:00.010,1,dotnet,database,10,1,constant,10
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:00.005,2,dotnet,database,10,2,constant,10
+DEPENDENCY,custom operationid database,2022-04-28 07:14:00.008,2,dotnet,database,10,2,constant,10
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:00.010,3,dotnet,database,10,3,constant,10
+DEPENDENCY,custom operationid database,2022-04-28 07:14:00.035,3,dotnet,database,10,3,constant,10
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:00.011,4,dotnet,database,10,4,constant,10
+DEPENDENCY,custom operationid database,2022-04-28 07:14:00.030,4,dotnet,database,10,4,constant,10
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:00.015,5,dotnet,database,10,5,constant,10
+DEPENDENCY,custom operationid database,2022-04-28 07:14:00.025,5,dotnet,database,10,5,constant,10
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:00.016,6,dotnet,database,10,6,constant,10
+DEPENDENCY,custom operationid database,2022-04-28 07:14:00.040,6,dotnet,database,10,6,constant,10
