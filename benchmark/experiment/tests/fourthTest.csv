@@ -1,0 +1,49 @@
+type,name,timestamp,operation_id,runtime,trigger,duration,iteration_id,invoke_mode,invoke_input
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:00.000,1,dotnet,database,10,1,constant,10
+DEPENDENCY,custom operationid database,2022-04-28 07:14:00.010,1,dotnet,database,10,1,constant,10
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:00.005,2,dotnet,database,10,2,constant,10
+DEPENDENCY,custom operationid database,2022-04-28 07:14:00.030,2,dotnet,database,10,2,constant,10
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:00.010,3,dotnet,database,10,3,constant,10
+DEPENDENCY,custom operationid database,2022-04-28 07:14:00.035,3,dotnet,database,10,3,constant,10
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:00.023,4,dotnet,database,10,4,constant,10
+DEPENDENCY,custom operationid database,2022-04-28 07:14:00.040,4,dotnet,database,10,4,constant,10
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:00.026,5,dotnet,database,10,5,constant,10
+DEPENDENCY,custom operationid database,2022-04-28 07:14:00.070,5,dotnet,database,10,5,constant,10
+
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:01.000,1,dotnet,database,10,1,constant,20
+DEPENDENCY,custom operationid database,2022-04-28 07:14:01.010,1,dotnet,database,10,1,constant,20
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:01.005,2,dotnet,database,10,2,constant,20
+DEPENDENCY,custom operationid database,2022-04-28 07:14:01.030,2,dotnet,database,10,2,constant,20
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:01.010,3,dotnet,database,10,3,constant,20
+DEPENDENCY,custom operationid database,2022-04-28 07:14:01.025,3,dotnet,database,10,3,constant,20
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:01.023,4,dotnet,database,10,4,constant,20
+DEPENDENCY,custom operationid database,2022-04-28 07:14:01.020,4,dotnet,database,10,4,constant,20
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:01.026,5,dotnet,database,10,5,constant,20
+DEPENDENCY,custom operationid database,2022-04-28 07:14:01.070,5,dotnet,database,10,5,constant,20
+
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:02.023,4,dotnet,database,10,4,constant,30
+DEPENDENCY,custom operationid database,2022-04-28 07:14:02.030,4,dotnet,database,10,4,constant,30
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:02.026,5,dotnet,database,10,5,constant,30
+DEPENDENCY,custom operationid database,2022-04-28 07:14:02.035,5,dotnet,database,10,5,constant,30
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:02.010,3,dotnet,database,10,3,constant,30
+DEPENDENCY,custom operationid database,2022-04-28 07:14:02.040,3,dotnet,database,10,3,constant,30
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:02.005,2,dotnet,database,10,2,constant,30
+DEPENDENCY,custom operationid database,2022-04-28 07:14:02.060,2,dotnet,database,10,2,constant,30
+
+DEPENDENCY,completiontrackdatabase,2022-04-28 07:14:02.000,1,dotnet,database,10,1,constant,30
+DEPENDENCY,custom operationid database,2022-04-28 07:14:02.080,1,dotnet,database,10,1,constant,30
+
+
