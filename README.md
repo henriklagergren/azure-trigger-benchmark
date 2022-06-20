@@ -1,6 +1,6 @@
 # Azure Trigger Benchmark (2022)
 
-#### An Azure benchmark built as a part of a master thesis conducted at Chalmers University of Technology in Sweden.
+#### An Azure benchmark for FaaS triggers, built as a part of a master thesis conducted at Chalmers University of Technology in Sweden.
 
 ## Intructions to reproduce experiment:
 
