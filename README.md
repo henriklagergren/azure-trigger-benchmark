@@ -7,7 +7,7 @@
 1. Installation
    - Pulumi CLI (https://www.pulumi.com/docs/get-started/install/)
    - Azure CLI (https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
-   - Azure Functions Core Tools (https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Cwindows%2Ccsharp%2Cportal%2Cbash)
+   - Azure Functions Core Tools (https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local)
    - NodeJS (https://nodejs.org/en/download/)
    - .NET (https://dotnet.microsoft.com/en-us/download)
 
