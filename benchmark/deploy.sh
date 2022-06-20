@@ -32,7 +32,7 @@ deploy_http_trigger() {
   checkIfSharedNeedDeploy
 
   # Deploy HTTP trigger
-  cd receiver_component/http/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd receiver_component/http/ && pulumi stack select receiver -c && pulumi up -f -y
 
   # Correct runtime
   if [ "$RUNTIME" = 'dotnet' ]; then
@@ -49,7 +49,7 @@ deploy_http_trigger() {
   cd ../../../..
 
   # Deploy infrastructure
-  cd invocation_component/ && pulumi stack select infra -c && pulumi up -f -y
+  cd invocation_component/ && pulumi stack select invocation -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
@@ -57,7 +57,7 @@ deploy_http_trigger() {
   echo "Write URL to .env"
   sed -i"" -e "s|^BENCHMARK_URL=.*|BENCHMARK_URL=\"$BENCHMARK_URL\?trigger=http\&input=$FUNCTION_URL\"|" $FILE_NAME
   curl -s $FUNCTION_APP_URL > /tmp/output.html
-  echo "Start HTTP trigger benchmark:"
+  echo "Start HTTP benchmark:"
   echo "$BENCHMARK_URL?trigger=http&input=$FUNCTION_URL"
 }
 
@@ -65,7 +65,7 @@ deploy_storage_trigger() {
   checkIfSharedNeedDeploy
 
   # Deploy storage trigger
-  cd receiver_component/blob_storage/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd receiver_component/blob_storage/ && pulumi stack select receiver -c && pulumi up -f -y
 
   STORAGE_CONNECTION_STRING=$(pulumi stack output storageConnectionString)
   STORAGE_ACCOUNT_NAME=$(pulumi stack output storageAccountName)
@@ -88,7 +88,7 @@ deploy_storage_trigger() {
   cd ../../../..
 
   # Deploy infrastructure
-  cd invocation_component/ && pulumi stack select infra -c && pulumi up -f -y
+  cd invocation_component/ && pulumi stack select invocation -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
@@ -109,7 +109,7 @@ deploy_queue_trigger() {
   checkIfSharedNeedDeploy
 
   # Deploy queue trigger
-  cd receiver_component/queue_storage/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd receiver_component/queue_storage/ && pulumi stack select receiver -c && pulumi up -f -y
 
   # Get storage account name and queue name
   QUEUE_CONNECTION_STRING=$(pulumi stack output queueConnectionString)
@@ -127,7 +127,7 @@ deploy_queue_trigger() {
   cd ../../../..
 
   # Deploy infrastructure
-  cd invocation_component/ && pulumi stack select infra -c && pulumi up -f -y
+  cd invocation_component/ && pulumi stack select invocation -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
@@ -147,7 +147,7 @@ deploy_database_trigger() {
   checkIfSharedNeedDeploy
 
   # Deploy database trigger
-  cd receiver_component/database/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd receiver_component/database/ && pulumi stack select receiver -c && pulumi up -f -y
 
   # Get storage account name and database name
   CONTAINER_NAME=$(pulumi stack output containerName)
@@ -160,7 +160,7 @@ deploy_database_trigger() {
   cd ../../../..
 
   # Deploy infrastructure
-  cd invocation_component/ && pulumi stack select infra -c && pulumi up -f -y
+  cd invocation_component/ && pulumi stack select invocation -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
@@ -180,7 +180,7 @@ deploy_serviceBus_trigger() {
   checkIfSharedNeedDeploy
 
   # Deploy serviceBus trigger
-  cd receiver_component/service_bus_topic/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd receiver_component/service_bus_topic/ && pulumi stack select receiver -c && pulumi up -f -y
 
   # Get storage account name and serviceBus name
   SERVICE_BUS_NAMESPACE=$(pulumi stack output serviceBusNamespace)
@@ -199,7 +199,7 @@ deploy_serviceBus_trigger() {
   cd ../../../..
 
   # Deploy infrastructure
-  cd invocation_component/ && pulumi stack select infra -c && pulumi up -f -y
+  cd invocation_component/ && pulumi stack select invocation -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
@@ -219,7 +219,7 @@ deploy_eventHub_trigger() {
   checkIfSharedNeedDeploy
 
   # Deploy database trigger
-  cd receiver_component/event_hub/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd receiver_component/event_hub/ && pulumi stack select receiver -c && pulumi up -f -y
 
   # Get event hub function app details
   EVENT_HUB_NAME=$(pulumi stack output eventHubName)
@@ -237,7 +237,7 @@ deploy_eventHub_trigger() {
   cd ../../../..
 
   # Deploy infrastructure
-  cd invocation_component/ && pulumi stack select infra -c && pulumi up -f -y
+  cd invocation_component/ && pulumi stack select invocation -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)
@@ -265,7 +265,7 @@ deploy_eventGrid_trigger() {
   cd ../../../..
 
   # Deploy eventGrid trigger
-  cd receiver_component/event_grid/ && pulumi stack select trigger -c && pulumi up -f -y
+  cd receiver_component/event_grid/ && pulumi stack select receiver -c && pulumi up -f -y
 
   # Get event grid storage and container name
   EVENT_GRID_STORAGE_NAME=$(pulumi stack output eventGridStorageAccountName)
@@ -274,7 +274,7 @@ deploy_eventGrid_trigger() {
   cd ../..
 
   # Deploy infrastructure
-  cd invocation_component/ && pulumi stack select infra -c && pulumi up -f -y
+  cd invocation_component/ && pulumi stack select invocation -c && pulumi up -f -y
 
   # Get url to benchmark gateway
   BENCHMARK_URL=$(pulumi stack output url)

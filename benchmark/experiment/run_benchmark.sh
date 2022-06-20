@@ -8,7 +8,7 @@ deploy_http_trigger() {
   echo "Deploying http trigger"
   cd ..
   bash ./deploy.sh -t http -r $RUNTIME -l $LOCATION
-  cd experiment/workload
+  cd experiment
   echo "Http trigger deployed"
   echo "Wait 10s before starting benchmark"
   sleep 10
@@ -18,62 +18,62 @@ deploy_http_trigger() {
 }
 
 deploy_blob_storage_trigger() {
-  echo "Deploying storage trigger"
+  echo "Deploying Blob storage trigger"
   cd ..
   bash ./deploy.sh -t storage -r $RUNTIME -l $LOCATION
-  cd experiment/workload
+  cd experiment
   echo "Storage trigger deployed"
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting storage benchmark"
   run_k6
-  echo "Storage benchmark finished"
+  echo "Blob storage benchmark finished"
 }
 
 deploy_queue_storage_trigger() {
-  echo "Deploying queue trigger"
+  echo "Deploying Queue storage trigger"
   cd ..
   bash ./deploy.sh -t queue -r $RUNTIME -l $LOCATION
-  cd experiment/workload
+  cd experiment
   echo "Queue trigger deployed"
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting queue benchmark"
   run_k6
-  echo "Queue benchmark finished"
+  echo "Queue storage benchmark finished"
 }
 
 deploy_database_trigger() {
-  echo "Deploying database trigger"
+  echo "Deploying Cosmos DB trigger"
   cd ..
   bash ./deploy.sh -t database -r $RUNTIME -l $LOCATION
-  cd experiment/workload
+  cd experiment
   echo "Database trigger deployed"
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting database benchmark"
   run_k6
-  echo "Database benchmark finished"
+  echo "Cosmos DB benchmark finished"
 }
 
 deploy_service_bus_topic_trigger() {
-  echo "Deploying Service bus trigger"
+  echo "Deploying Service bus topic trigger"
   cd ..
   bash ./deploy.sh -t serviceBus -r $RUNTIME -l $LOCATION
-  cd experiment/workload
+  cd experiment
   echo "Service bus trigger deployed"
   echo "Wait 10s before starting benchmark"
   sleep 10
   echo "Starting Service bus benchmark"
   run_k6
-  echo "Service bus benchmark finished"
+  echo "Service bus topic benchmark finished"
 }
 
 deploy_event_hub_trigger() {
   echo "Deploying Event hub trigger"
   cd ..
   bash ./deploy.sh -t eventHub -r $RUNTIME -l $LOCATION
-  cd experiment/workload
+  cd experiment
   echo "Event hub trigger deployed"
   echo "Wait 10s before starting benchmark"
   sleep 10
@@ -86,7 +86,7 @@ deploy_event_grid_trigger() {
   echo "Deploying Event grid trigger"
   cd ..
   bash ./deploy.sh -t eventGrid -r $RUNTIME -l $LOCATION
-  cd experiment/workload
+  cd experiment
   echo "Event grid trigger deployed"
   echo "Wait 10s before starting benchmark"
   sleep 10
@@ -111,22 +111,27 @@ run_k6() {
   if [ "$var" = "all" ]; then
     for b in "${BURST_SIZES[@]}"; do
       echo "Running k6 with all sizes: $b" 
-      k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../.env | cut -d '"' -f2) -e BURST_SIZE=$b -e MODE='BURST' k6.js --quiet
+      k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../.env | cut -d '"' -f2) -e BURST_SIZE=$b -e MODE='BURST' ./workload/k6.js --quiet
       echo "Waiting 10s" 
       sleep 10
     done
   else
     echo "Running k6 with burst size : ${var}"
-    k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../.env | cut -d '"' -f2) -e BURST_SIZE=${var} -e MODE='BURST' k6.js --quiet
+    k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../.env | cut -d '"' -f2) -e BURST_SIZE=${var} -e MODE='BURST' ./workload/k6.js --quiet
   fi
 
   for i in "${INVOKE_DELAYS[@]}"; do
       echo "Running k6 with invoke delay: $i" 
       echo "Waiting 10s" 
       sleep 10
-      k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../.env | cut -d '"' -f2) -e INVOKE_DELAY=$i -e MODE='CONSTANT' k6.js --quiet
+      k6 run -e BENCHMARK_URL=$(grep BENCHMARK_URL ./../.env | cut -d '"' -f2) -e INVOKE_DELAY=$i -e MODE='CONSTANT' ./workload/k6.js --quiet
   done
 }
+
+# Run tests
+cd tests
+python3 run_tests.py
+cd ..
 
 # Read input flags
 while getopts 't:r:l:b:' flag; do
@@ -177,7 +182,6 @@ else
   exit
 fi
 
-# Decide which trigger to deploy based on input flag
 if [ "$TRIGGER_TYPE" = 'http' ]; then
   deploy_http_trigger
 elif [ "$TRIGGER_TYPE" = 'storage' ]; then
