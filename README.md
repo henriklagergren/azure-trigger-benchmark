@@ -35,12 +35,26 @@
        - If nothing specified: _northeurope_
    - NOTE: First time deploying the resources will take approx. 10 minutes.
 
-7. Analyze Scripts:
-   - Run the command `analyze_latency.py` will output the measured latency.
-   - Run the command `analyze_reliability.py` will output the frequency of out-of-order, missed or duplicate event deliveries.
-   - **Note:** It may take up to 4-6 minutes for the data to be available for retrieval after manual invocations or running the experiment.
+7. Fetch Data:
+   - Navigate to data_scripts folder
+   - Locate the fetch_traces.py script
+      - Go to row 26-30 in the file and change the interval of which traces that should be collected i.e. start and end time/date.
+   - Run the command from bash `python3 fetch_traces.`
+   - Generated data is found in experiment -> raw_data
 
-8. Finish by Remove All Published Resources:
+8. Analyze Scripts:
+   - Navigate to the data_scripts folder
+   - Run the command `python3 analyze_latency.py` will output the measured latency.
+   - Run the command `python3 analyze_reliability.py` will output the frequency of out-of-order, missed or duplicate event deliveries.
+   - **Note:** It may take up to 4-6 minutes for the data to be available for retrieval after manual invocations or running the experiment.
+   - Generated data is found in experiment -> results -> latency/reliability
+
+(9). Plot Scripts:
+   - Two plot scripts are located in data_scripts folder: `plot_latency.py` and `plot_reliability.py`
+   - These scripts will generate different plots (that were used in the master thesis based) on the results in the result folder.
+   - Generated plots are found in experiment -> results -> latency/reliability -> plots
+
+10. Finish by Remove All Published Resources:
    - Run the command from root folder `(bash) destroy.sh -t **trigger_type**`
    - NOTE: This also removes all insights data in the portal.
  
